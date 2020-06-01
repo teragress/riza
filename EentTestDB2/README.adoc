@@ -1,0 +1,251 @@
+= コミット後のデータ変更通知サンプル
+:source-highlighter: highlightjs
+:icons: font
+:nofooter:
+
+Spring Data JPA(Hibernate) での変更イベントを保持して、コミット完了後に通知するサンプルです。
+
+また、Hibernate Envars で履歴管理を行います。
+
+== 実行方法
+
+以下のクラスを Java Application として実行してください。
+
+link:src/main/java/com/example/eventnotify/EventNotifyApplication.java[com.example.eventnotify.EventNotifyApplication]
+
+maven から実行する場合は、以下を実行します。
+
+[source,sh]
+----
+mvn spring-boot:run
+----
+
+アプリ起動後、以下のリクエストで処理を実行します。
+
+[source,sh]
+----
+# 新規作成（insert）
+curl -v http://localhost:8080/rest/customers -X PUT -H 'Content-Type: application/json' -d '{"name":"AA","rank":2}'
+
+# 登録済みをすべて取得
+curl -v http://localhost:8080/rest/customers
+
+# 更新（update)
+curl -v http://localhost:8080/rest/customers -X POST -H 'Content-Type: application/json' -d '{"id":1,"name":"BB","rank":3}'
+
+# 削除（{id} 部分は削除対象の id）
+curl -v http://localhost:8080/rest/customers/{id} -X DELETE
+
+# 登録（複数 EntityManager）
+curl -v http://localhost:8080/rest/trade -X PUT -H 'Content-Type: application/json' --data '{"customerId":1, "total":45000}'
+----
+
+処理を実行すると、コミット後に以下のようなログが出力されます。
+（oldRevisionが変更前、newRevisionが変更後のリビジョン）
+
+.insert,update,delete
+----
+14:38:18.907 [http-nio-0.0.0.0-8080-exec-1] INFO  c.e.e.e.PostCommitPersistentEventNotifier - イベント通知：PersistentEvent(type=INSERT, entityId=1, entity=Customer(id=1, name=AA, rank=2, version=0), oldRevision=null, newRevision=2)
+14:38:54.647 [http-nio-0.0.0.0-8080-exec-3] INFO  c.e.e.e.PostCommitPersistentEventNotifier - イベント通知：PersistentEvent(type=UPDATE, entityId=1, entity=Customer(id=1, name=BB, rank=3, version=1), oldRevision=2, newRevision=3)
+02:27:06.240 [http-nio-0.0.0.0-8080-exec-5] INFO  c.e.e.e.PostCommitPersistentEventNotifier - イベント通知：PersistentEvent(type=DELETE, entityId=1, entity=Customer(id=1, name=BB, rank=3, version=1), oldRevision=3, newRevision=null)
+----
+
+.複数EntityManagerを跨った変更
+----
+15:52:44.479 [http-nio-0.0.0.0-8080-exec-5] INFO  c.e.e.e.PostCommitPersistentEventNotifier - イベント通知：PersistentEvent(type=INSERT, entityId=4, entity=Trade(id=4, customerId=1, total=45000, version=0), oldRevision=null, newRevision=6)
+15:52:44.479 [http-nio-0.0.0.0-8080-exec-5] INFO  c.e.e.e.PostCommitPersistentEventNotifier - イベント通知：PersistentEvent(type=UPDATE, entityId=1, entity=Customer(id=1, name=BB, rank=4, version=2), oldRevision=3, newRevision=5)
+----
+
+新規作成時に `name` を `ERROR` とすると、登録（save()）後に例外が throw され、トランザクションが rollback されます。
+この場合は、イベント通知（ログ出力）されません。
+[source,sh]
+----
+curl -v http://localhost:8080/rest/customers -X PUT -H 'Content-Type: application/json' -d '{"name":"ERROR","rank":2}'
+----
+
+
+== 実装説明
+
+サンプルでポイントになる点を記載します。
+
+=== 更新の検知について
+
+JPA による更新を検知するため、Hibernate の https://docs.jboss.org/hibernate/orm/5.3/userguide/html_single/Hibernate_User_Guide.html#events-interceptors[Interceptor] を使用しています。
+
+サンプルでは以下のクラスで実装しています。
+
+link:src/main/java/com/example/eventnotify/event/PersistentEventInterceptor.java[com.example.eventnotify.event.PersistentEventInterceptor]
+
+この Interceptor ですが、Hibernate によるデータ変更があった時に呼び出されます。
+
+アプリ以外（Envars）のデータ操作などでも呼ばれるため、イベント通知対象を絞っています。(isTargetEvent() メソッド参照）
+
+==== Interceptorの登録
+
+Interceptor は、以下の部分で EntityManagerFactory のプロパティ `hibernate.ejb.interceptor` に Interceptor のインスタンスを設定しています。
+
+* link:src/main/java/com/example/eventnotify/customer/CustomerJpaConfiguration.java[CustomerJpaConfiguration] の customerEntityManagerFactory()
+* link:src/main/java/com/example/eventnotify/trade/TradeJpaConfiguration.java[TradeJpaConfiguration] の 
+tradeEntityManagerFactory()
+
+=== 通知イベントの保持
+
+トランザクション中に発生したイベントは、以下のクラスに保持します。
+
+* link:src/main/java/com/example/eventnotify/event/PersistentEventHolder.java[PersistentEventHolder]
+
+notify() で渡されたイベント情報（PersistentEvent）を保持しています。
+
+=== イベントの通知
+
+イベントの通知は以下のクラスで行います。
+
+link:src/main/java/com/example/eventnotify/event/PostCommitPersistentEventNotifier.java[com.example.eventnotify.event.PostCommitPersistentEventNotifier]
+
+PersistentEventHolder が保持しているイベントについて、Commit後に通知を行います。（サンプルではログ出力）
+
+==== Commit後の処理
+
+Commit 後に処理を行うために `TransactionSynchronization` を使っています。トランザクション内で以下のように `registerSynchronization()` で登録すると、そのトランザクションが完了するときに callback を受けることができます。
+
+[source,java]
+----
+TransactionSynchronizationManager.registerSynchronization(new TransactionListener());
+----
+
+==== トランザクションスコープ
+
+PersistentEventHolder はトランザクション毎にインスタンスを作成しています。（イベント情報をトランザクション単位で保持するため）
+これには、Spring の https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/support/SimpleTransactionScope.html[SimpleTransactionScope] を使用しています。
+
+このスコープはデフォルトでは Spring に登録されていません。 link:src/main/java/com/example/eventnotify/EventNotifyApplication.java[EventNotifyApplication] クラスで以下にように登録しています。
+
+[source,java]
+----
+  @Bean
+  public Scope transactionScope() {
+    return new SimpleTransactionScope();
+  }
+
+  @Bean
+  public CustomScopeConfigurer customScopeConfigurer() {
+    CustomScopeConfigurer customScopeConfigurer = new CustomScopeConfigurer();
+    // transaction という名前で Scope を登録
+    customScopeConfigurer.addScope("transaction", transactionScope());
+    return customScopeConfigurer;
+  }
+----
+
+`@Scope` で以下のように指定すると、当該クラスのインスタンスが SimpleTransactionScope で管理されるようになります。
+
+[source,java]
+----
+@Scope(value = "transaction", proxyMode = ScopedProxyMode.INTERFACES)
+public class PostCommitPersistentEventNotifier implements PersistentEventNotifier {
+  ...
+}
+----
+
+==== リビジョンの取得
+
+変更前、変更後リビジョンについては、Envars の作成する Audit 情報から取得しています。
+この情報は、コミット直前に作成されるため、コミット完了後にクエリを使って取得しています。
+
+link:src/main/java/com/example/eventnotify/event/PostCommitPersistentEventNotifier.java[PostCommitPersistentEventNotifier] クラスの `getRevisions()` メソッドを参照。
+
+トランザクション完了後に参照するため、取得時に他の処理によって Audit が追加されている可能性があります。
+この対処のために、Entity に version フィールドを追加し、以下の Audit レコードのみを対象にして現在のリビジョンを取得しています。
+
+    更新時の version >= Audit レコードの version
+
+[NOTE]
+====
+version フィールドはデフォルトでは Audit には保持されません。
+`org.hibernate.envers.do_not_audit_optimistic_locking_field` を `true` に設定する必要があります。
+
+サンプルでは link:src/main/resources/application.yml[application.yml] で設定しています。
+====
+
+
+=== 複数 EntityManager対応
+
+複数の EntityManager を使用する場合は、それぞれの EntityManager を手動で設定する必要があります。
+
+サンプルでは、以下の２つのパッケージで、別々の EntityManager を使用しています。（DataSource は同じものを使用）
+
+|===
+|パッケージ|EntityManager設定クラス
+
+|com.example.eventnotify.customer
+|link:src/main/java/com/example/eventnotify/customer/CustomerJpaConfiguration.java[com.example.eventnotify.customer.CustomerJpaConfiguration]
+
+|com.example.eventnotify.trade
+|link:src/main/java/com/example/eventnotify/trade/TradeJpaConfiguration.java[com.example.eventnotify.trade.TradeJpaConfiguration]
+|===
+
+==== EntityManager の設定クラス
+
+クラスに `@EnableJpaRepositories` を付けて、EntityManagerFactory の Bean名（`entityManagerFactoryRef`）と Repository が存在するパッケージ（`basePackages`）を指定します。
+
+NOTE: EntityManagerFactory の Bean名 は、EntityManagerFactory を設定しているメソッド名になります。
+
+[source,java]
+----
+@EnableJpaRepositories(
+    entityManagerFactoryRef = "customerEntityManagerFactory",
+    basePackages = "com.example.eventnotify.customer.repository")
+@Configuration
+public class CustomerJpaConfiguration {
+...
+}
+----
+
+EntityManagerFactory の作成（設定）は、`CustomerJpaConfiguration` では `customerEntityManagerFactory()` メソッドです。
+ここでは、`EntityManagerFactoryBuilder` を使用して EntityManagerFactory の作成を行っています。
+
+NOTE: 複数 EntityManager を 1つのトランザクションで実行する場合は、Transaction Type を JTA とする必要があります。
+このため、`EntityManagerFactoryBuilder` の `jta(true)` を呼び出しています。
+
+
+==== トランザクションマネージャ
+
+複数 EntityManager を1つのトランザクションで実行する場合は JTA が必要なため、トランザクションマネージャ（ https://narayana.io/[Narayana] ）を使用しています。
+
+Narayana は link:pom.xml[pom.xml] に以下を `<dependencies>` に追加しています。
+
+[source,xml]
+----
+    <dependency>
+      <groupId>me.snowdrop</groupId>
+      <artifactId>narayana-spring-boot-starter</artifactId>
+    </dependency>
+----
+
+Narayana の spring-boot 連携については、以下をご参照ください。
+
+https://github.com/snowdrop/narayana-spring-boot
+
+
+==== トランザクションについて
+
+Narayana はトランザクション内で使用しているリソースが１つの場合は、two phase commit はしないで、one phase commit します。
+
+サンプルでは EntityManager は同じ DataSource を使用しているので、one phase で commit が行われます。
+
+
+==== Envers の履歴テーブル
+
+EntityManager が複数になっていますが DataSource は同じため、デフォルトだと全ての EntityManager が同じテーブルにリビジョンレコードを登録します。
+
+これを避けるために、EntityManager ごとに以下の RevisionEntity を作成し、テーブルをそれぞれ別のものとなるようにしています。
+
+|===
+|RevisionEntity|テーブル名
+
+|link:src/main/java/com/example/eventnotify/customer/entity/CustomerRevinfo.java[com.example.eventnotify.customer.entity.CustomerRevinfo]
+|CUSTOMER_REVINFO
+
+|link:src/main/java/com/example/eventnotify/trade/entity/TradeRevinfo.java[com.example.eventnotify.trade.entity.TradeRevinfo]
+|TRADE_REVINFO
+|===
+

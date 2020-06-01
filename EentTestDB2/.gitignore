@@ -1,0 +1,23 @@
+.gradle/
+build/
+target/
+
+# for eclipse
+.settings/
+.project
+.classpath
+.metadata/
+.springBeans
+RemoteSystemsTempFiles/
+bin/
+
+# for intellij
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# for netbeans
+.nb-gradle/
+nbproject/
