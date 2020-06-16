@@ -20,12 +20,12 @@ camel:
     main-run-controller: true
 server:
   address: 0.0.0.0
-  port: 8080
+  port: 8085
 
 management:
   server:
     address: 0.0.0.0
-    port: 8081
+    port: 8086
   endpoints:
     enabled-by-default: false
   endpoint:

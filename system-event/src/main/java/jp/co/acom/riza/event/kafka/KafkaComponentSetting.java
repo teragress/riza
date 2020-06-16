@@ -24,7 +24,7 @@ public class KafkaComponentSetting {
 	private static Logger logger = Logger.getLogger(KafkaComponentSetting.class);
 
 	@Autowired
-	private static Environment env;
+	private Environment env;
 	/**
 	 * KAFKAコンシューマー用コンポーネントの登録メソッド
 	 *

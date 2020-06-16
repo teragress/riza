@@ -63,11 +63,11 @@ public class KafkaConstants {
 	/**
 	 * ファイル受信イベントのトピック名
 	 */
-	public static final String KAFKA_FILE_EVENT_TOPIC = "KAFKA_FILE_EVENT_TOPIC";
+	public static final String KAFKA_FILE_EVENT_TOPIC = "FileEventTopic";
 	/**
 	 * ファイル受信イベントのコンシューマグループ名
 	 */
-	public static final String KAFKA_FILE_EVENT_GROUP = "KAFKA_FILE_EVENT_GROUP";
+	public static final String KAFKA_FILE_EVENT_GROUP = "FileEventGroup";
 	/**
 	 * ファイルイベントのコンシューマ接続数取得キー
 	 */

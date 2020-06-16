@@ -12,7 +12,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.kafka.KafkaConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -26,15 +26,14 @@ import jp.co.acom.riza.utils.log.Logger;
  * @author developer
  *
  */
-@Component
+@Service
 public class FileEventProcess implements Processor {
 	/**
 	 * ロガー
 	 */
 	private static Logger logger = Logger.getLogger(FileEventProcess.class);
 
-	@Autowired
-	CamelContext camelContext;
+	@Autowired	CamelContext camelContext;
 	
 	/**
 	 * 受信ファイルイベントの処理関数

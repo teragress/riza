@@ -9,7 +9,7 @@ import jp.co.acom.riza.event.kafka.KafkaConstants;
 import jp.co.acom.riza.event.kafka.ManualCommitProcess;
 import jp.co.acom.riza.utils.log.Logger;
 
-@Component
+//@Component
 public class FileEventConsumer extends RouteBuilder {
 	/**
 	 * ロガー
@@ -27,12 +27,12 @@ public class FileEventConsumer extends RouteBuilder {
 	 */
 	@Override
 	public void configure() throws Exception {
-		int consumerCount = env.getProperty(KafkaConstants.KAFKA_FILE_CONSUMER_COUNT, Integer.class,
+		int consumersCount = env.getProperty(KafkaConstants.KAFKA_FILE_CONSUMER_COUNT, Integer.class,
 				KafkaConstants.KAFKA_DEFAULT_FILE_CONSUMER_COUNT);
 
 		logger.debug("configure() start");
 		from("kafka:" + KafkaConstants.KAFKA_FILE_EVENT_TOPIC + "?groupId=" + KafkaConstants.KAFKA_FILE_EVENT_GROUP
-				+ "&consumerCount=" + consumerCount)
+				+ "&consumersCount=" + consumersCount)
 						.routeId("kafka_file_consumer")
 						.process(fileEventProcess)
 						.process(new ManualCommitProcess());
