@@ -4,6 +4,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
@@ -14,6 +16,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.client.RestTemplate;
 
 import jp.co.acom.riza.cep.event.RizaCepEventFinish;
@@ -39,7 +42,7 @@ public class CepMonitorService {
 	 * 環境変数取得用
 	 */
 	@Autowired
-	private static Environment env;
+	private Environment env;
 
 	/**
 	 * 処理待ち時間(秒)
@@ -66,11 +69,9 @@ public class CepMonitorService {
 	 * デフォルトのCEP URI
 	 */
 	private static final String MONITOR_DEFAULT_CEP_URI = "http://localhost:8080/rest/sep";
-
-	/**
-	 * @throws URISyntaxException
-	 */
-	public CepMonitorService() {
+	
+	@PostConstruct
+	public void initialize() {
 		String cepBaseUri = env.getProperty(CepConstants.CEP_BASE_URI, String.class, MONITOR_DEFAULT_CEP_URI);
 		try {
 

@@ -9,7 +9,7 @@ import javax.naming.NamingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -28,7 +28,7 @@ import jp.co.acom.riza.utils.log.Logger;
 import jp.com.acom.renove.event.mq.MessageUtilImpl;
 
 /** 中のイベントを Commit 後に送信する. */
-@Component
+@Service
 @Scope(value = "transaction", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class PostCommitPersistentEventNotifier {
 	private static final Logger logger = Logger.getLogger(PostCommitPersistentEventNotifier.class);

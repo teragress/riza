@@ -14,7 +14,10 @@ spring:
 #      hibernate.hbm2ddl.auto: create
   jta:
     log-dir: target/transaction-logs
-
+camel:
+  springboot:
+    name: MyCamel
+    main-run-controller: true
 server:
   address: 0.0.0.0
   port: 8080

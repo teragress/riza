@@ -33,8 +33,6 @@ public class FileEventProcess implements Processor {
 	 */
 	private static Logger logger = Logger.getLogger(FileEventProcess.class);
 
-//	@Resource(name = "kafka-event-context")
-//	private CamelContext camelContext;
 	@Autowired
 	CamelContext camelContext;
 	
@@ -75,14 +73,8 @@ public class FileEventProcess implements Processor {
 	 */
 	private void produceFileEvent(FileEventParameter parm) throws FileNotFoundException, IOException,NamingException {
 
-
-		//System.out.println("**************camel context " + camelContext);
-		//camelContext = new DefaultCamelContext();
-//		InitialContext initialContext = new InitialContext();
-//		camelContext = (CamelContext) initialContext.lookup("java:jboss/camel/context/loan-event-context");
 		ProducerTemplate producer = camelContext.createProducerTemplate();
 
-		//KafkaMessageSendUtil util = new KafkaMessageSendUtil();
 		String lineStr;
 		try (BufferedReader reader = new BufferedReader(new FileReader(parm.getDataFilePath()))) {
 			while ((lineStr = reader.readLine()) != null) {
