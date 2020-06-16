@@ -29,7 +29,7 @@ public class TradeJpaConfiguration {
   // 対象の Entity が存在するパッケージ.
   private static final String ENTITY_PACKAGE = "com.example.eventnotify.trade.entity";
 
-  @Autowired protected PostCommitPersistentEventNotifier postCommitPersistentEventNotifier;
+  @Autowired protected ApplicationRouteHolder postCommitPersistentEventNotifier;
 
   @Autowired protected PersistentEventNotifier tradePersistentEventNotifier;
 

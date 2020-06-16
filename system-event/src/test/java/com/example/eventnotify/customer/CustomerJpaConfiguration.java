@@ -1,14 +1,12 @@
 package com.example.eventnotify.customer;
 
-import com.example.eventnotify.event.PersistentEventHolder;
-import com.example.eventnotify.event.PersistentEventInterceptor;
-import com.example.eventnotify.event.PersistentEventNotifier;
-import com.example.eventnotify.event.PostCommitPersistentEventNotifier;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -21,6 +19,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 
+import jp.co.acom.riza.event.core.PersistentEventHolder;
+import jp.co.acom.riza.event.core.PersistentEventInterceptor;
+import jp.co.acom.riza.event.core.PersistentEventNotifier;
+import jp.co.acom.riza.event.core.PostCommitPersistentEventNotifier;
+
 /** customer パッケージ用の EntityManager の設定. */
 @EnableJpaRepositories(
     entityManagerFactoryRef = "customerEntityManagerFactory",
@@ -29,6 +32,8 @@ import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 public class CustomerJpaConfiguration {
   // 対象の Entity が存在するパッケージ.
   private static final String ENTITY_PACKAGE = "com.example.eventnotify.customer.entity";
+  private static final String ENTITY_MANAGER_FACTORY = "customerEntityManagerFactory";
+  private static final String ENTITY_MANAGER_BEAN_NAME = "customerEntityManager";
 
   @Autowired protected PostCommitPersistentEventNotifier postCommitPersistentEventNotifier;
 
@@ -65,7 +70,7 @@ public class CustomerJpaConfiguration {
    */
   @Bean
   public SharedEntityManagerBean customerEntityManager(
-      @Qualifier("customerEntityManagerFactory")
+      @Qualifier(ENTITY_MANAGER_FACTORY)
           EntityManagerFactory customerEntityManagerFactory) {
     SharedEntityManagerBean sharedEntityManagerBean = new SharedEntityManagerBean();
     sharedEntityManagerBean.setEntityManagerFactory(customerEntityManagerFactory);
@@ -93,9 +98,9 @@ public class CustomerJpaConfiguration {
    */
   @Bean
   @Scope(value = "transaction", proxyMode = ScopedProxyMode.INTERFACES)
-  public PersistentEventNotifier customerPersistentEventNotifier(
-      @Qualifier("customerEntityManager") EntityManager customerEntityManager) {
-    PersistentEventHolder holder = new PersistentEventHolder(customerEntityManager);
+  public jp.co.acom.riza.event.core.PersistentEventNotifier customerPersistentEventNotifier(
+      @Qualifier(ENTITY_MANAGER_BEAN_NAME) EntityManager customerEntityManager) {
+    PersistentEventHolder holder = new PersistentEventHolder(ENTITY_MANAGER_BEAN_NAME);
     postCommitPersistentEventNotifier.addEventHolder(holder);
     return holder;
   }

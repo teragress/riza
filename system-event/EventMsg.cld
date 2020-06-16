@@ -121,8 +121,8 @@
                       <target class="net.java.amateras.uml.classdiagram.model.ClassModel" reference="../../../../../../../../.."/>
                       <bendpoints/>
                       <stereoType></stereoType>
-                      <fromMultiplicity>*</fromMultiplicity>
-                      <toMultiplicity>1</toMultiplicity>
+                      <fromMultiplicity>1</fromMultiplicity>
+                      <toMultiplicity>*</toMultiplicity>
                     </net.java.amateras.uml.classdiagram.model.AssociationModel>
                   </sourceConnections>
                   <targetConnections>

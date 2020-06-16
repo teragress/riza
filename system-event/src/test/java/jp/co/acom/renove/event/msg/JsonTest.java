@@ -7,7 +7,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jp.co.acom.renove.event.core.PersistentType;
+import jp.co.acom.riza.event.core.PersistentType;
+import jp.co.acom.riza.event.msg.EntityManagerPersistent;
+import jp.co.acom.riza.event.msg.EntityPersistence;
+import jp.co.acom.riza.event.msg.EntityPersistent;
+import jp.co.acom.riza.event.msg.EventHeader;
+import jp.co.acom.riza.event.msg.FlowEvent;
 
 public class JsonTest {
     @JsonTypeInfo(use = Id.NAME)
