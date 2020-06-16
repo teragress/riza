@@ -1,4 +1,4 @@
-package com.example.eventnotify.trade.entity;
+package jp.co.acom.example.eventnotify.trade.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

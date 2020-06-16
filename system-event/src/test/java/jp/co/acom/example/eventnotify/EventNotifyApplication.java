@@ -1,4 +1,4 @@
-package com.example.eventnotify;
+package jp.co.acom.example.eventnotify;
 
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.beans.factory.config.Scope;

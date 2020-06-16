@@ -1,8 +1,9 @@
-package com.example.eventnotify.service.logic;
+package jp.com.acom.example.eventnotify.service.logic;
 
-import com.example.eventnotify.customer.entity.Customer;
-import com.example.eventnotify.trade.entity.Trade;
-import com.example.eventnotify.trade.repository.TradeRepository;
+import jp.co.acom.example.eventnotify.customer.entity.Customer;
+import jp.co.acom.example.eventnotify.trade.entity.Trade;
+import jp.co.acom.example.eventnotify.trade.repository.TradeRepository;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;

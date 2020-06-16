@@ -1,4 +1,4 @@
-package com.example.eventnotify.customer;
+package jp.co.acom.example.eventnotify.customer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,11 +27,11 @@ import jp.co.acom.riza.event.core.PostCommitPersistentEventNotifier;
 /** customer パッケージ用の EntityManager の設定. */
 @EnableJpaRepositories(
     entityManagerFactoryRef = "customerEntityManagerFactory",
-    basePackages = "com.example.eventnotify.customer.repository")
+    basePackages = "jp.co.acom.example.eventnotify.customer.repository")
 @Configuration
 public class CustomerJpaConfiguration {
   // 対象の Entity が存在するパッケージ.
-  private static final String ENTITY_PACKAGE = "com.example.eventnotify.customer.entity";
+  private static final String ENTITY_PACKAGE = "jp.co.acom.example.eventnotify.customer.entity";
   private static final String ENTITY_MANAGER_FACTORY = "customerEntityManagerFactory";
   private static final String ENTITY_MANAGER_BEAN_NAME = "customerEntityManager";
 

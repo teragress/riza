@@ -1,10 +1,10 @@
-package com.example.eventnotify.service;
+package jp.co.acom.example.eventnotify.service;
 
-import com.example.eventnotify.customer.entity.Customer;
-import com.example.eventnotify.customer.repository.CustomerRepository;
-import com.example.eventnotify.service.logic.CustomerRankUpdater;
-import com.example.eventnotify.trade.entity.Trade;
-import com.example.eventnotify.trade.repository.TradeRepository;
+import jp.co.acom.example.eventnotify.customer.entity.Customer;
+import jp.co.acom.example.eventnotify.customer.repository.CustomerRepository;
+import jp.co.acom.example.eventnotify.trade.entity.Trade;
+import jp.co.acom.example.eventnotify.trade.repository.TradeRepository;
+import jp.com.acom.example.eventnotify.service.logic.CustomerRankUpdater;
 
 import java.util.List;
 import java.util.Optional;

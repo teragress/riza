@@ -1,8 +1,7 @@
-package com.example.eventnotify.customer.entity;
+package jp.co.acom.example.eventnotify.customer.entity;
 
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Version;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,9 +10,9 @@ import org.hibernate.envers.Audited;
 @Data
 @Entity
 @Audited
-@EqualsAndHashCode(of = "id")
-public class Customer {
-  @Id @GeneratedValue private Long id;
+//@EqualsAndHashCode(of = "md")
+public class MultiKeyEntity {
+  @EmbeddedId private MultiKey multiKey;
   private String name;
   private Integer rank;
 

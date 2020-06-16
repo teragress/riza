@@ -1,4 +1,4 @@
-package com.example.eventnotify.trade;
+package jp.co.acom.example.eventnotify.trade;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,11 +24,11 @@ import jp.co.acom.riza.event.core.PostCommitPersistentEventNotifier;
 /** trade パッケージ用の EntityManager の設定. */
 @EnableJpaRepositories(
     entityManagerFactoryRef = "tradeEntityManagerFactory",
-    basePackages = "com.example.eventnotify.trade.repository")
+    basePackages = "jp.co.acom.example.eventnotify.trade.repository")
 @Configuration
 public class TradeJpaConfiguration {
   // 対象の Entity が存在するパッケージ.
-  private static final String ENTITY_PACKAGE = "com.example.eventnotify.trade.entity";
+  private static final String ENTITY_PACKAGE = "jp.co.acom.example.eventnotify.trade.entity";
   private static final String ENTITY_MANAGER_FACTORY = "tradeEntityManagerFactory";
   private static final String ENTITY_MANAGER_BEAN_NAME = "tradeEntityManager";
   

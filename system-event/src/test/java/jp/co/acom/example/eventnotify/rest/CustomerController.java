@@ -1,7 +1,8 @@
-package com.example.eventnotify.rest;
+package jp.co.acom.example.eventnotify.rest;
 
-import com.example.eventnotify.customer.entity.Customer;
-import com.example.eventnotify.service.CustomerService;
+import jp.co.acom.example.eventnotify.customer.entity.Customer;
+import jp.co.acom.example.eventnotify.service.CustomerService;
+
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

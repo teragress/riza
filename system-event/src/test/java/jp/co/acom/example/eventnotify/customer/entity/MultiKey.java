@@ -1,4 +1,4 @@
-package com.example.eventnotify.customer.entity;
+package jp.co.acom.example.eventnotify.customer.entity;
 
 import java.io.Serializable;
 
