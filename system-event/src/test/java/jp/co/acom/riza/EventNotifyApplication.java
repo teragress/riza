@@ -8,11 +8,13 @@ import org.springframework.beans.factory.config.Scope;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.support.SimpleTransactionScope;
 
 /** A spring-boot application. */
 @SpringBootApplication
+@ComponentScan(basePackages="jp.co.acom")
 public class EventNotifyApplication {
   // must have a main method spring-boot can run
   public static void main(String[] args) {

@@ -16,9 +16,11 @@ public class CustomerService {
   private static final Logger LOGGER = LoggerFactory.getLogger(CustomerService.class);
 
   @Autowired private CustomerRepository customerRepository;
+  @Autowired private CommonContextInit init;
 
   public void save(Customer customer) {
     LOGGER.info("start save.");
+    init.initCommonContxt();
     customerRepository.save(customer);
 
     if ("ERROR".equals(customer.getName())) {
@@ -30,16 +32,19 @@ public class CustomerService {
 
   public void delete(long id) {
     LOGGER.info("start delete.");
+    init.initCommonContxt();
     customerRepository.deleteById(id);
     LOGGER.info("end delete.");
   }
 
   public List<Customer> findAll() {
+	    init.initCommonContxt();
     return customerRepository.findAll();
   }
 
   public void modify(Customer customer) {
     LOGGER.info("start modify.");
+    init.initCommonContxt();
     customerRepository
         .findById(customer.getId())
         .ifPresent(

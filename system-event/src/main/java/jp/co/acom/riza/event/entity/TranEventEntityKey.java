@@ -1,5 +1,6 @@
 package jp.co.acom.riza.event.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Embeddable;
@@ -17,7 +18,11 @@ import lombok.ToString;
 @Setter
 @ToString
 @Embeddable
-public class TranEventEntityKey {
+public class TranEventEntityKey implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * 日時
 	 */

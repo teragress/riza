@@ -1,4 +1,4 @@
-package jp.co.acom.riza.riza.config;
+package jp.co.acom.riza.config;
 
 /**
  * イベント用のコンスタント定義

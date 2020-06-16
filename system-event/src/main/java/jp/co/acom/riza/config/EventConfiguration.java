@@ -1,4 +1,4 @@
-package jp.co.acom.riza.riza.config;
+package jp.co.acom.riza.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -16,11 +16,11 @@ import org.springframework.orm.jpa.support.SharedEntityManagerBean;
  * @author mtera1003
  *
  */
-@EnableJpaRepositories(entityManagerFactoryRef = "systemEntityManagerFactory", basePackages = "jp.co.acom.renove.event.repository")
+@EnableJpaRepositories(entityManagerFactoryRef = "systemEntityManagerFactory", basePackages = "jp.co.acom.riza.event.repository")
 @Configuration
 public class EventConfiguration {
 	// 当該エンティティマネージャーのエンティティが存在するパッケージ.
-	private static final String ENTITY_PACKAGE = "jp.co.acom.renove.event.entity";
+	private static final String ENTITY_PACKAGE = "jp.co.acom.riza.event.entity";
 	/**
 	 * system パッケージ用の EntityManagerFactory の定義.
 	 *

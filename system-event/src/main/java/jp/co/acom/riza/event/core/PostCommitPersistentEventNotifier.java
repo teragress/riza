@@ -25,7 +25,7 @@ import jp.co.acom.riza.event.msg.FlowEvent;
 import jp.co.acom.riza.event.repository.TranEventEntityRepository;
 import jp.co.acom.riza.event.utils.JsonConverter;
 import jp.co.acom.riza.utils.log.Logger;
-import jp.com.acom.renove.event.mq.MessageUtilImpl;
+import jp.com.acom.riza.event.mq.MessageUtilImpl;
 
 /** 中のイベントを Commit 後に送信する. */
 @Service

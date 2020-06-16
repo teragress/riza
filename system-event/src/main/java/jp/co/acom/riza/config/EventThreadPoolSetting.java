@@ -1,4 +1,4 @@
-package jp.co.acom.riza.riza.config;
+package jp.co.acom.riza.config;
 
 import org.apache.camel.ThreadPoolRejectedPolicy;
 import org.apache.camel.builder.ThreadPoolProfileBuilder;

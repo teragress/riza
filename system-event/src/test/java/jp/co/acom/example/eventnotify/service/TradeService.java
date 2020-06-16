@@ -4,7 +4,6 @@ import jp.co.acom.example.eventnotify.customer.entity.Customer;
 import jp.co.acom.example.eventnotify.customer.repository.CustomerRepository;
 import jp.co.acom.example.eventnotify.trade.entity.Trade;
 import jp.co.acom.example.eventnotify.trade.repository.TradeRepository;
-import jp.com.acom.example.eventnotify.service.logic.CustomerRankUpdater;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,12 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class TradeService {
   private static final Logger LOGGER = LoggerFactory.getLogger(TradeService.class);
 
-  @Autowired private CustomerRankUpdater customerRankUpdater;
+  @Autowired private jp.co.acom.example.eventnotify.service.logic.CustomerRankUpdater customerRankUpdater;
   @Autowired private CustomerRepository customerRepository;
   @Autowired private TradeRepository tradeRepository;
+  @Autowired private CommonContextInit init;
+
 
   public void save(Trade trade) {
     LOGGER.info("start save.");
+    init.initCommonContxt();
     Optional<Customer> customer = customerRepository.findById(trade.getCustomerId());
     if (!customer.isPresent()) {
       throw new RuntimeException("customer id " + trade.getCustomerId() + " does not exist.");
@@ -36,10 +38,12 @@ public class TradeService {
   }
 
   public List<Trade> getAll() {
+	    init.initCommonContxt();
     return tradeRepository.findAll();
   }
 
   public List<Trade> getByCustomer(long customerId) {
+	    init.initCommonContxt();
     return tradeRepository.findByCustomerId(customerId);
   }
 }

@@ -1,4 +1,4 @@
-package jp.com.acom.renove.event.mq;
+package jp.com.acom.riza.event.mq;
 
 
 import javax.jms.Destination;

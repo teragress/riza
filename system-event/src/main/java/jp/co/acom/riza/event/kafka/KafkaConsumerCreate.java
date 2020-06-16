@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
-import jp.co.acom.riza.riza.config.EventConstants;
+import jp.co.acom.riza.config.EventConstants;
 import jp.co.acom.riza.utils.log.Logger;
 
 /**

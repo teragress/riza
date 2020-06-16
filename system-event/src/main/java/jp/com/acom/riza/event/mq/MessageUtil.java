@@ -1,4 +1,4 @@
-package jp.com.acom.renove.event.mq;
+package jp.com.acom.riza.event.mq;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
