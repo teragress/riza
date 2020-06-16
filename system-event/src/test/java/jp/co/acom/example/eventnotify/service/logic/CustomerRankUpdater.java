@@ -1,4 +1,4 @@
-package jp.com.acom.example.eventnotify.service.logic;
+package jp.co.acom.example.eventnotify.service.logic;
 
 import jp.co.acom.example.eventnotify.customer.entity.Customer;
 import jp.co.acom.example.eventnotify.trade.entity.Trade;
