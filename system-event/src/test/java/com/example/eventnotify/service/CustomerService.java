@@ -1,15 +1,14 @@
 package com.example.eventnotify.service;
 
-import com.example.eventnotify.customer.entity.Customer;
-
-import jp.co.acom.riza.event.repository.CustomerRepository;
-
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.example.eventnotify.customer.entity.Customer;
+import com.example.eventnotify.customer.repository.CustomerRepository;
 
 @Service
 @Transactional

@@ -98,7 +98,7 @@ public class CustomerJpaConfiguration {
    */
   @Bean
   @Scope(value = "transaction", proxyMode = ScopedProxyMode.INTERFACES)
-  public jp.co.acom.riza.event.core.PersistentEventNotifier customerPersistentEventNotifier(
+  public PersistentEventNotifier customerPersistentEventNotifier(
       @Qualifier(ENTITY_MANAGER_BEAN_NAME) EntityManager customerEntityManager) {
     PersistentEventHolder holder = new PersistentEventHolder(ENTITY_MANAGER_BEAN_NAME);
     postCommitPersistentEventNotifier.addEventHolder(holder);

@@ -1,9 +1,5 @@
 package com.example.eventnotify.trade;
 
-import com.example.eventnotify.event.PersistentEventHolder;
-import com.example.eventnotify.event.PersistentEventInterceptor;
-import com.example.eventnotify.event.PersistentEventNotifier;
-import com.example.eventnotify.event.PostCommitPersistentEventNotifier;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -20,6 +16,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 
+import jp.co.acom.riza.event.core.PersistentEventHolder;
+import jp.co.acom.riza.event.core.PersistentEventInterceptor;
+import jp.co.acom.riza.event.core.PersistentEventNotifier;
+import jp.co.acom.riza.event.core.PostCommitPersistentEventNotifier;
+
 /** trade パッケージ用の EntityManager の設定. */
 @EnableJpaRepositories(
     entityManagerFactoryRef = "tradeEntityManagerFactory",
@@ -28,8 +29,10 @@ import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 public class TradeJpaConfiguration {
   // 対象の Entity が存在するパッケージ.
   private static final String ENTITY_PACKAGE = "com.example.eventnotify.trade.entity";
-
-  @Autowired protected ApplicationRouteHolder postCommitPersistentEventNotifier;
+  private static final String ENTITY_MANAGER_FACTORY = "tradeEntityManagerFactory";
+  private static final String ENTITY_MANAGER_BEAN_NAME = "tradeEntityManager";
+  
+  @Autowired protected PostCommitPersistentEventNotifier postCommitPersistentEventNotifier;
 
   @Autowired protected PersistentEventNotifier tradePersistentEventNotifier;
 
@@ -63,7 +66,7 @@ public class TradeJpaConfiguration {
    */
   @Bean
   public SharedEntityManagerBean tradeEntityManager(
-      @Qualifier("tradeEntityManagerFactory") EntityManagerFactory tradeEntityManagerFactory) {
+      @Qualifier(ENTITY_MANAGER_FACTORY) EntityManagerFactory tradeEntityManagerFactory) {
     SharedEntityManagerBean sharedEntityManagerBean = new SharedEntityManagerBean();
     sharedEntityManagerBean.setEntityManagerFactory(tradeEntityManagerFactory);
     return sharedEntityManagerBean;
@@ -76,6 +79,7 @@ public class TradeJpaConfiguration {
    */
   @Bean
   public PersistentEventInterceptor tradePersistentEventInterceptor() {
+    
     PersistentEventInterceptor interceptor = new PersistentEventInterceptor();
     interceptor.setEventNotifier(tradePersistentEventNotifier);
     interceptor.setEntityPackage(ENTITY_PACKAGE);
@@ -92,7 +96,7 @@ public class TradeJpaConfiguration {
   @Scope(value = "transaction", proxyMode = ScopedProxyMode.INTERFACES)
   public PersistentEventNotifier tradePersistentEventNotifier(
       @Qualifier("tradeEntityManager") EntityManager tradeEntityManager) {
-    PersistentEventHolder holder = new PersistentEventHolder(tradeEntityManager);
+    PersistentEventHolder holder = new PersistentEventHolder(ENTITY_MANAGER_BEAN_NAME);
     postCommitPersistentEventNotifier.addEventHolder(holder);
     return holder;
   }
