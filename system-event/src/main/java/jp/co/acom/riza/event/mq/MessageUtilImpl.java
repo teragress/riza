@@ -1,4 +1,4 @@
-package jp.com.acom.riza.event.mq;
+package jp.co.acom.riza.event.mq;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,13 +11,13 @@ import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import jp.co.acom.riza.utils.log.Logger;
 
-@Service
+@Component
 @Scope(value = "transaction", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class MessageUtilImpl {
 

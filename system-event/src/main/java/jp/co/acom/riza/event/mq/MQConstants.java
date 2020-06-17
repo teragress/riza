@@ -1,4 +1,4 @@
-package jp.com.acom.riza.event.mq;
+package jp.co.acom.riza.event.mq;
 
 /**
  * MQ関連のコンスタント定義

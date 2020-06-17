@@ -95,7 +95,7 @@ public class TradeJpaConfiguration {
   @Bean
   @Scope(value = "transaction", proxyMode = ScopedProxyMode.INTERFACES)
   public PersistentEventNotifier tradePersistentEventNotifier(
-      @Qualifier("tradeEntityManager") EntityManager tradeEntityManager) {
+      @Qualifier(ENTITY_MANAGER_BEAN_NAME) EntityManager tradeEntityManager) {
     PersistentEventHolder holder = new PersistentEventHolder(ENTITY_MANAGER_BEAN_NAME);
     postCommitPersistentEventNotifier.addEventHolder(holder);
     return holder;
