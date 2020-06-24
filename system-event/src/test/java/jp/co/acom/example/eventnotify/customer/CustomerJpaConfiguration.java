@@ -87,6 +87,7 @@ public class CustomerJpaConfiguration {
     PersistentEventInterceptor interceptor = new PersistentEventInterceptor();
     interceptor.setEventNotifier(customerPersistentEventNotifier);
     interceptor.setEntityPackage(ENTITY_PACKAGE);
+     interceptor.setPostNotifier(postCommitPersistentEventNotifier);
     return interceptor;
   }
 
@@ -101,6 +102,7 @@ public class CustomerJpaConfiguration {
   public PersistentEventNotifier customerPersistentEventNotifier(
       @Qualifier(ENTITY_MANAGER_BEAN_NAME) EntityManager customerEntityManager) {
     PersistentEventHolder holder = new PersistentEventHolder(ENTITY_MANAGER_BEAN_NAME);
+    holder.setPostCommitPersistentEventNotifier(postCommitPersistentEventNotifier);
     postCommitPersistentEventNotifier.addEventHolder(holder);
     return holder;
   }

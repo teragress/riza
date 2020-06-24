@@ -1,22 +1,17 @@
 package jp.co.acom.riza.event.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 import javax.persistence.Embeddable;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
+import lombok.Data;
 /**
  * トランザクションイベントテーブルキー
  * @author vagrant
  *
  */
-@Getter
-@Setter
-@ToString
+@Data
 @Embeddable
 public class TranEventEntityKey implements Serializable {
 	/**
@@ -26,7 +21,7 @@ public class TranEventEntityKey implements Serializable {
 	/**
 	 * 日時
 	 */
-	private Date date;
+	private Timestamp datetime;
 	/**
 	 * トランザクション識別
 	 */

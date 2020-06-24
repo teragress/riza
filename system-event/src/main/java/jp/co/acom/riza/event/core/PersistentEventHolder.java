@@ -8,7 +8,6 @@ import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * 変更イベントを保持する
@@ -17,7 +16,6 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@ToString
 public class PersistentEventHolder implements PersistentEventNotifier {
 	private List<PersistentEvent> events = new ArrayList<>();
 	/**
@@ -27,8 +25,11 @@ public class PersistentEventHolder implements PersistentEventNotifier {
 	/**
 	 * リビジョン番号
 	 */
-	private long revision;
-
+	private long revision = -1;
+	/**
+	 * 
+	 */
+	private PostCommitPersistentEventNotifier postCommitPersistentEventNotifier;
 	/**
 	 * @param entityManagerBeanName
 	 */
@@ -50,7 +51,7 @@ public class PersistentEventHolder implements PersistentEventNotifier {
 	public void notify(Long revision) {
 		this.revision = revision;
 	}
-
+	
 	/**
 	 * 保持しているイベントを取得する.
 	 *

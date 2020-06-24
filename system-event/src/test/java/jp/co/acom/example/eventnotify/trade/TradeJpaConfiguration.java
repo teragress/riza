@@ -83,6 +83,7 @@ public class TradeJpaConfiguration {
     PersistentEventInterceptor interceptor = new PersistentEventInterceptor();
     interceptor.setEventNotifier(tradePersistentEventNotifier);
     interceptor.setEntityPackage(ENTITY_PACKAGE);
+    interceptor.setPostNotifier(postCommitPersistentEventNotifier);
     return interceptor;
   }
 
@@ -97,6 +98,7 @@ public class TradeJpaConfiguration {
   public PersistentEventNotifier tradePersistentEventNotifier(
       @Qualifier(ENTITY_MANAGER_BEAN_NAME) EntityManager tradeEntityManager) {
     PersistentEventHolder holder = new PersistentEventHolder(ENTITY_MANAGER_BEAN_NAME);
+    holder.setPostCommitPersistentEventNotifier(postCommitPersistentEventNotifier);
     postCommitPersistentEventNotifier.addEventHolder(holder);
     return holder;
   }

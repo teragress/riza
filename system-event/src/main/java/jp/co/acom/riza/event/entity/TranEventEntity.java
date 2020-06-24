@@ -4,9 +4,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 /**
  * トランザクションイベントエンティティ
@@ -14,9 +12,7 @@ import lombok.ToString;
  * @author vagrant
  *
  */
-@Getter
-@Setter
-@ToString
+@Data
 @Table(schema = "VAGRANT", name = "TRANEVENT")
 @Entity
 public class TranEventEntity {

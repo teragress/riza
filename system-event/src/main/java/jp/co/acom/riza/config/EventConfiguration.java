@@ -45,11 +45,11 @@ public class EventConfiguration {
 	 * @param systemEntityManagerFactory EntityManager の Factory
 	 * @return
 	 */
-	@Bean
-	public SharedEntityManagerBean systemEntityManager(
-			@Qualifier("systemEntityManagerFactory") EntityManagerFactory systemEntityManagerFactory) {
-		SharedEntityManagerBean sharedEntityManagerBean = new SharedEntityManagerBean();
-		sharedEntityManagerBean.setEntityManagerFactory(systemEntityManagerFactory);
-		return sharedEntityManagerBean;
-	}
+//	@Bean
+//	public SharedEntityManagerBean systemEntityManager(
+//			@Qualifier("systemEntityManagerFactory") EntityManagerFactory systemEntityManagerFactory) {
+//		SharedEntityManagerBean sharedEntityManagerBean = new SharedEntityManagerBean();
+//		sharedEntityManagerBean.setEntityManagerFactory(systemEntityManagerFactory);
+//		return sharedEntityManagerBean;
+//	}
 }
