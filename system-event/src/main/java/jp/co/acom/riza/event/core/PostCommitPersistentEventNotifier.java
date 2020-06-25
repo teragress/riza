@@ -18,6 +18,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import jp.co.acom.riza.cep.CepMonitorService;
 import jp.co.acom.riza.context.CommonContext;
+import jp.co.acom.riza.event.core.PersistentEventHolder.AuditStatus;
 import jp.co.acom.riza.event.entity.TranEventEntity;
 import jp.co.acom.riza.event.entity.TranEventEntityKey;
 import jp.co.acom.riza.event.kafka.KafkaEventProducer;
@@ -59,27 +60,19 @@ public class PostCommitPersistentEventNotifier {
 
 	@Autowired
 	MessageUtilImpl messageUtil;
-	
+
 	@Autowired
 	PostCommitPersistentEventNotifier eventNotifier;
 
 	private String sepKey;
-	
-	public enum AuditStatus {
-		INIT,
-		AUDIT_ENTITY_ON,
-		AUDIT_ENTITY_WRITE,
-		COMPLETE
-	}
-	private AuditStatus auditStatus = AuditStatus.INIT;
 
 	@PostConstruct
 	public void initialize() {
 		logger.debug("initialize() started.");
 		TransactionSynchronizationManager.registerSynchronization(new TransactionListener());
 		List<TransactionSynchronization> list = TransactionSynchronizationManager.getSynchronizations();
-		for (TransactionSynchronization tran: list) {
-			logger.info("*************************** tran="  + tran.toString());
+		for (TransactionSynchronization tran : list) {
+			logger.info("*************************** tran=" + tran.toString());
 		}
 	}
 
@@ -111,6 +104,8 @@ public class PostCommitPersistentEventNotifier {
 			EntityManagerPersistent emp = new EntityManagerPersistent();
 			emp.setEntityManagerName(pHolder.getEntityManagerBeanName());
 			List<EntityPersistent> ePersistents = new ArrayList<EntityPersistent>();
+			emp.setEntityPersistences(ePersistents);
+			emp.setRevison(pHolder.getRevision());
 			for (PersistentEvent pEvent : pHolder.getEvents()) {
 				EntityPersistent ep = new EntityPersistent();
 				ep.setEntityClassName(pEvent.getEntity().getClass().getName());
@@ -129,9 +124,9 @@ public class PostCommitPersistentEventNotifier {
 
 	public void beforeEvent() {
 
-			insertTranEvent();
-			sepKey = commonContext.getTraceId() + commonContext.getSpanId();
-			monitor.startMonitor(sepKey, commonContext.getDate());
+		insertTranEvent();
+		sepKey = commonContext.getTraceId() + commonContext.getSpanId();
+		monitor.startMonitor(sepKey, commonContext.getDate());
 	}
 
 	/**
@@ -186,12 +181,20 @@ public class PostCommitPersistentEventNotifier {
 		@Override
 		public void beforeCommit(boolean readOnly) {
 			logger.debug("beforCommit() started. readOnly=" + readOnly);
-			if (eventNotifier.auditStatus == AuditStatus.INIT) {
-				  insertTranEvent();
-				  sepKey = commonContext.getTraceId() + commonContext.getSpanId(); 
-				  // cep監視リクエスト
-				  monitor.startMonitor(sepKey, commonContext.getDate());
-				  eventNotifier.auditStatus = AuditStatus.COMPLETE;
+			boolean allInit = true;
+			for (PersistentEventHolder persistentEventHolder : eventHolders) {
+				if (persistentEventHolder.getAuditStatus() != AuditStatus.INIT) {
+					allInit = false;
+				}
+			}
+			if (allInit) {
+				insertTranEvent();
+				sepKey = commonContext.getTraceId() + commonContext.getSpanId();
+				// cep監視リクエスト
+				monitor.startMonitor(sepKey, commonContext.getDate());
+				for (PersistentEventHolder persistentEventHolder : eventHolders) {
+					persistentEventHolder.setAuditStatus(AuditStatus.COMPLETE);
+				}
 			}
 			super.beforeCommit(readOnly);
 		}

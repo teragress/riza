@@ -9,7 +9,7 @@ import org.hibernate.envers.RevisionEntity;
 import org.hibernate.type.Type;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import jp.co.acom.riza.event.core.PostCommitPersistentEventNotifier.AuditStatus;
+import jp.co.acom.riza.event.core.PersistentEventHolder.AuditStatus;
 import jp.co.acom.riza.utils.log.Logger;
 import lombok.Getter;
 import lombok.Setter;
@@ -97,15 +97,12 @@ public class PersistentEventInterceptor extends EmptyInterceptor {
 		logger.debug("notifyRevision() started. entity=" + entity);
 		if (AnnotationUtils.findAnnotation(entity.getClass(), RevisionEntity.class) != null
 				&& entity.getClass().getName().endsWith("Revinfo")) {
-			if (postNotifier.getAuditStatus() == AuditStatus.AUDIT_ENTITY_ON) {
-				postNotifier.setAuditStatus(AuditStatus.AUDIT_ENTITY_WRITE);
-			}
 			eventNotifier.notify(Long.valueOf(id.toString()));
 		}
-		if (AnnotationUtils.findAnnotation(entity.getClass(), Audited.class) != null
-				&& postNotifier.getAuditStatus() == AuditStatus.INIT) {
-			postNotifier.setAuditStatus(AuditStatus.AUDIT_ENTITY_ON);
-		}
+//		if (AnnotationUtils.findAnnotation(entity.getClass(), Audited.class) != null
+//				&& postNotifier.getAuditStatus() == AuditStatus.INIT) {
+//			postNotifier.setAuditStatus(AuditStatus.AUDIT_ENTITY_ON);
+//		}
 	}
 
 	/**
@@ -137,13 +134,19 @@ public class PersistentEventInterceptor extends EmptyInterceptor {
 
 	@Override
 	public void beforeTransactionCompletion(Transaction tx) {
-		logger.info("**********************************beforeTransactionComplition() started.*******************");
-		;
-		logger.info("AuditStatus=" + postNotifier.getAuditStatus());
-		;
-		if (postNotifier.getAuditStatus() == AuditStatus.AUDIT_ENTITY_WRITE) {
+		logger.info("********beforeTransactionComplition() started.*************");
+		boolean allReady = true;
+		for (PersistentEventHolder persistentEventHolder : postNotifier.getEventHolders()) {
+			if (persistentEventHolder.getAuditStatus() == AuditStatus.AUDIT_ENTITY_ON ||
+					persistentEventHolder.getAuditStatus() == AuditStatus.COMPLETE) {
+				allReady = false;
+			}
+		}
+		if (allReady) {
 			postNotifier.beforeEvent();
-			postNotifier.setAuditStatus(AuditStatus.COMPLETE);
+			for (PersistentEventHolder persistentEventHolder : postNotifier.getEventHolders()) {
+				persistentEventHolder.setAuditStatus(AuditStatus.COMPLETE);
+			}
 		}
 		super.beforeTransactionCompletion(tx);
 	}

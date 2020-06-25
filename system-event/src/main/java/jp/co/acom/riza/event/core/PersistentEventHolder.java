@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jp.co.acom.riza.utils.log.Logger;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PersistentEventHolder implements PersistentEventNotifier {
+	
+	private static final Logger logger = Logger.getLogger(PersistentEventHolder.class);
 	private List<PersistentEvent> events = new ArrayList<>();
 	/**
 	 * エンティティマネージャーBean名
@@ -26,6 +29,14 @@ public class PersistentEventHolder implements PersistentEventNotifier {
 	 * リビジョン番号
 	 */
 	private long revision = -1;
+	
+	public enum AuditStatus {
+		INIT,
+		AUDIT_ENTITY_ON,
+		AUDIT_ENTITY_WRITE,
+		COMPLETE
+	}
+	private AuditStatus auditStatus = AuditStatus.INIT;
 	/**
 	 * 
 	 */
@@ -42,6 +53,10 @@ public class PersistentEventHolder implements PersistentEventNotifier {
 	 */
 	@Override
 	public void notify(PersistentEvent event) {
+		if (event.getEntityType() == EntityType.RESOURCE && auditStatus == AuditStatus.INIT) {
+			logger.debug(entityManagerBeanName + " auditStatus INIT to AUDIT_ENTITY_ON");
+			auditStatus = AuditStatus.AUDIT_ENTITY_ON;
+		}
 		events.add(event);
 	}
 	/**
@@ -49,6 +64,10 @@ public class PersistentEventHolder implements PersistentEventNotifier {
 	 */
 	@Override
 	public void notify(Long revision) {
+		if (auditStatus == AuditStatus.AUDIT_ENTITY_ON) {
+			logger.debug(entityManagerBeanName + " auditStatus AUDIT_ENTITY_ON to AUDIT_ENTITY_WRITE");
+			auditStatus = AuditStatus.AUDIT_ENTITY_WRITE;
+		}
 		this.revision = revision;
 	}
 	
