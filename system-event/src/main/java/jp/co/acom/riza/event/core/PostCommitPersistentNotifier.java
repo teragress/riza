@@ -28,7 +28,7 @@ import jp.co.acom.riza.event.msg.FlowEvent;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.Manager;
 import jp.co.acom.riza.event.repository.TranEventEntityRepository;
-import jp.co.acom.riza.event.utils.JsonConverter;
+import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.utils.log.Logger;
 import lombok.Getter;
 import lombok.Setter;
@@ -138,12 +138,19 @@ public class PostCommitPersistentNotifier {
 		logger.debug("insertTranEvent() started.");
 		flowEvent = createFlowEvent();
 		TranEventEntity tranEntity = new TranEventEntity();
-		tranEntity.setEventMsg(JsonConverter.objectToJsonString(flowEvent));
-		TranEventEntityKey tranKey = new TranEventEntityKey();
-		tranKey.setTranId(commonContext.getTraceId() + commonContext.getSpanId());
-		tranKey.setDatetime(new Timestamp(commonContext.getDate().getTime()));
-		tranEntity.setTranEventKey(tranKey);
-		tranEventRepository.save(tranEntity);
+		
+		String evMsg = StringUtil.objectToJsonString(flowEvent);
+		List<String> splitStr = StringUtil.splitByLength(evMsg,24000);
+		for (int i=0; i < splitStr.size();i++) {
+			TranEventEntityKey tranKey = new TranEventEntityKey();
+			tranKey.setTranId(commonContext.getTraceId() + commonContext.getSpanId());
+			tranKey.setDatetime(new Timestamp(commonContext.getDate().getTime()));
+			tranKey.setSeq(i);
+			tranEntity.setTranEventKey(tranKey);
+			tranEntity.setCnt(splitStr.size());
+			tranEntity.setEventMsg(splitStr.get(i));
+			tranEventRepository.save(tranEntity);
+		}
 	}
 
 	/**
@@ -192,8 +199,6 @@ public class PostCommitPersistentNotifier {
 			if (allInit) {
 				insertTranEvent();
 				sepKey = commonContext.getTraceId() + commonContext.getSpanId();
-				// cep監視リクエスト
-				monitor.startMonitor(sepKey, commonContext.getDate());
 				for (PersistentHolder holder : holders) {
 					holder.setAuditStatus(AuditStatus.COMPLETE);
 				}
@@ -213,6 +218,7 @@ public class PostCommitPersistentNotifier {
 		@Override
 		public void afterCompletion(int status) {
 			logger.debug("afterCompletion() started. status=" + status);
+			// cep監視終了リクエスト
 			monitor.endMonitor(sepKey);
 			super.afterCompletion(status);
 		}

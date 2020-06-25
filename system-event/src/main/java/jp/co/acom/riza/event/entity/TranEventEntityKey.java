@@ -26,6 +26,10 @@ public class TranEventEntityKey implements Serializable {
 	 * トランザクション識別
 	 */
 	private String tranId;
+	/**
+	 * シーケンス番号
+	 */
+	private int seq;
 
 
 }

@@ -9,7 +9,7 @@ import jp.co.acom.riza.event.msg.Manager;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.FlowEvent;
 import jp.co.acom.riza.event.msg.EntityEvent;
-import jp.co.acom.riza.event.utils.JsonConverter;
+import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.utils.log.Logger;
 
 /**
@@ -37,9 +37,9 @@ public class KafkaEventProducer {
 	 */
 	public void sendEventMessage(FlowEvent flowEvent) {
 		logger.debug("sendMessageEvent() started.");
-		
+
 		kafkaTemplate.send(KafkaConstants.KAFKA_FLOW_TOPIC_PREFIX + flowEvent.getFlowId(),
-				JsonConverter.objectToJsonString(flowEvent));
+				StringUtil.objectToJsonString(flowEvent));
 
 		for (Manager pManager : flowEvent.getManagers()) {
 			for (Entity pEntity : pManager.getEntitys()) {
@@ -47,10 +47,9 @@ public class KafkaEventProducer {
 				pEvent.setHeader(flowEvent.getHeader());
 				pEvent.setManager(pManager.getManager());
 				pEvent.setEntity(pEntity);
-				String[] sStr = pEntity.getEntity().split(".");
-				String topic = sStr[sStr.length - 1];
-				kafkaTemplate.send(KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX + topic,
-						JsonConverter.objectToJsonString(pEvent));
+				String cls = pEntity.getEntity().substring((pEntity.getEntity().lastIndexOf('.') + 1));
+				kafkaTemplate.send(KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX + cls,
+						StringUtil.objectToJsonString(pEvent));
 			}
 		}
 	}

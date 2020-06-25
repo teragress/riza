@@ -22,6 +22,10 @@ public class TranEventEntity {
 	@EmbeddedId
 	private TranEventEntityKey tranEventKey;
 	/**
+	 * 分割数
+	 */
+	private Integer cnt;
+	/**
 	 * イベントメッセージ
 	 */
 	private String eventMsg;
