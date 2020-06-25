@@ -17,10 +17,10 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PersistentEventHolder implements PersistentEventNotifier {
+public class PersistentHolder implements PersistentEventNotifier {
 	
-	private static final Logger logger = Logger.getLogger(PersistentEventHolder.class);
-	private List<PersistentEvent> events = new ArrayList<>();
+	private static final Logger logger = Logger.getLogger(PersistentHolder.class);
+	private List<EntityPersistent> events = new ArrayList<>();
 	/**
 	 * エンティティマネージャーBean名
 	 */
@@ -40,11 +40,11 @@ public class PersistentEventHolder implements PersistentEventNotifier {
 	/**
 	 * 
 	 */
-	private PostCommitPersistentEventNotifier postCommitPersistentEventNotifier;
+	private PostCommitPersistentNotifier postCommitPersistentEventNotifier;
 	/**
 	 * @param entityManagerBeanName
 	 */
-	public PersistentEventHolder(String entityManagerBeanName) {
+	public PersistentHolder(String entityManagerBeanName) {
 		super();
 		this.entityManagerBeanName = entityManagerBeanName;
 	}
@@ -52,7 +52,7 @@ public class PersistentEventHolder implements PersistentEventNotifier {
 	 *　変更イベントを保存する
 	 */
 	@Override
-	public void notify(PersistentEvent event) {
+	public void notify(EntityPersistent event) {
 		if (event.getEntityType() == EntityType.RESOURCE && auditStatus == AuditStatus.INIT) {
 			logger.debug(entityManagerBeanName + " auditStatus INIT to AUDIT_ENTITY_ON");
 			auditStatus = AuditStatus.AUDIT_ENTITY_ON;
@@ -76,8 +76,8 @@ public class PersistentEventHolder implements PersistentEventNotifier {
 	 *
 	 * @return イベントのリスト
 	 */
-	public List<PersistentEvent> getEvents() {
-		List<PersistentEvent> normalized = getNormalizedEvents();
+	public List<EntityPersistent> getEvents() {
+		List<EntityPersistent> normalized = getNormalizedEvents();
 		return normalized;
 	}
 
@@ -88,15 +88,15 @@ public class PersistentEventHolder implements PersistentEventNotifier {
 	 *
 	 * @return 正規化したイベントの一覧
 	 */
-	private List<PersistentEvent> getNormalizedEvents() {
-		Map<Serializable, List<PersistentEvent>> eventMap = new HashMap<>();
+	private List<EntityPersistent> getNormalizedEvents() {
+		Map<Serializable, List<EntityPersistent>> eventMap = new HashMap<>();
 		events.forEach(
 				it -> eventMap.computeIfAbsent(it.getEntityId(), key -> new ArrayList<>()).add(it));
 
-		List<PersistentEvent> normalized = new ArrayList<>();
-		for (List<PersistentEvent> sameIdEvents : eventMap.values()) {
-			PersistentEvent first = sameIdEvents.get(0);
-			PersistentEvent last = sameIdEvents.get(sameIdEvents.size() - 1);
+		List<EntityPersistent> normalized = new ArrayList<>();
+		for (List<EntityPersistent> sameIdEvents : eventMap.values()) {
+			EntityPersistent first = sameIdEvents.get(0);
+			EntityPersistent last = sameIdEvents.get(sameIdEvents.size() - 1);
 
 			if (first.getPersistentType() == PersistentType.INSERT) {
 				if (last.getPersistentType() != PersistentType.DELETE) {

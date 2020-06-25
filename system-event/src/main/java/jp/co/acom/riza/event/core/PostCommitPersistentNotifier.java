@@ -18,15 +18,15 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import jp.co.acom.riza.cep.CepMonitorService;
 import jp.co.acom.riza.context.CommonContext;
-import jp.co.acom.riza.event.core.PersistentEventHolder.AuditStatus;
+import jp.co.acom.riza.event.core.PersistentHolder.AuditStatus;
 import jp.co.acom.riza.event.entity.TranEventEntity;
 import jp.co.acom.riza.event.entity.TranEventEntityKey;
 import jp.co.acom.riza.event.kafka.KafkaEventProducer;
 import jp.co.acom.riza.event.mq.MessageUtilImpl;
-import jp.co.acom.riza.event.msg.EntityManagerPersistent;
-import jp.co.acom.riza.event.msg.EntityPersistent;
 import jp.co.acom.riza.event.msg.EventHeader;
 import jp.co.acom.riza.event.msg.FlowEvent;
+import jp.co.acom.riza.event.msg.PersistentEntity;
+import jp.co.acom.riza.event.msg.PersistentManager;
 import jp.co.acom.riza.event.repository.TranEventEntityRepository;
 import jp.co.acom.riza.event.utils.JsonConverter;
 import jp.co.acom.riza.utils.log.Logger;
@@ -38,10 +38,10 @@ import lombok.Setter;
 @Setter
 @Service
 @Scope(value = "transaction", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class PostCommitPersistentEventNotifier {
-	private static final Logger logger = Logger.getLogger(PostCommitPersistentEventNotifier.class);
+public class PostCommitPersistentNotifier {
+	private static final Logger logger = Logger.getLogger(PostCommitPersistentNotifier.class);
 
-	private List<PersistentEventHolder> eventHolders = new ArrayList<>();
+	private List<PersistentHolder> holders = new ArrayList<>();
 	private FlowEvent flowEvent;
 	/**
 	 * CommonContext
@@ -62,7 +62,7 @@ public class PostCommitPersistentEventNotifier {
 	MessageUtilImpl messageUtil;
 
 	@Autowired
-	PostCommitPersistentEventNotifier eventNotifier;
+	PostCommitPersistentNotifier eventNotifier;
 
 	private String sepKey;
 
@@ -81,9 +81,9 @@ public class PostCommitPersistentEventNotifier {
 	 *
 	 * @param holder イベント保持オブジェクト
 	 */
-	public void addEventHolder(PersistentEventHolder holder) {
+	public void addEventHolder(PersistentHolder holder) {
 		logger.debug("addEventHolder() started. holder=" + holder);
-		eventHolders.add(holder);
+		holders.add(holder);
 	}
 
 	/**
@@ -93,32 +93,34 @@ public class PostCommitPersistentEventNotifier {
 	 */
 	private FlowEvent createFlowEvent() {
 		logger.debug("createFlowEvent() started.");
+		
 		flowEvent = new FlowEvent();
 		flowEvent.setFlowId(commonContext.getFlowid());
+		
 		EventHeader eventHeader = new EventHeader();
 		eventHeader.setReqeustId(commonContext.getReqeustId());
 		eventHeader.setUserId(commonContext.getUserId());
 		flowEvent.setEventHeader(eventHeader);
-		List<EntityManagerPersistent> empList = new ArrayList<EntityManagerPersistent>();
-		for (PersistentEventHolder pHolder : eventHolders) {
-			EntityManagerPersistent emp = new EntityManagerPersistent();
-			emp.setEntityManagerName(pHolder.getEntityManagerBeanName());
-			List<EntityPersistent> ePersistents = new ArrayList<EntityPersistent>();
-			emp.setEntityPersistences(ePersistents);
-			emp.setRevison(pHolder.getRevision());
-			for (PersistentEvent pEvent : pHolder.getEvents()) {
-				EntityPersistent ep = new EntityPersistent();
-				ep.setEntityClassName(pEvent.getEntity().getClass().getName());
-				ep.setKeyClassName(pEvent.getEntityId().getClass().getName());
-				ep.setEntityType(pEvent.getEntityType());
-				ep.setKeyObject(pEvent.getEntityId());
-				ep.setPersitenceEventType(pEvent.getPersistentType());
-				ep.setRevision(pHolder.getRevision());
-				ePersistents.add(ep);
+		
+		List<PersistentManager> managerList = new ArrayList<PersistentManager>();
+		for (PersistentHolder holder : holders) {
+			PersistentManager pManager = new PersistentManager();
+			pManager.setEntityManagerName(holder.getEntityManagerBeanName());
+			List<PersistentEntity> pList = new ArrayList<PersistentEntity>();
+			pManager.setEntityPersistences(pList);
+			pManager.setRevison(holder.getRevision());
+			for (EntityPersistent eP : holder.getEvents()) {
+				PersistentEntity pEntity = new PersistentEntity();
+				pEntity.setEntityClassName(eP.getEntity().getClass().getName());
+				pEntity.setKeyClassName(eP.getEntityId().getClass().getName());
+				pEntity.setEntityType(eP.getEntityType());
+				pEntity.setKeyObject(eP.getEntityId());
+				pEntity.setPersitenceEventType(eP.getPersistentType());
+				pList.add(pEntity);
 			}
-			empList.add(emp);
+			managerList.add(pManager);
 		}
-		flowEvent.setEntityManagerPersistences(empList);
+		flowEvent.setEntityManagerPersistences(managerList);
 		return flowEvent;
 	}
 
@@ -182,8 +184,8 @@ public class PostCommitPersistentEventNotifier {
 		public void beforeCommit(boolean readOnly) {
 			logger.debug("beforCommit() started. readOnly=" + readOnly);
 			boolean allInit = true;
-			for (PersistentEventHolder persistentEventHolder : eventHolders) {
-				if (persistentEventHolder.getAuditStatus() != AuditStatus.INIT) {
+			for (PersistentHolder holder : holders) {
+				if (holder.getAuditStatus() != AuditStatus.INIT) {
 					allInit = false;
 				}
 			}
@@ -192,8 +194,8 @@ public class PostCommitPersistentEventNotifier {
 				sepKey = commonContext.getTraceId() + commonContext.getSpanId();
 				// cep監視リクエスト
 				monitor.startMonitor(sepKey, commonContext.getDate());
-				for (PersistentEventHolder persistentEventHolder : eventHolders) {
-					persistentEventHolder.setAuditStatus(AuditStatus.COMPLETE);
+				for (PersistentHolder holder : holders) {
+					holder.setAuditStatus(AuditStatus.COMPLETE);
 				}
 			}
 			super.beforeCommit(readOnly);

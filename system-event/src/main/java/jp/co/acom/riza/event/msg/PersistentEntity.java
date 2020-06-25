@@ -11,13 +11,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class EntityPersistent {
+public class PersistentEntity {
 
-	private EventHeader eventHeader;
+	//private EventHeader eventHeader;
 	private PersistentType persitenceEventType;
 	private EntityType entityType;
 	private String entityClassName;
 	private String keyClassName;
 	private Serializable keyObject;
-	private Long revision;
+	//private Long revision;
 }

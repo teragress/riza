@@ -9,7 +9,7 @@ import org.hibernate.envers.RevisionEntity;
 import org.hibernate.type.Type;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import jp.co.acom.riza.event.core.PersistentEventHolder.AuditStatus;
+import jp.co.acom.riza.event.core.PersistentHolder.AuditStatus;
 import jp.co.acom.riza.utils.log.Logger;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,12 +22,12 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PersistentEventInterceptor extends EmptyInterceptor {
+public class PersistentInterceptor extends EmptyInterceptor {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = Logger.getLogger(PersistentEventInterceptor.class);
+	private static final Logger logger = Logger.getLogger(PersistentInterceptor.class);
 	/**
 	 * エンティティ格納パッケージ
 	 */
@@ -37,7 +37,7 @@ public class PersistentEventInterceptor extends EmptyInterceptor {
 	 */
 	private PersistentEventNotifier eventNotifier;
 
-	private PostCommitPersistentEventNotifier postNotifier;
+	private PostCommitPersistentNotifier postNotifier;
 
 	/**
 	 * 更新イベント処理
@@ -81,7 +81,7 @@ public class PersistentEventInterceptor extends EmptyInterceptor {
 	private void notifyEvent(Object entity, Serializable id, PersistentType persistentType) {
 		logger.debug("notifyEvent() started. entity=" + entity);
 		if (isTargetEvent(entity, id)) {
-			PersistentEvent event = new PersistentEvent(persistentType, getEntityType(entity), entity, id);
+			EntityPersistent event = new EntityPersistent(persistentType, getEntityType(entity), entity, id);
 			event.setEntityId(id);
 			eventNotifier.notify(event);
 		}
@@ -136,7 +136,7 @@ public class PersistentEventInterceptor extends EmptyInterceptor {
 	public void beforeTransactionCompletion(Transaction tx) {
 		logger.info("********beforeTransactionComplition() started.*************");
 		boolean allReady = true;
-		for (PersistentEventHolder persistentEventHolder : postNotifier.getEventHolders()) {
+		for (PersistentHolder persistentEventHolder : postNotifier.getHolders()) {
 			if (persistentEventHolder.getAuditStatus() == AuditStatus.AUDIT_ENTITY_ON ||
 					persistentEventHolder.getAuditStatus() == AuditStatus.COMPLETE) {
 				allReady = false;
@@ -144,7 +144,7 @@ public class PersistentEventInterceptor extends EmptyInterceptor {
 		}
 		if (allReady) {
 			postNotifier.beforeEvent();
-			for (PersistentEventHolder persistentEventHolder : postNotifier.getEventHolders()) {
+			for (PersistentHolder persistentEventHolder : postNotifier.getHolders()) {
 				persistentEventHolder.setAuditStatus(AuditStatus.COMPLETE);
 			}
 		}

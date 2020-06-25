@@ -13,12 +13,12 @@ import lombok.ToString;
 public class FlowEvent {
 	private EventHeader eventHeader;
 	private String flowId;
-	private List<EntityManagerPersistent> entityManagerPersistences;
+	private List<PersistentManager> entityManagerPersistences;
 
-	public List<EntityPersistent> getEntityPersistence(String entityClassName) {
-		List<EntityPersistent> list = new ArrayList<EntityPersistent>();
-		for (EntityManagerPersistent emp : entityManagerPersistences) {
-			for (EntityPersistent per : emp.getEntityPersistences()) {
+	public List<PersistentEntity> getEntityPersistence(String entityClassName) {
+		List<PersistentEntity> list = new ArrayList<PersistentEntity>();
+		for (PersistentManager emp : entityManagerPersistences) {
+			for (PersistentEntity per : emp.getEntityPersistences()) {
 				if (entityClassName.equals(per.getEntityClassName())) {
 					list.add(per);
 				}

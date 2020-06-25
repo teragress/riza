@@ -16,10 +16,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 
-import jp.co.acom.riza.event.core.PersistentEventHolder;
-import jp.co.acom.riza.event.core.PersistentEventInterceptor;
+import jp.co.acom.riza.event.core.PersistentHolder;
+import jp.co.acom.riza.event.core.PersistentInterceptor;
 import jp.co.acom.riza.event.core.PersistentEventNotifier;
-import jp.co.acom.riza.event.core.PostCommitPersistentEventNotifier;
+import jp.co.acom.riza.event.core.PostCommitPersistentNotifier;
 
 /** trade パッケージ用の EntityManager の設定. */
 @EnableJpaRepositories(
@@ -32,7 +32,7 @@ public class TradeJpaConfiguration {
   private static final String ENTITY_MANAGER_FACTORY = "tradeEntityManagerFactory";
   private static final String ENTITY_MANAGER_BEAN_NAME = "tradeEntityManager";
   
-  @Autowired protected PostCommitPersistentEventNotifier postCommitPersistentEventNotifier;
+  @Autowired protected PostCommitPersistentNotifier postCommitPersistentEventNotifier;
 
   @Autowired protected PersistentEventNotifier tradePersistentEventNotifier;
 
@@ -78,9 +78,9 @@ public class TradeJpaConfiguration {
    * @return
    */
   @Bean
-  public PersistentEventInterceptor tradePersistentEventInterceptor() {
+  public PersistentInterceptor tradePersistentEventInterceptor() {
     
-    PersistentEventInterceptor interceptor = new PersistentEventInterceptor();
+    PersistentInterceptor interceptor = new PersistentInterceptor();
     interceptor.setEventNotifier(tradePersistentEventNotifier);
     interceptor.setEntityPackage(ENTITY_PACKAGE);
     interceptor.setPostNotifier(postCommitPersistentEventNotifier);
@@ -97,7 +97,7 @@ public class TradeJpaConfiguration {
   @Scope(value = "transaction", proxyMode = ScopedProxyMode.INTERFACES)
   public PersistentEventNotifier tradePersistentEventNotifier(
       @Qualifier(ENTITY_MANAGER_BEAN_NAME) EntityManager tradeEntityManager) {
-    PersistentEventHolder holder = new PersistentEventHolder(ENTITY_MANAGER_BEAN_NAME);
+    PersistentHolder holder = new PersistentHolder(ENTITY_MANAGER_BEAN_NAME);
     holder.setPostCommitPersistentEventNotifier(postCommitPersistentEventNotifier);
     postCommitPersistentEventNotifier.addEventHolder(holder);
     return holder;

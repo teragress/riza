@@ -14,8 +14,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class PersistentEvent {
-	public PersistentEvent() {
+public class EntityPersistent {
+	public EntityPersistent() {
 	}
 
 	/**
@@ -24,7 +24,7 @@ public class PersistentEvent {
 	 * @param entityType エンティティの種類(リソース/イベント)
 	 * @param entity 対象エンティティ
 	 */
-	public PersistentEvent(PersistentType persistentType, EntityType entityType, Object entity, Serializable entityId) {
+	public EntityPersistent(PersistentType persistentType, EntityType entityType, Object entity, Serializable entityId) {
 		this.persistentType = persistentType;
 		this.entityType = entityType;
 		this.entity = entity;

@@ -13,6 +13,5 @@ public class PersistentEvent {
 	}
 	private EventHeader eventHeader;
 	private String entityManagerName;
-	private EntityType entityType;
-	private EntityPersistent entityPersistence;
+	private PersistentEntity entityPersistence;
 }
