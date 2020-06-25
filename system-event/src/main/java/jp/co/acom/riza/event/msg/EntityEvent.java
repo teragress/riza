@@ -7,11 +7,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class PersistentEvent {
+public class EntityEvent {
 	public enum EntityType {
 		RESOURCE, EVENT
 	}
-	private EventHeader eventHeader;
-	private String entityManagerName;
-	private PersistentEntity entityPersistence;
+	private Header header;
+	private String manager;
+	private Entity entity;
 }

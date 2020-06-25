@@ -11,15 +11,15 @@ import lombok.ToString;
 @Setter
 @ToString
 public class FlowEvent {
-	private EventHeader eventHeader;
+	private Header header;
 	private String flowId;
-	private List<PersistentManager> entityManagerPersistences;
+	private List<Manager> managers;
 
-	public List<PersistentEntity> getEntityPersistence(String entityClassName) {
-		List<PersistentEntity> list = new ArrayList<PersistentEntity>();
-		for (PersistentManager emp : entityManagerPersistences) {
-			for (PersistentEntity per : emp.getEntityPersistences()) {
-				if (entityClassName.equals(per.getEntityClassName())) {
+	public List<Entity> getEntityPersistence(String entityClassName) {
+		List<Entity> list = new ArrayList<Entity>();
+		for (Manager emp : managers) {
+			for (Entity per : emp.getEntitys()) {
+				if (entityClassName.equals(per.getEntity())) {
 					list.add(per);
 				}
 			}

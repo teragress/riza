@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class EventHeader {
+public class Header {
 
 	private String reqeustId;
 	private String userId;

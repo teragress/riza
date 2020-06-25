@@ -23,10 +23,10 @@ import jp.co.acom.riza.event.entity.TranEventEntity;
 import jp.co.acom.riza.event.entity.TranEventEntityKey;
 import jp.co.acom.riza.event.kafka.KafkaEventProducer;
 import jp.co.acom.riza.event.mq.MessageUtilImpl;
-import jp.co.acom.riza.event.msg.EventHeader;
+import jp.co.acom.riza.event.msg.Header;
 import jp.co.acom.riza.event.msg.FlowEvent;
-import jp.co.acom.riza.event.msg.PersistentEntity;
-import jp.co.acom.riza.event.msg.PersistentManager;
+import jp.co.acom.riza.event.msg.Entity;
+import jp.co.acom.riza.event.msg.Manager;
 import jp.co.acom.riza.event.repository.TranEventEntityRepository;
 import jp.co.acom.riza.event.utils.JsonConverter;
 import jp.co.acom.riza.utils.log.Logger;
@@ -97,30 +97,30 @@ public class PostCommitPersistentNotifier {
 		flowEvent = new FlowEvent();
 		flowEvent.setFlowId(commonContext.getFlowid());
 		
-		EventHeader eventHeader = new EventHeader();
+		Header eventHeader = new Header();
 		eventHeader.setReqeustId(commonContext.getReqeustId());
 		eventHeader.setUserId(commonContext.getUserId());
-		flowEvent.setEventHeader(eventHeader);
+		flowEvent.setHeader(eventHeader);
 		
-		List<PersistentManager> managerList = new ArrayList<PersistentManager>();
+		List<Manager> managerList = new ArrayList<Manager>();
 		for (PersistentHolder holder : holders) {
-			PersistentManager pManager = new PersistentManager();
-			pManager.setEntityManagerName(holder.getEntityManagerBeanName());
-			List<PersistentEntity> pList = new ArrayList<PersistentEntity>();
-			pManager.setEntityPersistences(pList);
+			Manager pManager = new Manager();
+			pManager.setManager(holder.getEntityManagerBeanName());
+			List<Entity> pList = new ArrayList<Entity>();
+			pManager.setEntitys(pList);
 			pManager.setRevison(holder.getRevision());
 			for (EntityPersistent eP : holder.getEvents()) {
-				PersistentEntity pEntity = new PersistentEntity();
-				pEntity.setEntityClassName(eP.getEntity().getClass().getName());
-				pEntity.setKeyClassName(eP.getEntityId().getClass().getName());
+				Entity pEntity = new Entity();
+				pEntity.setEntity(eP.getEntity().getClass().getName());
+				pEntity.setKey(eP.getEntityId().getClass().getName());
 				pEntity.setEntityType(eP.getEntityType());
-				pEntity.setKeyObject(eP.getEntityId());
-				pEntity.setPersitenceEventType(eP.getPersistentType());
+				pEntity.setKeyValue(eP.getEntityId());
+				pEntity.setType(eP.getPersistentType());
 				pList.add(pEntity);
 			}
 			managerList.add(pManager);
 		}
-		flowEvent.setEntityManagerPersistences(managerList);
+		flowEvent.setManagers(managerList);
 		return flowEvent;
 	}
 

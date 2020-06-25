@@ -9,8 +9,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class PersistentManager {
-	private String entityManagerName;
-	private List<PersistentEntity> entityPersistences;
+public class Manager {
+	private String manager;
+	private List<Entity> entitys;
 	private Long revison;
 }
