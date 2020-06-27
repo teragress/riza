@@ -1,4 +1,4 @@
-package jp.co.acom.example.eventnotify.customer.entity;
+package jp.co.acom.riza.event.trade.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,10 +12,11 @@ import org.hibernate.envers.Audited;
 @Entity
 @Audited
 @EqualsAndHashCode(of = "id")
-public class Customer {
+public class Trade {
   @Id @GeneratedValue private Long id;
-  private String name;
-  private Integer rank;
+
+  private Long customerId;
+  private Integer total;
 
   @Version private long version;
 }

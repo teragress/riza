@@ -1,4 +1,4 @@
-package jp.co.acom.example.eventnotify.trade.entity;
+package jp.co.acom.riza.event.trade.entity;
 
 import javax.persistence.Entity;
 import org.hibernate.envers.DefaultRevisionEntity;

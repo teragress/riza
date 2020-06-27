@@ -1,18 +1,15 @@
-package jp.co.acom.example.eventnotify.customer;
+package jp.co.acom.riza.event.trade;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -24,35 +21,34 @@ import jp.co.acom.riza.event.core.PersistentInterceptor;
 import jp.co.acom.riza.event.core.PersistentEventNotifier;
 import jp.co.acom.riza.event.core.PostCommitPersistentNotifier;
 
-/** customer パッケージ用の EntityManager の設定. */
+/** trade パッケージ用の EntityManager の設定. */
 @EnableJpaRepositories(
-    entityManagerFactoryRef = "customerEntityManagerFactory",
-    basePackages = "jp.co.acom.example.eventnotify.customer.repository")
+    entityManagerFactoryRef = "tradeEntityManagerFactory",
+    basePackages = "jp.co.acom.riza.event.trade.repository")
 @Configuration
-public class CustomerJpaConfiguration {
+public class TradeJpaConfiguration {
   // 対象の Entity が存在するパッケージ.
-  private static final String ENTITY_PACKAGE = "jp.co.acom.example.eventnotify.customer.entity";
-  private static final String ENTITY_MANAGER_FACTORY = "customerEntityManagerFactory";
-  private static final String ENTITY_MANAGER_BEAN_NAME = "customerEntityManager";
-
+  private static final String ENTITY_PACKAGE = "jp.co.acom.riza.event.trade.entity";
+  private static final String ENTITY_MANAGER_FACTORY = "tradeEntityManagerFactory";
+  private static final String ENTITY_MANAGER_BEAN_NAME = "tradeEntityManager";
+  
   @Autowired protected PostCommitPersistentNotifier postCommitPersistentEventNotifier;
 
-  @Autowired protected PersistentEventNotifier customerPersistentEventNotifier;
+  @Autowired protected PersistentEventNotifier tradePersistentEventNotifier;
 
   /**
-   * customerパッケージ用の EntityManagerFactory の定義.
+   * trade パッケージ用の EntityManagerFactory の定義.
    *
    * @param dataSource データソース
    * @param builder EntityMangerFactoryBuilder
    * @return
    */
   @Bean
-  @Primary
-  public LocalContainerEntityManagerFactoryBean customerEntityManagerFactory(
+  public LocalContainerEntityManagerFactoryBean tradeEntityManagerFactory(
       DataSource dataSource, EntityManagerFactoryBuilder builder) {
     Map<String, Object> properties = new HashMap<>();
     // HibernateのInterceptorを設定する
-    properties.put("hibernate.ejb.interceptor", customerPersistentEventInterceptor());
+    properties.put("hibernate.ejb.interceptor", tradePersistentEventInterceptor());
 
     return builder
         .dataSource(dataSource)
@@ -63,17 +59,16 @@ public class CustomerJpaConfiguration {
   }
 
   /**
-   * customerパッケージ用のEntityManager を直接 DI できるようにする定義.
+   * trade パッケージ用のEntityManager を直接 DI できるようにする定義.
    *
-   * @param customerEntityManagerFactory EntityManager の Factory
+   * @param tradeEntityManagerFactory EntityManager の Factory
    * @return
    */
   @Bean
-  public SharedEntityManagerBean customerEntityManager(
-      @Qualifier(ENTITY_MANAGER_FACTORY)
-          EntityManagerFactory customerEntityManagerFactory) {
+  public SharedEntityManagerBean tradeEntityManager(
+      @Qualifier(ENTITY_MANAGER_FACTORY) EntityManagerFactory tradeEntityManagerFactory) {
     SharedEntityManagerBean sharedEntityManagerBean = new SharedEntityManagerBean();
-    sharedEntityManagerBean.setEntityManagerFactory(customerEntityManagerFactory);
+    sharedEntityManagerBean.setEntityManagerFactory(tradeEntityManagerFactory);
     return sharedEntityManagerBean;
   }
 
@@ -83,24 +78,25 @@ public class CustomerJpaConfiguration {
    * @return
    */
   @Bean
-  public PersistentInterceptor customerPersistentEventInterceptor() {
+  public PersistentInterceptor tradePersistentEventInterceptor() {
+    
     PersistentInterceptor interceptor = new PersistentInterceptor();
-    interceptor.setEventNotifier(customerPersistentEventNotifier);
+    interceptor.setEventNotifier(tradePersistentEventNotifier);
     interceptor.setEntityPackage(ENTITY_PACKAGE);
-     interceptor.setPostNotifier(postCommitPersistentEventNotifier);
+    interceptor.setPostNotifier(postCommitPersistentEventNotifier);
     return interceptor;
   }
 
   /**
-   * customerパッケージのエンティティの変更を保持するオブジェクトの定義.
+   * trade パッケージのエンティティの変更を保持するオブジェクトの定義.
    *
-   * @param customerEntityManager customerパッケージのEntityManager
+   * @param tradeEntityManager customerパッケージのEntityManager
    * @return
    */
   @Bean
   @Scope(value = "transaction", proxyMode = ScopedProxyMode.INTERFACES)
-  public PersistentEventNotifier customerPersistentEventNotifier(
-      @Qualifier(ENTITY_MANAGER_BEAN_NAME) EntityManager customerEntityManager) {
+  public PersistentEventNotifier tradePersistentEventNotifier(
+      @Qualifier(ENTITY_MANAGER_BEAN_NAME) EntityManager tradeEntityManager) {
     PersistentHolder holder = new PersistentHolder(ENTITY_MANAGER_BEAN_NAME);
     holder.setPostCommitPersistentEventNotifier(postCommitPersistentEventNotifier);
     postCommitPersistentEventNotifier.addEventHolder(holder);

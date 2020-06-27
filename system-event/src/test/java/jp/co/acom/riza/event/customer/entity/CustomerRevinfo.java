@@ -1,4 +1,4 @@
-package jp.co.acom.example.eventnotify.customer.entity;
+package jp.co.acom.riza.event.customer.entity;
 
 import java.util.Date;
 

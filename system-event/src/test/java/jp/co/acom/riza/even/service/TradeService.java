@@ -1,9 +1,9 @@
-package jp.co.acom.example.eventnotify.service;
+package jp.co.acom.riza.even.service;
 
-import jp.co.acom.example.eventnotify.customer.entity.Customer;
-import jp.co.acom.example.eventnotify.customer.repository.CustomerRepository;
-import jp.co.acom.example.eventnotify.trade.entity.Trade;
-import jp.co.acom.example.eventnotify.trade.repository.TradeRepository;
+import jp.co.acom.riza.event.customer.entity.Customer;
+import jp.co.acom.riza.event.customer.repository.CustomerRepository;
+import jp.co.acom.riza.event.trade.entity.Trade;
+import jp.co.acom.riza.event.trade.repository.TradeRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TradeService {
   private static final Logger LOGGER = LoggerFactory.getLogger(TradeService.class);
 
-  @Autowired private jp.co.acom.example.eventnotify.service.logic.CustomerRankUpdater customerRankUpdater;
+  @Autowired private jp.co.acom.riza.event.service.logic.CustomerRankUpdater customerRankUpdater;
   @Autowired private CustomerRepository customerRepository;
   @Autowired private TradeRepository tradeRepository;
   @Autowired private CommonContextInit init;

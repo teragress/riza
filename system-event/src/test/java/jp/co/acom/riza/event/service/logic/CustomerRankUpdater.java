@@ -1,8 +1,8 @@
-package jp.co.acom.example.eventnotify.service.logic;
+package jp.co.acom.riza.event.service.logic;
 
-import jp.co.acom.example.eventnotify.customer.entity.Customer;
-import jp.co.acom.example.eventnotify.trade.entity.Trade;
-import jp.co.acom.example.eventnotify.trade.repository.TradeRepository;
+import jp.co.acom.riza.event.customer.entity.Customer;
+import jp.co.acom.riza.event.trade.entity.Trade;
+import jp.co.acom.riza.event.trade.repository.TradeRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;

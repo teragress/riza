@@ -41,7 +41,14 @@ import lombok.Setter;
 public class PostCommitPersistentNotifier {
 	private static final Logger logger = Logger.getLogger(PostCommitPersistentNotifier.class);
 
+	private static final int TRAN_MESSAGE_MAX_SIZE = 24000;
+	/**
+	 * エンティティマネージャー単位のホルダー
+	 */
 	private List<PersistentHolder> holders = new ArrayList<>();
+	/**
+	 * フローイベント
+	 */
 	private FlowEvent flowEvent;
 	/**
 	 * CommonContext
@@ -93,15 +100,15 @@ public class PostCommitPersistentNotifier {
 	 */
 	private FlowEvent createFlowEvent() {
 		logger.debug("createFlowEvent() started.");
-		
+
 		flowEvent = new FlowEvent();
 		flowEvent.setFlowId(commonContext.getFlowid());
-		
+
 		Header eventHeader = new Header();
 		eventHeader.setReqeustId(commonContext.getReqeustId());
 		eventHeader.setUserId(commonContext.getUserId());
 		flowEvent.setHeader(eventHeader);
-		
+
 		List<Manager> managerList = new ArrayList<Manager>();
 		for (PersistentHolder holder : holders) {
 			Manager pManager = new Manager();
@@ -138,10 +145,10 @@ public class PostCommitPersistentNotifier {
 		logger.debug("insertTranEvent() started.");
 		flowEvent = createFlowEvent();
 		TranEventEntity tranEntity = new TranEventEntity();
-		
+
 		String evMsg = StringUtil.objectToJsonString(flowEvent);
-		List<String> splitStr = StringUtil.splitByLength(evMsg,24000);
-		for (int i=0; i < splitStr.size();i++) {
+		List<String> splitStr = StringUtil.splitByLength(evMsg, TRAN_MESSAGE_MAX_SIZE);
+		for (int i = 0; i < splitStr.size(); i++) {
 			TranEventEntityKey tranKey = new TranEventEntityKey();
 			tranKey.setTranId(commonContext.getTraceId() + commonContext.getSpanId());
 			tranKey.setDatetime(new Timestamp(commonContext.getDate().getTime()));

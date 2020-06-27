@@ -1,7 +1,7 @@
-package jp.co.acom.example.eventnotify.rest;
+package jp.co.acom.riza.event.rest;
 
-import jp.co.acom.example.eventnotify.customer.entity.Customer;
-import jp.co.acom.example.eventnotify.service.CustomerService;
+import jp.co.acom.riza.even.service.CustomerService;
+import jp.co.acom.riza.event.customer.entity.Customer;
 
 import java.util.List;
 import org.slf4j.Logger;

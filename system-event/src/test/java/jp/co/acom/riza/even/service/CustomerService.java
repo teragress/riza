@@ -1,4 +1,4 @@
-package jp.co.acom.example.eventnotify.service;
+package jp.co.acom.riza.even.service;
 
 import java.util.List;
 import org.slf4j.Logger;
@@ -7,14 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jp.co.acom.example.eventnotify.customer.entity.Customer;
-import jp.co.acom.example.eventnotify.customer.entity.MultiKey;
-import jp.co.acom.example.eventnotify.customer.entity.MultiKeyEntity;
-import jp.co.acom.example.eventnotify.customer.repository.CustomerRepository;
-import jp.co.acom.example.eventnotify.customer.repository.MultiKeyEntityRepository;
-import jp.co.acom.example.eventnotify.service.logic.CustomerRankUpdater;
-import jp.co.acom.example.eventnotify.trade.entity.Trade;
-import jp.co.acom.example.eventnotify.trade.repository.TradeRepository;
+import jp.co.acom.riza.event.customer.entity.Customer;
+import jp.co.acom.riza.event.customer.entity.MultiKey;
+import jp.co.acom.riza.event.customer.entity.MultiKeyEntity;
+import jp.co.acom.riza.event.customer.repository.CustomerRepository;
+import jp.co.acom.riza.event.customer.repository.MultiKeyEntityRepository;
+import jp.co.acom.riza.event.service.logic.CustomerRankUpdater;
+import jp.co.acom.riza.event.trade.entity.Trade;
+import jp.co.acom.riza.event.trade.repository.TradeRepository;
 
 @Service
 @Transactional

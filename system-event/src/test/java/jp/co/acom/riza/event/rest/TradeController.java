@@ -1,7 +1,7 @@
-package jp.co.acom.example.eventnotify.rest;
+package jp.co.acom.riza.event.rest;
 
-import jp.co.acom.example.eventnotify.service.TradeService;
-import jp.co.acom.example.eventnotify.trade.entity.Trade;
+import jp.co.acom.riza.even.service.TradeService;
+import jp.co.acom.riza.event.trade.entity.Trade;
 
 import java.util.List;
 import org.slf4j.Logger;

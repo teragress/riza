@@ -1,4 +1,4 @@
-package jp.co.acom.example.eventnotify.service;
+package jp.co.acom.riza.even.service;
 
 import java.util.Date;
 import java.util.UUID;
