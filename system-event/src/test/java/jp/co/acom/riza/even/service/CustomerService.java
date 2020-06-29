@@ -12,7 +12,6 @@ import jp.co.acom.riza.event.customer.entity.MultiKey;
 import jp.co.acom.riza.event.customer.entity.MultiKeyEntity;
 import jp.co.acom.riza.event.customer.repository.CustomerRepository;
 import jp.co.acom.riza.event.customer.repository.MultiKeyEntityRepository;
-import jp.co.acom.riza.event.service.logic.CustomerRankUpdater;
 import jp.co.acom.riza.event.trade.entity.Trade;
 import jp.co.acom.riza.event.trade.repository.TradeRepository;
 

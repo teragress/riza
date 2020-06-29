@@ -4,7 +4,6 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Version;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.hibernate.envers.Audited;
 
 @Data

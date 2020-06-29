@@ -1,5 +1,7 @@
 package jp.co.acom.riza.event.kafka;
 
+import javax.transaction.Transactional;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
@@ -32,19 +34,36 @@ public class DynamicExecuteProcess implements Processor {
 	ApplicationRouteHolder holder;
 
 	/**
-	 * マニュアルコミット
+	 * ダイナミック業務呼出し
 	 */
 	public void process(Exchange exchange) throws Exception {
 		logger.debug("process() started.");
 		String[] ids = exchange.getFromRouteId().split("_");
 		String group = ids[1];
-		String topic = exchange.getIn().getHeader(KafkaConstants.TOPIC,String.class);
+		String topic = exchange.getIn().getHeader(KafkaConstants.TOPIC, String.class);
 		for (String root : holder.getApplicationRoutes(group, topic)) {
-			template.asyncRequestBody("direct:" + root, exchange.getIn().getBody());
-		}
+			try {
+				executeProcess("direct:" + root, exchange);
+			} catch (Exception ex) {
 
+			}
+		}
 
 		KafkaManualCommit manual = exchange.getIn().getHeader(KafkaConstants.MANUAL_COMMIT, KafkaManualCommit.class);
 		manual.commitSync();
+	}
+
+	/**
+	 * @param route
+	 * @param exchange
+	 */
+	@Transactional
+	private void executeProcess(String route, Exchange exchange) {
+		try {
+			template.requestBodyAndHeaders(route, exchange.getIn().getBody(), exchange.getIn().getHeaders());
+		} catch (Exception ex) {
+			logger.error("Business Transaction error occurred.",ex);
+			new RuntimeException(ex);
+		}
 	}
 }

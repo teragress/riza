@@ -14,7 +14,7 @@ import org.springframework.transaction.support.SimpleTransactionScope;
 
 /** A spring-boot application. */
 @SpringBootApplication
-@ComponentScan(basePackages="jp.co.acom")
+//@ComponentScan(basePackages="jp.co.acom")
 public class EventNotifyApplication {
   // must have a main method spring-boot can run
   public static void main(String[] args) {

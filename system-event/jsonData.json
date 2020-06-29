@@ -1,0 +1,45 @@
+{
+	"header": {
+		"reqeustId": "testRequestId",
+		"userId": "userid"
+	},
+	"flowId": "testFlowId",
+	"managers": [
+		{
+			"manager": "customerEntityManager",
+			"entitys": [
+				{
+					"type": "INSERT",
+					"entityType": "RESOURCE",
+					"entity": "jp.co.acom.example.eventnotify.customer.entity.MultiKeyEntity",
+					"key": "jp.co.acom.example.eventnotify.customer.entity.MultiKey",
+					"keyValue": {
+						"key1": "key1",
+						"key2": 1
+					}
+				},
+				{
+					"type": "INSERT",
+					"entityType": "RESOURCE",
+					"entity": "jp.co.acom.example.eventnotify.customer.entity.Customer",
+					"key": "java.lang.Long",
+					"keyValue": 257
+				}
+			],
+			"revison": 259
+		},
+		{
+			"manager": "tradeEntityManager",
+			"entitys": [
+				{
+					"type": "INSERT",
+					"entityType": "RESOURCE",
+					"entity": "jp.co.acom.example.eventnotify.trade.entity.Trade",
+					"key": "java.lang.Long",
+					"keyValue": 258
+				}
+			],
+			"revison": 260
+		}
+	]
+}
