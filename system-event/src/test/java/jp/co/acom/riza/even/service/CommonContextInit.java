@@ -16,7 +16,7 @@ public class CommonContextInit {
 
 	public void initCommonContxt() {
 		context.setDate(new Date());
-		context.setFlowid("testFlowId");
+		context.setFlowid("InsertApl");
 		context.setReqeustId("testRequestId");
 		context.setSpanId(UUID.randomUUID().toString());
 		context.setTraceId(UUID.randomUUID().toString());

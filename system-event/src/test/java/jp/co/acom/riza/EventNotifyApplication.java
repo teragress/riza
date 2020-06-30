@@ -32,7 +32,7 @@ public class EventNotifyApplication {
     customScopeConfigurer.addScope("transaction", transactionScope());
     return customScopeConfigurer;
   }
-	@Bean
+//	@Bean
 	public DataSource dataSource() {
 		/*
 		 * TransactionAwareDataSourceProxy dataSource = new

@@ -16,11 +16,11 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-@Scope
+//@Scope("singleton")
 public class ApplicationRouteHolder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationRouteHolder.class);
 
-	private Map<String, Map<String, List<String>>> holder = new HashMap<String, Map<String, List<String>>>();
+	private static Map<String, Map<String, List<String>>> holder = new HashMap<String, Map<String, List<String>>>();
 
 	/**
 	 * アプリケーションルートを登録する

@@ -6,19 +6,18 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.kafka.KafkaConstants;
-import org.apache.camel.component.kafka.KafkaManualCommit;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import jp.co.acom.riza.utils.log.Logger;
 
 /**
- * マニュアルコミット
+ * ビジネス動的呼出しプロセス
  *
  * @author developer
  *
  */
-@Component
+@Service
 public class DynamicExecuteProcess implements Processor {
 	/**
 	 * ロガー
@@ -36,12 +35,13 @@ public class DynamicExecuteProcess implements Processor {
 	/**
 	 * ダイナミック業務呼出し
 	 */
-	public void process(Exchange exchange) throws Exception {
+	public void process(Exchange exchange) {
 		logger.debug("process() started.");
 		String[] ids = exchange.getFromRouteId().split("_");
 		String group = ids[1];
 		String topic = exchange.getIn().getHeader(KafkaConstants.TOPIC, String.class);
 		for (String root : holder.getApplicationRoutes(group, topic)) {
+			logger.info("dynamic execute root=" + root + " group=" + group + " topic=" + topic);
 			try {
 				executeProcess("direct:" + root, exchange);
 			} catch (Exception ex) {
@@ -49,8 +49,8 @@ public class DynamicExecuteProcess implements Processor {
 			}
 		}
 
-		KafkaManualCommit manual = exchange.getIn().getHeader(KafkaConstants.MANUAL_COMMIT, KafkaManualCommit.class);
-		manual.commitSync();
+//		KafkaManualCommit manual = exchange.getIn().getHeader(KafkaConstants.MANUAL_COMMIT, KafkaManualCommit.class);
+//		manual.commitSync();
 	}
 
 	/**

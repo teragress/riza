@@ -1,6 +1,7 @@
 package jp.co.acom.riza.event.kafka;
 
 import java.util.EventObject;
+import org.apache.camel.CamelContext;
 import org.apache.camel.management.event.CamelContextStartedEvent;
 import org.apache.camel.support.EventNotifierSupport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,30 +16,26 @@ import jp.co.acom.riza.utils.log.Logger;
  */
 
 @Component
-public class KafkaEventNotify extends EventNotifierSupport {
+public class CamelNotifyLintner extends EventNotifierSupport {
 
 	/**
 	 * ロガー
 	 */
-	private static Logger logger = Logger.getLogger(KafkaEventNotify.class);
+	private static Logger logger = Logger.getLogger(CamelNotifyLintner.class);
 
 	@Autowired
-	KafkaConsumerCreate consumerCreate;
-	/**
-	 *　Camelコンテキスト
-	 */
-
+	KafkaConsumerCreate create;
 	/**
 	 * CamelcontextStartedEventトリガー
 	 */
 	@Override
 	public void notify(EventObject event) throws Exception {
-		logger.info("notify() started.");
+		logger.info("notify() started. ************************************************::");
 		if (event instanceof CamelContextStartedEvent) {
 			CamelContextStartedEvent startEvent = (CamelContextStartedEvent)event;
-			consumerCreate.setContext(startEvent.getContext());
-			consumerCreate.setApplicationRouteHolder();
-			consumerCreate.createConsumer();
+			CamelContext context = startEvent.getContext();
+			create.setApplicationRouteHolder(context);
+			create.createConsumer(context);
 		}
 	}
 
@@ -47,7 +44,7 @@ public class KafkaEventNotify extends EventNotifierSupport {
 	 */
 	@Override
 	public boolean isEnabled(EventObject event) {
-		logger.info("isEnabled() stared.**********************************************************");
+		logger.info("isEnabled() stared.");
 		if (event instanceof CamelContextStartedEvent) {
 			return true;
 		}

@@ -38,8 +38,11 @@ public class KafkaEventProducer {
 	public void sendEventMessage(FlowEvent flowEvent) {
 		logger.debug("sendMessageEvent() started.");
 
-		kafkaTemplate.send(KafkaConstants.KAFKA_FLOW_TOPIC_PREFIX + flowEvent.getFlowId(),
-				StringUtil.objectToJsonString(flowEvent));
+		String flowTopic = KafkaConstants.KAFKA_FLOW_TOPIC_PREFIX + flowEvent.getFlowId();
+		String flowMessage = StringUtil.objectToJsonString(flowEvent);
+		logger.debug("kafka-flow-send topic=" + flowTopic + " message=" + flowMessage);
+
+		kafkaTemplate.send(flowTopic, flowMessage);
 
 		for (Manager pManager : flowEvent.getManagers()) {
 			for (Entity pEntity : pManager.getEntitys()) {
@@ -47,9 +50,11 @@ public class KafkaEventProducer {
 				pEvent.setHeader(flowEvent.getHeader());
 				pEvent.setManager(pManager.getManager());
 				pEvent.setEntity(pEntity);
-				String cls = pEntity.getEntity().substring((pEntity.getEntity().lastIndexOf('.') + 1));
-				kafkaTemplate.send(KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX + cls,
-						StringUtil.objectToJsonString(pEvent));
+				String entityTopic = KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX
+						+ pEntity.getEntity().substring((pEntity.getEntity().lastIndexOf('.') + 1));
+				String entityMessage = StringUtil.objectToJsonString(pEvent);
+				logger.debug("kafka-entity-send topic=" + entityTopic + " message=" + entityMessage);
+				kafkaTemplate.send(entityTopic, entityMessage);
 			}
 		}
 	}
