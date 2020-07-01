@@ -2,10 +2,12 @@ package jp.co.acom.riza.event.rest;
 
 import jp.co.acom.riza.even.service.CustomerService;
 import jp.co.acom.riza.event.customer.entity.Customer;
+import jp.co.acom.riza.event.flow.CustomerFlowConsumer;
+import jp.co.acom.riza.utils.log.Logger;
+import jp.co.acom.riza.utils.log.MessageFormat;
 
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "rest/customers", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 public class CustomerController {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CustomerController.class);
+	/**
+	 * ロガー
+	 */
+	private static Logger logger = Logger.getLogger(CustomerController.class);
 
+  @Autowired
+  MessageFormat msg;
+  
   private CustomerService customerService;
 
   public CustomerController(CustomerService customerService) {
@@ -33,6 +41,8 @@ public class CustomerController {
    */
   @RequestMapping("/insert")
   public Customer save(@RequestBody Customer customer) {
+
+	logger.info(MessageFormat.get("RIZA0001"),"イベント","監視");
     customerService.save(customer);
     return customer;
   }
