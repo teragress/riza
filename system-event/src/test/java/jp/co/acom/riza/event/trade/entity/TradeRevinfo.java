@@ -6,4 +6,9 @@ import org.hibernate.envers.RevisionEntity;
 
 @Entity(name = "TRADE_REVINFO")
 @RevisionEntity
-public class TradeRevinfo extends DefaultRevisionEntity {}
+public class TradeRevinfo extends DefaultRevisionEntity {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;}

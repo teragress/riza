@@ -15,14 +15,14 @@ import lombok.Data;
  */
 @Data
 //@Table(schema = "VAGRANT", name = "TRANEVENT")
-@Table(name = "TRANEVENT")
+@Table(name = "EVENTCHECKPOINT")
 @Entity
-public class TranEventEntity {
+public class EventCheckpointEntity {
 	/**
 	 * イベントキークラス
 	 */
 	@EmbeddedId
-	private TranEventEntityKey tranEventKey;
+	private EventCheckpointEntityKey tranEventKey;
 	/**
 	 * 分割数
 	 */

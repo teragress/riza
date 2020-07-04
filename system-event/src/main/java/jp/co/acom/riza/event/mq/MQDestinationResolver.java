@@ -1,6 +1,5 @@
 package jp.co.acom.riza.event.mq;
 
-
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;

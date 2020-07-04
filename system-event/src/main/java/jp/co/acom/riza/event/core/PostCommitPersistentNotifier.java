@@ -12,15 +12,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import jp.co.acom.riza.cep.CepMonitorService;
 import jp.co.acom.riza.context.CommonContext;
 import jp.co.acom.riza.event.core.PersistentHolder.AuditStatus;
-import jp.co.acom.riza.event.entity.TranEventEntity;
-import jp.co.acom.riza.event.entity.TranEventEntityKey;
+import jp.co.acom.riza.event.entity.EventCheckpointEntity;
+import jp.co.acom.riza.event.entity.EventCheckpointEntityKey;
 import jp.co.acom.riza.event.kafka.KafkaEventProducer;
 import jp.co.acom.riza.event.mq.MessageUtilImpl;
 import jp.co.acom.riza.event.msg.Header;
@@ -77,10 +76,6 @@ public class PostCommitPersistentNotifier {
 	public void initialize() {
 		logger.debug("initialize() started.");
 		TransactionSynchronizationManager.registerSynchronization(new TransactionListener());
-		List<TransactionSynchronization> list = TransactionSynchronizationManager.getSynchronizations();
-		for (TransactionSynchronization tran : list) {
-			logger.info("*************************** tran=" + tran.toString());
-		}
 	}
 
 	/**
@@ -144,12 +139,12 @@ public class PostCommitPersistentNotifier {
 	private void insertTranEvent() {
 		logger.debug("insertTranEvent() started.");
 		flowEvent = createFlowEvent();
-		TranEventEntity tranEntity = new TranEventEntity();
+		EventCheckpointEntity tranEntity = new EventCheckpointEntity();
 
 		String evMsg = StringUtil.objectToJsonString(flowEvent);
 		List<String> splitStr = StringUtil.splitByLength(evMsg, TRAN_MESSAGE_MAX_SIZE);
 		for (int i = 0; i < splitStr.size(); i++) {
-			TranEventEntityKey tranKey = new TranEventEntityKey();
+			EventCheckpointEntityKey tranKey = new EventCheckpointEntityKey();
 			tranKey.setTranId(commonContext.getTraceId() + commonContext.getSpanId());
 			tranKey.setDatetime(new Timestamp(commonContext.getDate().getTime()));
 			tranKey.setSeq(i);
