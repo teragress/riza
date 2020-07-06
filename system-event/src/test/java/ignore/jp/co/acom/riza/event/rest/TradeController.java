@@ -1,6 +1,6 @@
-package jp.co.acom.riza.event.rest;
+package ignore.jp.co.acom.riza.event.rest;
 
-import jp.co.acom.riza.even.service.TradeService;
+import jp.co.acom.riza.event.service.TradeService;
 import jp.co.acom.riza.event.trade.entity.Trade;
 
 import java.util.List;

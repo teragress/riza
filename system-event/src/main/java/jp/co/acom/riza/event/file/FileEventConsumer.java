@@ -6,7 +6,7 @@ import org.springframework.core.env.Environment;
 
 import jp.co.acom.riza.event.kafka.KafkaConstants;
 import jp.co.acom.riza.event.kafka.ManualCommitProcess;
-import jp.co.acom.riza.utils.log.Logger;
+import jp.co.acom.riza.system.utils.log.Logger;
 
 //@Component
 public class FileEventConsumer extends RouteBuilder {

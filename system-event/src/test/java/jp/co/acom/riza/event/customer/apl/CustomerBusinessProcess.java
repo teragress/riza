@@ -5,7 +5,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Service;
 
-import jp.co.acom.riza.utils.log.Logger;
+import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
  * サンプル Processor.

@@ -6,7 +6,7 @@ import org.apache.camel.component.kafka.KafkaConstants;
 import org.apache.camel.component.kafka.KafkaManualCommit;
 import org.springframework.stereotype.Component;
 
-import jp.co.acom.riza.utils.log.Logger;
+import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
  * マニュアルコミット

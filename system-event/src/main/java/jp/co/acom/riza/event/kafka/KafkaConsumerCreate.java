@@ -10,7 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import jp.co.acom.riza.config.EventConstants;
-import jp.co.acom.riza.utils.log.Logger;
+import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
  * 起動されているビジネス用コンシューマからKAFKAのコンシューマを作成する

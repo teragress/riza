@@ -1,4 +1,4 @@
-package jp.co.acom.riza.utils.log;
+package jp.co.acom.riza.system.utils.log;
 
 import java.util.Map;
 import javax.annotation.PostConstruct;

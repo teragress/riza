@@ -1,12 +1,16 @@
 package jp.co.acom.riza.event.utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jp.co.acom.riza.utils.log.Logger;
+import jp.co.acom.riza.event.msg.EntityEvent;
+import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
  * @author mtera1003
@@ -31,6 +35,18 @@ public class StringUtil {
 			logger.error("obj to json convert error", e);
 		}
 		return str;
+	}
+	
+	/**
+	 * @param str
+	 * @return
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public static EntityEvent stringToEntityEventObject(String str) throws JsonParseException, JsonMappingException, IOException { ObjectMapper mapper = new ObjectMapper();
+		EntityEvent entityEvent = mapper.readValue(str,EntityEvent.class);
+		return entityEvent;
 	}
 	/**
 	 * @param s

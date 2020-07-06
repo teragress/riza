@@ -6,7 +6,8 @@ import org.apache.camel.management.event.CamelContextStartedEvent;
 import org.apache.camel.support.EventNotifierSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import jp.co.acom.riza.utils.log.Logger;
+
+import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
  * 起動されているビジネス用コンシューマからKAFKAのコンシューマを作成する

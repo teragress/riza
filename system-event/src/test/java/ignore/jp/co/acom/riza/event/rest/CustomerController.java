@@ -1,9 +1,9 @@
-package jp.co.acom.riza.event.rest;
+package ignore.jp.co.acom.riza.event.rest;
 
-import jp.co.acom.riza.even.service.CustomerService;
 import jp.co.acom.riza.event.customer.entity.Customer;
-import jp.co.acom.riza.utils.log.Logger;
-import jp.co.acom.riza.utils.log.MessageFormat;
+import jp.co.acom.riza.event.service.CustomerService;
+import jp.co.acom.riza.system.utils.log.Logger;
+import jp.co.acom.riza.system.utils.log.MessageFormat;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

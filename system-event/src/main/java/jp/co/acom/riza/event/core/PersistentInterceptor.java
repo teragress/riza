@@ -10,7 +10,7 @@ import org.hibernate.type.Type;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import jp.co.acom.riza.event.core.PersistentHolder.AuditStatus;
-import jp.co.acom.riza.utils.log.Logger;
+import jp.co.acom.riza.system.utils.log.Logger;
 import lombok.Getter;
 import lombok.Setter;
 

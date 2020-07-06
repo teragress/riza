@@ -17,7 +17,8 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.co.acom.riza.utils.log.Logger;
+
+import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
  * 受信ファイルイベントを処理するクラス。<br>

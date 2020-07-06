@@ -10,7 +10,7 @@ import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.FlowEvent;
 import jp.co.acom.riza.event.msg.EntityEvent;
 import jp.co.acom.riza.event.utils.StringUtil;
-import jp.co.acom.riza.utils.log.Logger;
+import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
  * Kafkaイベント用Producer処理

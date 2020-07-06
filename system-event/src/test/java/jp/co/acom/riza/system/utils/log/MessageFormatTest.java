@@ -1,4 +1,4 @@
-package jp.co.acom.riza.utils.log;
+package jp.co.acom.riza.system.utils.log;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 //@ExtendWith(SpringExtension.class)
-@ComponentScan(basePackages="jp.co.acom.riza.utils")
+@ComponentScan(basePackages="jp.co.acom.riza.system.utils")
 @ContextConfiguration(classes = AppConfig.class)
 @EnableConfigurationProperties
 @PropertySource("classpath:message.properties")

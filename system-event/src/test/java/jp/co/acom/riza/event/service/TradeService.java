@@ -1,4 +1,4 @@
-package jp.co.acom.riza.even.service;
+package jp.co.acom.riza.event.service;
 
 import jp.co.acom.riza.event.customer.entity.Customer;
 import jp.co.acom.riza.event.customer.repository.CustomerRepository;

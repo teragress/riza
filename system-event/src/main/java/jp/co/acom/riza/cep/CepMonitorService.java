@@ -21,7 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import jp.co.acom.riza.cep.event.RizaCepEventFinish;
 import jp.co.acom.riza.cep.event.RizaCepEventResponse;
 import jp.co.acom.riza.cep.event.RizaCepEventStart;
-import jp.co.acom.riza.utils.log.Logger;
+import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
  * CEP監視サービス

@@ -15,7 +15,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import jp.co.acom.riza.utils.log.Logger;
+
+import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
  * KAFKAコンポーネントの登録クラス

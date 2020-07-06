@@ -1,5 +1,5 @@
 //
-package jp.co.acom.riza.utils.log;
+package jp.co.acom.riza.system.utils.log;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;

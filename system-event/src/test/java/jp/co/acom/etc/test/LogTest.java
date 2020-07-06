@@ -2,7 +2,8 @@ package jp.co.acom.etc.test;
 
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import jp.co.acom.riza.utils.log.Logger;
+
+import jp.co.acom.riza.system.utils.log.Logger;
 
 /** A spring-boot application. */
 @SpringBootApplication

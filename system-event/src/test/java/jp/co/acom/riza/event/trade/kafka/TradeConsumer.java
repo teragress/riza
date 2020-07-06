@@ -4,7 +4,8 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import jp.co.acom.riza.utils.log.Logger;
+
+import jp.co.acom.riza.system.utils.log.Logger;
 
 @Component
 public class TradeConsumer extends RouteBuilder {

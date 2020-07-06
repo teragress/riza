@@ -28,7 +28,7 @@ import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.Manager;
 import jp.co.acom.riza.event.repository.TranEventEntityRepository;
 import jp.co.acom.riza.event.utils.StringUtil;
-import jp.co.acom.riza.utils.log.Logger;
+import jp.co.acom.riza.system.utils.log.Logger;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -74,7 +74,7 @@ public class PostCommitPersistentNotifier {
 
 	@PostConstruct
 	public void initialize() {
-		logger.debug("initialize() started.");
+		logger.info("initialize() started.");
 		TransactionSynchronizationManager.registerSynchronization(new TransactionListener());
 	}
 
@@ -84,7 +84,7 @@ public class PostCommitPersistentNotifier {
 	 * @param holder イベント保持オブジェクト
 	 */
 	public void addEventHolder(PersistentHolder holder) {
-		logger.debug("addEventHolder() started. holder=" + holder);
+		logger.info("addEventHolder() started. holder=" + holder);
 		holders.add(holder);
 	}
 
@@ -94,7 +94,7 @@ public class PostCommitPersistentNotifier {
 	 * @return
 	 */
 	private FlowEvent createFlowEvent() {
-		logger.debug("createFlowEvent() started.");
+		logger.info("createFlowEvent() started.");
 
 		flowEvent = new FlowEvent();
 		flowEvent.setFlowId(commonContext.getFlowid());
@@ -137,7 +137,7 @@ public class PostCommitPersistentNotifier {
 	 * トランザクションイベントテーブル挿入
 	 */
 	private void insertTranEvent() {
-		logger.debug("insertTranEvent() started.");
+		logger.info("insertTranEvent() started.");
 		flowEvent = createFlowEvent();
 		EventCheckpointEntity tranEntity = new EventCheckpointEntity();
 
@@ -166,7 +166,7 @@ public class PostCommitPersistentNotifier {
 
 		@Override
 		public void afterCommit() {
-			logger.debug("afterCommit() started.");
+			logger.info("afterCommit() started.");
 			kafkaProducer.sendEventMessage(flowEvent);
 			try {
 				messageUtil.flush();
@@ -191,7 +191,7 @@ public class PostCommitPersistentNotifier {
 		 */
 		@Override
 		public void beforeCommit(boolean readOnly) {
-			logger.debug("beforCommit() started. readOnly=" + readOnly);
+			logger.info("beforCommit() started. readOnly=" + readOnly);
 			boolean allInit = true;
 			for (PersistentHolder holder : holders) {
 				if (holder.getAuditStatus() != AuditStatus.INIT) {
@@ -210,7 +210,7 @@ public class PostCommitPersistentNotifier {
 
 		@Override
 		public void beforeCompletion() {
-			logger.debug("beforeCompletion() started.");
+			logger.info("beforeCompletion() started.");
 			super.beforeCompletion();
 		}
 
@@ -219,7 +219,7 @@ public class PostCommitPersistentNotifier {
 		 */
 		@Override
 		public void afterCompletion(int status) {
-			logger.debug("afterCompletion() started. status=" + status);
+			logger.info("afterCompletion() started. status=" + status);
 			// cep監視終了リクエスト
 			monitor.endMonitor(sepKey);
 			super.afterCompletion(status);
