@@ -5,7 +5,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.example</groupId>
-	<artifactId>event-notify</artifactId>
+	<artifactId>system-event</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<name>EventNotify</name>
 	<properties>

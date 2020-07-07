@@ -28,15 +28,8 @@ public class MessageFormatTest {
 
 	@Test
 	public void testMessageFormat() {
-		assertEquals(null,MessageFormat.get("aaaaa"));
-//		Customer customer = new Customer();
-//		customer.setName("name");
-//		customer.setRank(5);
-//		customerService.save(customer);
-//		assertEquals(customer.getName(), "name");
-	}
-	@Test
-	public void test002() {
+		assertEquals("RIZA0004I {}の{}が開始しました。",MessageFormat.get("RIZA0004"));
 		assertEquals(null,MessageFormat.get("bbbb"));
+		assertEquals("TEST0004I {}の{}が開始しました。",MessageFormat.get("TEST0004"));
 	}
 }

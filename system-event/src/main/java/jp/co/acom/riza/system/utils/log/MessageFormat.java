@@ -1,29 +1,35 @@
 package jp.co.acom.riza.system.utils.log;
 
-import java.util.Map;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Properties;
+
 import javax.annotation.PostConstruct;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
 @Component
-@PropertySource(ignoreResourceNotFound = true, value = "classpath:message.properties")
-@ConfigurationProperties(prefix = "msg")
 public class MessageFormat {
-
-	private Map<String,String> text;
-
-	public void setText(Map<String, String> text) {
-		this.text = text;
-	}
-	private static Map<String,String> sText;
+	private static Logger logger = Logger.getLogger(MessageFormat.class);
 	
+	private static Properties messageProperties = new Properties();
+
 	@PostConstruct
-	public void initialize() {
-		sText = text;
+	public void initialize() throws IOException {
+		logger.info("initialize() started.");
+		ResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
+		Collection<Resource> list = Arrays.asList(patternResolver.getResources("classpath*:/*message.properties"));
+		for (Resource resource:list) {
+			logger.info("resource file =" + resource);
+			messageProperties.load(new FileInputStream(resource.getFile()));
+		}
 	}
 	
 	public static String get(String key) {
-		return sText.get(key);
+		return messageProperties.getProperty(key);
 	}
 }
