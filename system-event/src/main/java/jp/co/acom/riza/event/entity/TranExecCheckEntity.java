@@ -15,7 +15,7 @@ import lombok.Data;
 @Data
 @Table(name = "TRANEEXECCHECK")
 @Entity
-public class TranExcecCheckEntity {
+public class TranExecCheckEntity {
 	/**
 	 * イベントキークラス
 	 */
