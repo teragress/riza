@@ -1,6 +1,8 @@
 package jp.co.acom.riza.context;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -19,8 +21,10 @@ public class CommonContext {
 
 	private String reqeustId;
 	private String userId;
-	private String flowid;
-	private Date date;
+	private String businessProcess;
+	private LocalDate ljcomDate;
+	private LocalTime ljcomTime;
+	private LocalDateTime ljcomDateTime;
 	private String traceId;
 	private String spanId;
 }

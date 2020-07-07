@@ -1,6 +1,9 @@
 package jp.co.acom.riza.event.kafka;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 import javax.transaction.Transactional;
@@ -15,6 +18,8 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import brave.Tracer;
+import brave.propagation.TraceContext;
 import jp.co.acom.riza.context.CommonContext;
 import jp.co.acom.riza.event.msg.EntityEvent;
 import jp.co.acom.riza.event.utils.StringUtil;
@@ -32,11 +37,16 @@ public class EntityConsumerInitilizer implements Processor {
 	 * ロガー
 	 */
 	private static Logger logger = Logger.getLogger(EntityConsumerInitilizer.class);
+	
+	public static final String PROCESS_ID = "entityConsumerInitilizer";
 	/**
 	 * Producer Template
 	 */
 	@Autowired
 	CommonContext commonContext;
+	
+	@Autowired
+	Tracer tracer;
 
 	/**
 	 * ダイナミック業務呼出し
@@ -49,12 +59,35 @@ public class EntityConsumerInitilizer implements Processor {
 		logger.debug("process() started.");
 
 		EntityEvent entityEvent = StringUtil.stringToEntityEventObject((String) exchange.getIn().getBody());
-//		commonContext.setDate(null);
-//		commonContext.setFlowid(null);
-//		commonContext.setReqeustId(null);
-//		commonContext.setSpanId(null);
-//		commonContext.setTraceId(null);
-//		commonContext.setUserId(null);
+		setCommonContext(exchange.getFromRouteId(),entityEvent);
+		insertTranExecChckEntity(commonContext.getReqeustId(), commonContext.getLjcomDateTime());
 	}
+	
+	private void setCommonContext(String routeId,EntityEvent entityEvent) {
+		logger.debug("setCommonContext() started.");
 
+		LocalDateTime now = LocalDateTime.now();
+		commonContext.setLjcomDateTime(now);
+		commonContext.setLjcomDate(LocalDate.of(now.getYear(),now.getMonth(),now.getDayOfMonth()));
+		commonContext.setLjcomTime(LocalTime.of(now.getHour(),now.getMinute(),now.getSecond()));
+		String[] splitStr = routeId.split("_", 4);
+		commonContext.setBusinessProcess(splitStr[3]);
+		commonContext.setReqeustId(entityEvent.getHeader().getReqeustId() + ":" + commonContext.getBusinessProcess());
+		TraceContext traceContext = tracer.currentSpan().context();
+		commonContext.setTraceId(traceContext.traceIdString());
+		commonContext.setSpanId(Long.toHexString(traceContext.spanId()));
+		commonContext.setUserId(entityEvent.getHeader().getUserId());
+	}
+	
+	private void insertTranExecChckEntity(String key,LocalDateTime dateTime) {
+		logger.debug("insertTranExecChckEntity() started.");
+		
+		
+		
+		
+		
+		
+		
+		
+	}
 }

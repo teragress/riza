@@ -13,10 +13,6 @@ public class KafkaConstants {
 	 */
 	public static final String KAFKA_COMPONENT_BEAN = "kafka";
 	/**
-	 * KAFKAのフローイベントのトピックプレフィックス
-	 */
-	public static final String KAFKA_FLOW_TOPIC_PREFIX = "Flow";
-	/**
 	 * KAFKAのエンティティイベントのトピックプレフィックス
 	 */
 	public static final String KAFKA_ENTITY_TOPIC_PREFIX = "Entity";

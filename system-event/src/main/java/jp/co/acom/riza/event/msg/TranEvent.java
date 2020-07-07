@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class FlowEvent {
+public class TranEvent {
 	private Header header;
 	private String flowId;
 	private List<Manager> managers;

@@ -1,6 +1,6 @@
 package jp.co.acom.riza.event.service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -15,8 +15,8 @@ public class CommonContextInit {
 	@Autowired CommonContext context;
 
 	public void initCommonContxt() {
-		context.setDate(new Date());
-		context.setFlowid("InsertApl");
+		context.setLjcomDateTime(LocalDateTime.now());
+		context.setBusinessProcess("InsertApl");
 		context.setReqeustId("testRequestId");
 		context.setSpanId(UUID.randomUUID().toString());
 		context.setTraceId(UUID.randomUUID().toString());

@@ -2,6 +2,7 @@ package jp.co.acom.riza.cep;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
@@ -92,10 +93,10 @@ public class CepMonitorService {
 	 * @param date
 	 * @throws URISyntaxException
 	 */
-	public void startMonitor(String key, Date date) {
+	public void startMonitor(String key, LocalDateTime dateTime) {
 		RizaCepEventStart eventStart = new RizaCepEventStart();
 		eventStart.setEntryKeyId(key);
-		eventStart.setEventDate(date);
+		eventStart.setEventDateTime(dateTime);
 		eventStart.setExpireLimit(expireLimit);
 		RequestEntity<RizaCepEventStart> req = new RequestEntity<>(eventStart, headers, HttpMethod.POST, startUri);
 		ResponseEntity<RizaCepEventResponse> rsp = restTemplate.exchange(req, RizaCepEventResponse.class);

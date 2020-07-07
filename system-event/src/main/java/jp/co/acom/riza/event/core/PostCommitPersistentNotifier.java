@@ -23,7 +23,7 @@ import jp.co.acom.riza.event.entity.EventCheckpointEntityKey;
 import jp.co.acom.riza.event.kafka.KafkaEventProducer;
 import jp.co.acom.riza.event.mq.MessageUtilImpl;
 import jp.co.acom.riza.event.msg.Header;
-import jp.co.acom.riza.event.msg.FlowEvent;
+import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.Manager;
 import jp.co.acom.riza.event.repository.TranEventEntityRepository;
@@ -48,7 +48,7 @@ public class PostCommitPersistentNotifier {
 	/**
 	 * フローイベント
 	 */
-	private FlowEvent flowEvent;
+	private TranEvent tranEvent;
 	/**
 	 * CommonContext
 	 */
@@ -93,16 +93,16 @@ public class PostCommitPersistentNotifier {
 	 * 
 	 * @return
 	 */
-	private FlowEvent createFlowEvent() {
-		logger.info("createFlowEvent() started.");
+	private TranEvent createTranEvent() {
+		logger.info("createTranEvent() started.");
 
-		flowEvent = new FlowEvent();
-		flowEvent.setFlowId(commonContext.getFlowid());
+		tranEvent = new TranEvent();
+		tranEvent.setFlowId(commonContext.getBusinessProcess());
 
 		Header eventHeader = new Header();
 		eventHeader.setReqeustId(commonContext.getReqeustId());
 		eventHeader.setUserId(commonContext.getUserId());
-		flowEvent.setHeader(eventHeader);
+		tranEvent.setHeader(eventHeader);
 
 		List<Manager> managerList = new ArrayList<Manager>();
 		for (PersistentHolder holder : holders) {
@@ -122,15 +122,15 @@ public class PostCommitPersistentNotifier {
 			}
 			managerList.add(pManager);
 		}
-		flowEvent.setManagers(managerList);
-		return flowEvent;
+		tranEvent.setManagers(managerList);
+		return tranEvent;
 	}
 
 	public void beforeEvent() {
 
 		insertTranEvent();
 		sepKey = commonContext.getTraceId() + commonContext.getSpanId();
-		monitor.startMonitor(sepKey, commonContext.getDate());
+		monitor.startMonitor(sepKey, commonContext.getLjcomDateTime());
 	}
 
 	/**
@@ -138,15 +138,15 @@ public class PostCommitPersistentNotifier {
 	 */
 	private void insertTranEvent() {
 		logger.info("insertTranEvent() started.");
-		flowEvent = createFlowEvent();
+		tranEvent = createTranEvent();
 		EventCheckpointEntity tranEntity = new EventCheckpointEntity();
 
-		String evMsg = StringUtil.objectToJsonString(flowEvent);
+		String evMsg = StringUtil.objectToJsonString(tranEvent);
 		List<String> splitStr = StringUtil.splitByLength(evMsg, TRAN_MESSAGE_MAX_SIZE);
 		for (int i = 0; i < splitStr.size(); i++) {
 			EventCheckpointEntityKey tranKey = new EventCheckpointEntityKey();
 			tranKey.setTranId(commonContext.getTraceId() + commonContext.getSpanId());
-			tranKey.setDatetime(new Timestamp(commonContext.getDate().getTime()));
+			tranKey.setDatetime(Timestamp.valueOf(commonContext.getLjcomDateTime()));
 			tranKey.setSeq(i);
 			tranEntity.setTranEventKey(tranKey);
 			tranEntity.setCnt(splitStr.size());
@@ -167,7 +167,7 @@ public class PostCommitPersistentNotifier {
 		@Override
 		public void afterCommit() {
 			logger.info("afterCommit() started.");
-			kafkaProducer.sendEventMessage(flowEvent);
+			kafkaProducer.sendEventMessage(tranEvent);
 			try {
 				messageUtil.flush();
 			} catch (NamingException e) {

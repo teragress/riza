@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import jp.co.acom.riza.event.msg.Manager;
 import jp.co.acom.riza.event.msg.Entity;
-import jp.co.acom.riza.event.msg.FlowEvent;
+import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.event.msg.EntityEvent;
 import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.system.utils.log.Logger;
@@ -35,14 +35,8 @@ public class KafkaEventProducer {
 	 * 
 	 * @param flowEvent
 	 */
-	public void sendEventMessage(FlowEvent flowEvent) {
+	public void sendEventMessage(TranEvent flowEvent) {
 		logger.debug("sendMessageEvent() started.");
-
-		String flowTopic = KafkaConstants.KAFKA_FLOW_TOPIC_PREFIX + flowEvent.getFlowId();
-		String flowMessage = StringUtil.objectToJsonString(flowEvent);
-		logger.debug("kafka-flow-send topic=" + flowTopic + " message=" + flowMessage);
-
-		kafkaTemplate.send(flowTopic, flowMessage);
 
 		for (Manager pManager : flowEvent.getManagers()) {
 			for (Entity pEntity : pManager.getEntitys()) {

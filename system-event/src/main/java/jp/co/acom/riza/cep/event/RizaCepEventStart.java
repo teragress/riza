@@ -1,6 +1,6 @@
 package jp.co.acom.riza.cep.event;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import lombok.Data;
 
@@ -22,6 +22,6 @@ public class RizaCepEventStart {
    *
    * <p>null の場合は、イベント受信日時が使用される.
    */
-  private Date eventDate;
+  private LocalDateTime eventDateTime;
 
 }
