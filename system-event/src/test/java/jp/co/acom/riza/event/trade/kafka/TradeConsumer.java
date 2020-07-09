@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import jp.co.acom.riza.event.kafka.EntityConsumerInitilizer;
 import jp.co.acom.riza.system.utils.log.Logger;
 
 @Component
@@ -25,6 +26,7 @@ public class TradeConsumer extends RouteBuilder {
 		logger.debug("configure() start");
 		from("direct:" + "KAD_TRADE_EntityTrade_TradeBusiness")
 		.routeId("KAD_TRADE_EntityTrade_TradeBusiness")
+//    	.process(EntityConsumerInitilizer.PROCESS_ID)		
 		.process("customerBusinessProcess");
 	}
 }

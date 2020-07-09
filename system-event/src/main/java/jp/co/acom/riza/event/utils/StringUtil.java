@@ -21,22 +21,24 @@ public class StringUtil {
 	 * ロガー
 	 */
 	private static Logger logger = Logger.getLogger(StringUtil.class);
+
 	/**
 	 * Objectからjson形式に変換
+	 * 
 	 * @param o
 	 * @return
 	 */
 	public static String objectToJsonString(Object o) {
 		String str = "";
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper objectMapper = new ObjectMapper();
 		try {
-			str = mapper.writeValueAsString(o);
+			str = objectMapper.writeValueAsString(o);
 		} catch (JsonProcessingException e) {
 			logger.error("obj to json convert error", e);
 		}
 		return str;
 	}
-	
+
 	/**
 	 * @param str
 	 * @return
@@ -44,22 +46,28 @@ public class StringUtil {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public static EntityEvent stringToEntityEventObject(String str) throws JsonParseException, JsonMappingException, IOException { ObjectMapper mapper = new ObjectMapper();
-		EntityEvent entityEvent = mapper.readValue(str,EntityEvent.class);
+	public static EntityEvent stringToEntityEventObject(String str)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		EntityEvent entityEvent = objectMapper.readValue(str, EntityEvent.class);
+
 		return entityEvent;
 	}
+
 	/**
 	 * @param s
 	 * @param length
 	 * @return
 	 */
 	public static List<String> splitByLength(String s, int length) {
-	    List<String> list = new ArrayList<String>();
-	    while (s != null && s.length() != 0) {
-	        int endIndex = Math.min(length, s.length());
-	        list.add(s.substring(0, endIndex));
-	        s = s.substring(endIndex);
-	    }
-	    return list;
+		List<String> list = new ArrayList<String>();
+		while (s != null && s.length() != 0) {
+			int endIndex = Math.min(length, s.length());
+			list.add(s.substring(0, endIndex));
+			s = s.substring(endIndex);
+		}
+		return list;
 	}
 }

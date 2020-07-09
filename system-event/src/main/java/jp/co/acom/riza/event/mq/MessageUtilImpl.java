@@ -29,7 +29,7 @@ public class MessageUtilImpl {
 	@Autowired
 	CamelContext camelContext;
 	/**
-	 *
+	 * 
 	 */
 	private HashMap<String, ArrayList<String>> messageMap = new HashMap<>();
 

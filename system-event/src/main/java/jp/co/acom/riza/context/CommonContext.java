@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
+import jp.co.acom.riza.system.CommonConstants;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,7 +17,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Component
-@Scope(value = "transaction", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(value = CommonConstants.TRANSACTION_SCOPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CommonContext {
 
 	private String reqeustId;

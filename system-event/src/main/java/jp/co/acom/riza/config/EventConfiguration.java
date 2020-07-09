@@ -1,12 +1,21 @@
 package jp.co.acom.riza.config;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.support.SharedEntityManagerBean;
+
+import jp.co.acom.riza.event.core.PersistentEventNotifier;
+import jp.co.acom.riza.event.core.PersistentHolder;
 
 /**
  * system_eventパッケージ用のEntityManagerの設定
@@ -42,11 +51,26 @@ public class EventConfiguration {
 	 * @param systemEntityManagerFactory EntityManager の Factory
 	 * @return
 	 */
-//	@Bean
-//	public SharedEntityManagerBean systemEntityManager(
-//			@Qualifier("systemEntityManagerFactory") EntityManagerFactory systemEntityManagerFactory) {
-//		SharedEntityManagerBean sharedEntityManagerBean = new SharedEntityManagerBean();
-//		sharedEntityManagerBean.setEntityManagerFactory(systemEntityManagerFactory);
-//		return sharedEntityManagerBean;
-//	}
+	@Bean
+	public SharedEntityManagerBean systemEntityManager(
+			@Qualifier("systemEntityManagerFactory") EntityManagerFactory systemEntityManagerFactory) {
+		SharedEntityManagerBean sharedEntityManagerBean = new SharedEntityManagerBean();
+		sharedEntityManagerBean.setEntityManagerFactory(systemEntityManagerFactory);
+		return sharedEntityManagerBean;
+	}
+	  /**
+	   * customerパッケージのエンティティの変更を保持するオブジェクトの定義.
+	   *
+	   * @param customerEntityManager customerパッケージのEntityManager
+	   * @return
+	   */
+//	  @Bean
+//	  @Scope(value = "transaction", proxyMode = ScopedProxyMode.INTERFACES)
+//	  public PersistentEventNotifier customerPersistentEventNotifier(
+//	      @Qualifier(ENTITY_MANAGER_BEAN_NAME) EntityManager customerEntityManager) {
+//	    PersistentHolder holder = new PersistentHolder(ENTITY_MANAGER_BEAN_NAME);
+//	    holder.setPostCommitPersistentEventNotifier(postCommitPersistentEventNotifier);
+//	    postCommitPersistentEventNotifier.addEventHolder(holder);
+//	    return holder;
+//	  }
 }

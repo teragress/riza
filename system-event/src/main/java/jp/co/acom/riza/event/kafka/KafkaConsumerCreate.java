@@ -78,11 +78,13 @@ public class KafkaConsumerCreate {
 			context.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
-					from(uri).routeId(routeId).threads()
+					from(uri)
+					.routeId(routeId)
+					.threads()
 							.executorService(
 									(ExecutorService) aplContext.getBean(EventConstants.EVENT_THREAD_POOL_BEAN))
 							.doTry()
-								.process("dynamicExecuteProcess")
+								.process(DynamicExecuteProcess.PROCESS_ID)
 							.doFinally()
 								.process("manualCommitProcess")
 							.end();

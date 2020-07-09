@@ -43,6 +43,7 @@ public class KafkaEventProducer {
 				EntityEvent pEvent = new EntityEvent();
 				pEvent.setHeader(flowEvent.getHeader());
 				pEvent.setManager(pManager.getManager());
+				pEvent.setRevision(pManager.getRevison());
 				pEvent.setEntity(pEntity);
 				String entityTopic = KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX
 						+ pEntity.getEntity().substring((pEntity.getEntity().lastIndexOf('.') + 1));

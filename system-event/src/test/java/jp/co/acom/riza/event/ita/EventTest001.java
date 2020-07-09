@@ -46,19 +46,21 @@ public class EventTest001 {
 
 
 	@Test
-	public void test001() {
+	public void test001() throws InterruptedException {
 		Customer customer = new Customer();
 		customer.setName("name");
 		customer.setRank(5);
 		customerService.save(customer);
 		assertEquals(customer.getName(), "name");
+		Thread.sleep(10000);
 	}
 	@Test
-	public void test002() {
+	public void test002() throws InterruptedException {
 		Customer customer = new Customer();
 		customer.setName("name");
 		customer.setRank(5);
 		customerService.save(customer);
 		assertEquals(customer.getName(), "name");
+		Thread.sleep(10000);
 	}
 }

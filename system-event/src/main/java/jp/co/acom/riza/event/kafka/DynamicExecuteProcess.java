@@ -1,7 +1,5 @@
 package jp.co.acom.riza.event.kafka;
 
-import javax.transaction.Transactional;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
@@ -17,12 +15,15 @@ import jp.co.acom.riza.system.utils.log.Logger;
  * @author developer
  *
  */
-@Service
+@Service(DynamicExecuteProcess.PROCESS_ID)
 public class DynamicExecuteProcess implements Processor {
 	/**
 	 * ロガー
 	 */
 	private static Logger logger = Logger.getLogger(DynamicExecuteProcess.class);
+
+	public static final String PROCESS_ID = "dynamicExecuteProcess";
+
 	/**
 	 * Producer Template
 	 */
@@ -31,6 +32,9 @@ public class DynamicExecuteProcess implements Processor {
 
 	@Autowired
 	ApplicationRouteHolder holder;
+	
+	@Autowired
+	TransactionRouteExecute execute;
 
 	/**
 	 * ダイナミック業務呼出し
@@ -41,29 +45,14 @@ public class DynamicExecuteProcess implements Processor {
 		String group = ids[1];
 		String topic = exchange.getIn().getHeader(KafkaConstants.TOPIC, String.class);
 		for (String root : holder.getApplicationRoutes(group, topic)) {
-			logger.info("dynamic execute route=" + root + " group=" + group + " topic=" + topic);
+			logger.info("dynamic execute route=" + root + " group=" + group + " topic=" + topic + " body="
+					+ exchange.getIn().getBody());
+			;
 			try {
-				executeProcess("direct:" + root, exchange);
+				execute.executeRoute("direct:" + root, exchange);
 			} catch (Exception ex) {
-
+				ex.printStackTrace();
 			}
-		}
-
-//		KafkaManualCommit manual = exchange.getIn().getHeader(KafkaConstants.MANUAL_COMMIT, KafkaManualCommit.class);
-//		manual.commitSync();
-	}
-
-	/**
-	 * @param route
-	 * @param exchange
-	 */
-	@Transactional
-	private void executeProcess(String route, Exchange exchange) {
-		try {
-			template.requestBodyAndHeaders(route, exchange.getIn().getBody(), exchange.getIn().getHeaders());
-		} catch (Exception ex) {
-			logger.error("Business Transaction error occurred.",ex);
-			new RuntimeException(ex);
 		}
 	}
 }

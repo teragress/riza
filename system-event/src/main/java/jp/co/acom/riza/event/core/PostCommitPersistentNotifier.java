@@ -28,6 +28,7 @@ import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.Manager;
 import jp.co.acom.riza.event.repository.TranEventEntityRepository;
 import jp.co.acom.riza.event.utils.StringUtil;
+import jp.co.acom.riza.system.CommonConstants;
 import jp.co.acom.riza.system.utils.log.Logger;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +37,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Service
-@Scope(value = "transaction", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(value = CommonConstants.TRANSACTION_SCOPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class PostCommitPersistentNotifier {
 	private static final Logger logger = Logger.getLogger(PostCommitPersistentNotifier.class);
 
@@ -97,7 +98,7 @@ public class PostCommitPersistentNotifier {
 		logger.info("createTranEvent() started.");
 
 		tranEvent = new TranEvent();
-		tranEvent.setFlowId(commonContext.getBusinessProcess());
+		tranEvent.setBusinessProcess(commonContext.getBusinessProcess());
 
 		Header eventHeader = new Header();
 		eventHeader.setReqeustId(commonContext.getReqeustId());
@@ -114,9 +115,8 @@ public class PostCommitPersistentNotifier {
 			for (EntityPersistent eP : holder.getEvents()) {
 				Entity pEntity = new Entity();
 				pEntity.setEntity(eP.getEntity().getClass().getName());
-				pEntity.setKey(eP.getEntityId().getClass().getName());
 				pEntity.setEntityType(eP.getEntityType());
-				pEntity.setKeyValue(eP.getEntityId());
+				pEntity.setKey(eP.getEntityId());
 				pEntity.setType(eP.getPersistentType());
 				pList.add(pEntity);
 			}
@@ -143,6 +143,7 @@ public class PostCommitPersistentNotifier {
 
 		String evMsg = StringUtil.objectToJsonString(tranEvent);
 		List<String> splitStr = StringUtil.splitByLength(evMsg, TRAN_MESSAGE_MAX_SIZE);
+		
 		for (int i = 0; i < splitStr.size(); i++) {
 			EventCheckpointEntityKey tranKey = new EventCheckpointEntityKey();
 			tranKey.setTranId(commonContext.getTraceId() + commonContext.getSpanId());
@@ -151,6 +152,7 @@ public class PostCommitPersistentNotifier {
 			tranEntity.setTranEventKey(tranKey);
 			tranEntity.setCnt(splitStr.size());
 			tranEntity.setEventMsg(splitStr.get(i));
+			logger.info("******* TranEntity=" + tranEntity);
 			tranEventRepository.save(tranEntity);
 		}
 	}
@@ -179,10 +181,10 @@ public class PostCommitPersistentNotifier {
 			super.afterCommit();
 		}
 
-		@Override
-		public int getOrder() {
-			return Ordered.LOWEST_PRECEDENCE;
-		}
+//		@Override
+//		public int getOrder() {
+//			return Ordered.LOWEST_PRECEDENCE;
+//		}
 
 		/**
 		 * コミット前のインターセプター<br>

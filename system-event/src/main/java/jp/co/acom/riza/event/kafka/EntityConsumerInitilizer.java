@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.transaction.Transactional;
 
 import org.apache.camel.Exchange;
@@ -14,8 +16,10 @@ import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.kafka.KafkaConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -37,7 +41,8 @@ import jp.co.acom.riza.system.utils.log.Logger;
  * @author developer
  *
  */
-@Service
+@Service(EntityConsumerInitilizer.PROCESS_ID)
+//@Transactional
 public class EntityConsumerInitilizer implements Processor {
 	/**
 	 * ロガー
@@ -52,10 +57,7 @@ public class EntityConsumerInitilizer implements Processor {
 	CommonContext commonContext;
 
 	@Autowired
-	Tracer tracer;
-
-	@Autowired
-	private TranExecCheckEntityRepository tranExecRepository;
+	private ApplicationContext applicationContext;
 
 	/**
 	 * ダイナミック業務呼出し
@@ -65,39 +67,41 @@ public class EntityConsumerInitilizer implements Processor {
 	 * @throws JsonParseException
 	 */
 	public void process(Exchange exchange) throws JsonParseException, JsonMappingException, IOException {
-		logger.debug("process() started.");
+		logger.info("*********************************process() started.");
 
 		EntityEvent entityEvent = StringUtil.stringToEntityEventObject((String) exchange.getIn().getBody());
 		setCommonContext(exchange.getFromRouteId(), entityEvent);
 		insertTranExecChckEntity(commonContext.getReqeustId(), commonContext.getLjcomDateTime());
 	}
 
-	private void setCommonContext(String routeId,EntityEvent entityEvent) {
-		logger.debug("setCommonContext() started.");
+	private void setCommonContext(String routeId, EntityEvent entityEvent) {
+		logger.info("setCommonContext() started.");
 
 		LocalDateTime now = LocalDateTime.now();
 		commonContext.setLjcomDateTime(now);
-		commonContext.setLjcomDate(LocalDate.of(now.getYear(),now.getMonth(),now.getDayOfMonth()));
-		commonContext.setLjcomTime(LocalTime.of(now.getHour(),now.getMinute(),now.getSecond()));
+		commonContext.setLjcomDate(LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth()));
+		commonContext.setLjcomTime(LocalTime.of(now.getHour(), now.getMinute(), now.getSecond()));
 		String[] splitStr = routeId.split("_", 4);
 		commonContext.setBusinessProcess(splitStr[3]);
 		commonContext.setReqeustId(entityEvent.getHeader().getReqeustId() + ":" + commonContext.getBusinessProcess());
-		TraceContext traceContext = tracer.currentSpan().context();
-		commonContext.setTraceId(traceContext.traceIdString());
-		commonContext.setSpanId(Long.toHexString(traceContext.spanId()));
+//		TraceContext traceContext = tracer.currentSpan().context();
+//		commonContext.setTraceId(traceContext.traceIdString());
+//		commonContext.setSpanId(Long.toHexString(traceContext.spanId()));
 		commonContext.setUserId(entityEvent.getHeader().getUserId());
 	}
 
-	private void insertTranExecChckEntity(String key,LocalDateTime dateTime) {
-		logger.debug("insertTranExecChckEntity() started.");
+	private void insertTranExecChckEntity(String key, LocalDateTime dateTime) {
+		logger.info("insertTranExecChckEntity() started.");
 		TranExecCheckEntity execEntity = new TranExecCheckEntity();
 		execEntity.setEventKey(commonContext.getBusinessProcess());
 		execEntity.setDatetime(Timestamp.valueOf(commonContext.getLjcomDateTime()));
-		
-		try {
-     		tranExecRepository.save(execEntity);
-		} catch(DuplicateKeyException ex) {
-			throw new DuplicateExecuteException(ex);
+		logger.info("execEntity=" + execEntity);
+
+		EntityManagerFactory factory = (EntityManagerFactory) applicationContext.getBean("systemEntityManagerFactory");
+		EntityManager em = factory.createEntityManager();
+		if (em.find(TranExecCheckEntity.class, commonContext.getBusinessProcess()) != null) {
+			throw new DuplicateExecuteException(commonContext.getBusinessProcess());
 		}
+		em.persist(execEntity);
 	}
 }

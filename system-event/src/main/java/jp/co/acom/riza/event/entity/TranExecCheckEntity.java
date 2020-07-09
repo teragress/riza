@@ -13,7 +13,7 @@ import lombok.Data;
  *
  */
 @Data
-@Table(name = "TRANEEXECCHECK")
+@Table(name = "TRANEXECCHECK")
 @Entity
 public class TranExecCheckEntity {
 	/**
