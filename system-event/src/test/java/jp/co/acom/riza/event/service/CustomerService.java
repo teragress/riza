@@ -70,6 +70,12 @@ public class CustomerService {
 	@Transactional
 	public List<Customer> findAll() {
 		init.initCommonContxt();
+		for (Customer customer: customerRepository.findAll()) {
+			System.out.println("*********************** "
+					+ "customer=" + customer);
+		}
+			
+		
 		return customerRepository.findAll();
 	}
 

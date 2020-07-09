@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import jp.co.acom.riza.event.kafka.EntityConsumerInitilizer;
 import jp.co.acom.riza.system.utils.log.Logger;
 
-@Component
+//@Component
 public class CustomerConsumer extends RouteBuilder {
 	/**
 	 * ロガー

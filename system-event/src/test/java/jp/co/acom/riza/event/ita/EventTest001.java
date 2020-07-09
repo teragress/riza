@@ -53,6 +53,8 @@ public class EventTest001 {
 		customerService.save(customer);
 		assertEquals(customer.getName(), "name");
 		Thread.sleep(10000);
+		customerService.findAll();
+		Thread.sleep(10000);
 	}
 	@Test
 	public void test002() throws InterruptedException {

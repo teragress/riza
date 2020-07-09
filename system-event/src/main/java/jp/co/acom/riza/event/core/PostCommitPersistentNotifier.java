@@ -168,7 +168,7 @@ public class PostCommitPersistentNotifier {
 
 		@Override
 		public void afterCommit() {
-			logger.info("afterCommit() started.");
+			logger.info("*****************************************afterCommit() started.");
 			kafkaProducer.sendEventMessage(tranEvent);
 			try {
 				messageUtil.flush();
@@ -200,7 +200,7 @@ public class PostCommitPersistentNotifier {
 					allInit = false;
 				}
 			}
-			if (allInit) {
+			if (allInit && holders.size() != 0) {
 				insertTranEvent();
 				sepKey = commonContext.getTraceId() + commonContext.getSpanId();
 				for (PersistentHolder holder : holders) {

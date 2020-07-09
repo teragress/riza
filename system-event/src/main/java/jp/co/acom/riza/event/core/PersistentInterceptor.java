@@ -137,15 +137,17 @@ public class PersistentInterceptor extends EmptyInterceptor {
 		logger.info("********beforeTransactionComplition() started.*************");
 		boolean allReady = true;
 		for (PersistentHolder persistentEventHolder : postNotifier.getHolders()) {
-			if (persistentEventHolder.getAuditStatus() == AuditStatus.AUDIT_ENTITY_ON ||
-					persistentEventHolder.getAuditStatus() == AuditStatus.COMPLETE) {
+			if (persistentEventHolder.getAuditStatus() == AuditStatus.AUDIT_ENTITY_ON
+					|| persistentEventHolder.getAuditStatus() == AuditStatus.COMPLETE) {
 				allReady = false;
 			}
 		}
 		if (allReady) {
-			postNotifier.beforeEvent();
-			for (PersistentHolder persistentEventHolder : postNotifier.getHolders()) {
-				persistentEventHolder.setAuditStatus(AuditStatus.COMPLETE);
+			if (postNotifier.getHolders().size() > 0) {
+				postNotifier.beforeEvent();
+				for (PersistentHolder persistentEventHolder : postNotifier.getHolders()) {
+					persistentEventHolder.setAuditStatus(AuditStatus.COMPLETE);
+				}
 			}
 		}
 		super.beforeTransactionCompletion(tx);
