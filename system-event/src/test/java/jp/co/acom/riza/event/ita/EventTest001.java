@@ -35,8 +35,8 @@ public class EventTest001 {
 //	@MockBean(classes = KafkaTemplate.class)
 //	KafkaTemplate<String,String> template;
 	
-	@MockBean
-	CepMonitorService cepMonitorService;
+//	@MockBean
+//	CepMonitorService cepMonitorService;
 	
 	@Autowired
 	CustomerService customerService;
@@ -53,10 +53,10 @@ public class EventTest001 {
 		customerService.save(customer);
 		assertEquals(customer.getName(), "name");
 		Thread.sleep(10000);
-		customerService.findAll();
+	//	customerService.findAll();
 		Thread.sleep(10000);
 	}
-	@Test
+//	@Test
 	public void test002() throws InterruptedException {
 		Customer customer = new Customer();
 		customer.setName("name");

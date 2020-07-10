@@ -12,6 +12,7 @@ import jp.co.acom.riza.event.customer.entity.MultiKey;
 import jp.co.acom.riza.event.customer.entity.MultiKeyEntity;
 import jp.co.acom.riza.event.customer.repository.CustomerRepository;
 import jp.co.acom.riza.event.customer.repository.MultiKeyEntityRepository;
+import jp.co.acom.riza.event.mq.MessageUtil;
 import jp.co.acom.riza.event.trade.entity.Trade;
 import jp.co.acom.riza.event.trade.repository.TradeRepository;
 
@@ -51,6 +52,8 @@ public class CustomerService {
 		trade.setTotal(100);
 		tradeRepository.save(trade);
 		tradeRepository.flush();
+		MessageUtil.send("PRT_QUEUE", "test message 01");
+		MessageUtil.send("PRT_QUEUE", "test message 02");
 
 		if ("ERROR".equals(customer.getName())) {
 			// ロールバックテスト用

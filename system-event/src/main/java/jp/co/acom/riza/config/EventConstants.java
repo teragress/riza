@@ -39,4 +39,9 @@ public class EventConstants {
 	 *　スレッドプールBean名
 	 */
 	public static final String EVENT_THREAD_POOL_BEAN = "ThreadPoolBean";
+	
+	/**
+	 *　エンティティイベントを伝搬するexchangeのヘッダーキー
+	 */
+	public static final String EXCHANGE_HEADER_ENTITY_EVENT = "EntityEvent";
 }

@@ -129,8 +129,10 @@ public class PostCommitPersistentNotifier {
 	public void beforeEvent() {
 
 		insertTranEvent();
-		sepKey = commonContext.getTraceId() + commonContext.getSpanId();
-		monitor.startMonitor(sepKey, commonContext.getLjcomDateTime());
+		if (tranEvent != null && tranEvent.getManagers().size() > 0) {
+			sepKey = commonContext.getTraceId() + commonContext.getSpanId();
+			monitor.startMonitor(sepKey, commonContext.getLjcomDateTime());
+		}
 	}
 
 	/**
@@ -139,21 +141,24 @@ public class PostCommitPersistentNotifier {
 	private void insertTranEvent() {
 		logger.info("insertTranEvent() started.");
 		tranEvent = createTranEvent();
-		EventCheckpointEntity tranEntity = new EventCheckpointEntity();
+		if (tranEvent != null && tranEvent.getManagers().size() > 0) {
 
-		String evMsg = StringUtil.objectToJsonString(tranEvent);
-		List<String> splitStr = StringUtil.splitByLength(evMsg, TRAN_MESSAGE_MAX_SIZE);
-		
-		for (int i = 0; i < splitStr.size(); i++) {
-			EventCheckpointEntityKey tranKey = new EventCheckpointEntityKey();
-			tranKey.setTranId(commonContext.getTraceId() + commonContext.getSpanId());
-			tranKey.setDatetime(Timestamp.valueOf(commonContext.getLjcomDateTime()));
-			tranKey.setSeq(i);
-			tranEntity.setTranEventKey(tranKey);
-			tranEntity.setCnt(splitStr.size());
-			tranEntity.setEventMsg(splitStr.get(i));
-			logger.info("******* TranEntity=" + tranEntity);
-			tranEventRepository.save(tranEntity);
+			EventCheckpointEntity tranEntity = new EventCheckpointEntity();
+
+			String evMsg = StringUtil.objectToJsonString(tranEvent);
+			List<String> splitStr = StringUtil.splitByLength(evMsg, TRAN_MESSAGE_MAX_SIZE);
+
+			for (int i = 0; i < splitStr.size(); i++) {
+				EventCheckpointEntityKey tranKey = new EventCheckpointEntityKey();
+				tranKey.setTranId(commonContext.getTraceId() + commonContext.getSpanId());
+				tranKey.setDatetime(Timestamp.valueOf(commonContext.getLjcomDateTime()));
+				tranKey.setSeq(i);
+				tranEntity.setTranEventKey(tranKey);
+				tranEntity.setCnt(splitStr.size());
+				tranEntity.setEventMsg(splitStr.get(i));
+				logger.info("******* TranEntity=" + tranEntity);
+				tranEventRepository.save(tranEntity);
+			}
 		}
 	}
 
@@ -169,14 +174,18 @@ public class PostCommitPersistentNotifier {
 		@Override
 		public void afterCommit() {
 			logger.info("*****************************************afterCommit() started.");
-			kafkaProducer.sendEventMessage(tranEvent);
+			if (tranEvent != null && tranEvent.getManagers().size() > 0) {
+				kafkaProducer.sendEventMessage(tranEvent);
+			}
 			try {
 				messageUtil.flush();
 			} catch (NamingException e) {
 
 				logger.error("Mq message send Exception occurred.", e);
 			}
-			monitor.endMonitor(commonContext.getTraceId() + commonContext.getSpanId());
+			if (tranEvent != null && tranEvent.getManagers().size() > 0) {
+				monitor.endMonitor(commonContext.getTraceId() + commonContext.getSpanId());
+			}
 
 			super.afterCommit();
 		}
@@ -223,7 +232,10 @@ public class PostCommitPersistentNotifier {
 		public void afterCompletion(int status) {
 			logger.info("afterCompletion() started. status=" + status);
 			// cep監視終了リクエスト
-			monitor.endMonitor(sepKey);
+			if (tranEvent != null && tranEvent.getManagers().size() > 0) {
+				monitor.endMonitor(sepKey);
+			}
+				
 			super.afterCompletion(status);
 		}
 	}

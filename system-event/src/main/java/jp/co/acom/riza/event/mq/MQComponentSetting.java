@@ -1,5 +1,6 @@
 package jp.co.acom.riza.event.mq;
 
+import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 
 import org.apache.camel.component.jms.JmsComponent;

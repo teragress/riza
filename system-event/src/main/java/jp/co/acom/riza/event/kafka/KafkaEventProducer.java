@@ -33,15 +33,15 @@ public class KafkaEventProducer {
 	/**
 	 * パーシステントイベントのKafka送信
 	 * 
-	 * @param flowEvent
+	 * @param tranEvent
 	 */
-	public void sendEventMessage(TranEvent flowEvent) {
+	public void sendEventMessage(TranEvent tranEvent) {
 		logger.debug("sendMessageEvent() started.");
 
-		for (Manager pManager : flowEvent.getManagers()) {
+		for (Manager pManager : tranEvent.getManagers()) {
 			for (Entity pEntity : pManager.getEntitys()) {
 				EntityEvent pEvent = new EntityEvent();
-				pEvent.setHeader(flowEvent.getHeader());
+				pEvent.setHeader(tranEvent.getHeader());
 				pEvent.setManager(pManager.getManager());
 				pEvent.setRevision(pManager.getRevison());
 				pEvent.setEntity(pEntity);

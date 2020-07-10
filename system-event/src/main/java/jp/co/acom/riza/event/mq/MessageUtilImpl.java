@@ -65,7 +65,7 @@ public class MessageUtilImpl {
 				ArrayList<String> list = entry.getValue();
 				String queName = entry.getKey();
 				for (String putMessage : list) {
-					producer.requestBody("mqm:queue" + queName, putMessage);
+					producer.sendBody("jms:queue:" + queName, putMessage);
 					logger.debug("producer.send()" + putMessage);
 				}
 			}

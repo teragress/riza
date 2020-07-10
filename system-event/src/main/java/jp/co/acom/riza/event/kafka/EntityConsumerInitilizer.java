@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import brave.Tracer;
 import brave.propagation.TraceContext;
+import jp.co.acom.riza.config.EventConstants;
 import jp.co.acom.riza.context.CommonContext;
 import jp.co.acom.riza.event.entity.TranExecCheckEntity;
 import jp.co.acom.riza.event.msg.EntityEvent;
@@ -72,6 +73,9 @@ public class EntityConsumerInitilizer implements Processor {
 		EntityEvent entityEvent = StringUtil.stringToEntityEventObject((String) exchange.getIn().getBody());
 		setCommonContext(exchange.getFromRouteId(), entityEvent);
 		insertTranExecChckEntity(commonContext.getReqeustId(), commonContext.getLjcomDateTime());
+		exchange.getOut().setBody(exchange.getIn().getBody());
+		exchange.getOut().setHeaders(exchange.getIn().getHeaders());
+		exchange.getOut().setHeader(EventConstants.EXCHANGE_HEADER_ENTITY_EVENT, entityEvent);
 	}
 
 	private void setCommonContext(String routeId, EntityEvent entityEvent) {
@@ -97,8 +101,7 @@ public class EntityConsumerInitilizer implements Processor {
 		execEntity.setDatetime(Timestamp.valueOf(commonContext.getLjcomDateTime()));
 		logger.info("execEntity=" + execEntity);
 
-		EntityManagerFactory factory = (EntityManagerFactory) applicationContext.getBean("systemEntityManagerFactory");
-		EntityManager em = factory.createEntityManager();
+		EntityManager em = (EntityManager) applicationContext.getBean("systemEntityManager");
 		if (em.find(TranExecCheckEntity.class, commonContext.getBusinessProcess()) != null) {
 			throw new DuplicateExecuteException(commonContext.getBusinessProcess());
 		}
