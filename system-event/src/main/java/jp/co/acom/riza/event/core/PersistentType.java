@@ -8,6 +8,7 @@ package jp.co.acom.riza.event.core;
 public enum PersistentType {
 	INSERT,
 	UPDATE,
-	DELETE
+	DELETE,
+	SELECT
 }
 

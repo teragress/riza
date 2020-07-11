@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.naming.NamingException;
+import javax.xml.soap.MessageFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -24,12 +25,15 @@ import jp.co.acom.riza.event.kafka.KafkaEventProducer;
 import jp.co.acom.riza.event.mq.MessageUtilImpl;
 import jp.co.acom.riza.event.msg.Header;
 import jp.co.acom.riza.event.msg.TranEvent;
+import jp.co.acom.riza.event.msg.AuditEntity;
+import jp.co.acom.riza.event.msg.AuditMessage;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.Manager;
 import jp.co.acom.riza.event.repository.TranEventEntityRepository;
 import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.system.CommonConstants;
 import jp.co.acom.riza.system.utils.log.Logger;
+import jp.co.acom.riza.system.utils.log.MessageFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -46,6 +50,10 @@ public class PostCommitPersistentNotifier {
 	 * エンティティマネージャー単位のホルダー
 	 */
 	private List<PersistentHolder> holders = new ArrayList<>();
+	/**
+	 * 監査メッセージホルダー
+	 */
+	private AuditMessage auditMessage = new AuditMessage();
 	/**
 	 * フローイベント
 	 */
@@ -174,6 +182,11 @@ public class PostCommitPersistentNotifier {
 		@Override
 		public void afterCommit() {
 			logger.info("*****************************************afterCommit() started.");
+			if (auditMessage.getAuditEntity().size() > 0	) {
+				auditMessage.setUser(commonContext.getUserId());
+				logger.info(MessageFormat.get("RIZA0001"),StringUtil.objectToJsonString(auditMessage));
+			}
+			
 			if (tranEvent != null && tranEvent.getManagers().size() > 0) {
 				kafkaProducer.sendEventMessage(tranEvent);
 			}

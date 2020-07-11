@@ -2,11 +2,8 @@ package jp.co.acom.riza.event.ita;
 
 import static org.junit.Assert.assertEquals;
 
-import org.hibernate.service.spi.InjectService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,8 +32,8 @@ public class EventTest001 {
 //	@MockBean(classes = KafkaTemplate.class)
 //	KafkaTemplate<String,String> template;
 	
-//	@MockBean
-//	CepMonitorService cepMonitorService;
+	@MockBean
+	CepMonitorService cepMonitorService;
 	
 	@Autowired
 	CustomerService customerService;

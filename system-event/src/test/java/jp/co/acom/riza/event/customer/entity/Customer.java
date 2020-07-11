@@ -8,9 +8,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.envers.Audited;
 
+import jp.co.acom.riza.system.object.annotation.ObjectAnnotation.AuditMessage;
+import jp.co.acom.riza.system.object.annotation.ObjectAnnotation.NoEvent;
+
 @Data
 @Entity
 @Audited
+@AuditMessage
+@NoEvent
 @EqualsAndHashCode(of = "id")
 public class Customer {
   @Id @GeneratedValue private Long id;

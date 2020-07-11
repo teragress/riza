@@ -6,9 +6,12 @@ import javax.persistence.Version;
 import lombok.Data;
 import org.hibernate.envers.Audited;
 
+import jp.co.acom.riza.system.object.annotation.ObjectAnnotation.AuditMessage;
+
 @Data
 @Entity
 @Audited
+@AuditMessage
 //@EqualsAndHashCode(of = "md")
 public class MultiKeyEntity {
   @EmbeddedId private MultiKey multiKey;
