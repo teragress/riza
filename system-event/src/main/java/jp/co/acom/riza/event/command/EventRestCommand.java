@@ -1,5 +1,10 @@
 package jp.co.acom.riza.event.command;
 
+import jp.co.acom.riza.event.command.parm.CheckpointCleanParm;
+import jp.co.acom.riza.event.command.parm.EventRecoveryParm;
+import jp.co.acom.riza.event.command.parm.ExecTableCreanParm;
+import jp.co.acom.riza.event.command.parm.KafkaRecoveryParm;
+import jp.co.acom.riza.event.command.parm.RouteParm;
 import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
@@ -25,6 +30,8 @@ public class EventRestCommand {
 	private static final String REQ_EVENT_RECOVERY_DATE_TIME = "/EventRecovery/DateTime";
 	private static final String REQ_EVENT_RECOVERY_KEYS = "/EventRecovery/keys";
 	private static final String REQ_KAFKA_RECOVERY_OFFSET = "/KafkaRecovery/Offset";
+	private static final String REQ_ROUTE_START = "/Route/Start";
+	private static final String REQ_ROUTE_STOP = "/Route/Stop";
 	
 
   @Autowired
@@ -38,6 +45,7 @@ public class EventRestCommand {
    */
   @RequestMapping(value = REQ_CHECK_POINT_CLEAN)
   public String cleanCheckpoint(@RequestBody CheckpointCleanParm parm) {
+	  outputStartMessage(REQ_CHECK_POINT_CLEAN, parm.toString());
 
 
     return null;
@@ -50,6 +58,7 @@ public class EventRestCommand {
    */
   @RequestMapping(value = REQ_EXEC_TABLE_CLEAN)
   public String cleanExecTable(@RequestBody ExecTableCreanParm parm) {
+	  outputStartMessage(REQ_EXEC_TABLE_CLEAN, parm.toString());
 
 
     return null;
@@ -63,6 +72,7 @@ public class EventRestCommand {
    */
   @RequestMapping(value = REQ_EVENT_RECOVERY_DATE_TIME)
   public String recoveryEventDateTime(@RequestBody EventRecoveryParm parm) {
+	  outputStartMessage(REQ_EVENT_RECOVERY_DATE_TIME, parm.toString());
 
 
     return null;
@@ -75,6 +85,7 @@ public class EventRestCommand {
    */
   @RequestMapping(value = REQ_EVENT_RECOVERY_KEYS)
   public String recoveryEventKeys(@RequestBody EventRecoveryParm parm) {
+	  outputStartMessage(REQ_EVENT_RECOVERY_KEYS, parm.toString());
 
 
     return null;
@@ -87,17 +98,52 @@ public class EventRestCommand {
    * @return
    */
   @RequestMapping(value = REQ_KAFKA_RECOVERY_OFFSET)
-  public String recoveryKafkaMessageOffset(@RequestBody EventRecoveryParm parm) {
-
+  public String recoveryKafkaMessageOffset(@RequestBody KafkaRecoveryParm parm) {
+	  outputStartMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
 
     return null;
   }
-  private void outputStartMessage(String cmd) {
-	  logger.info(MessageFormat.get(EventMessageId.EVENT_COMMAND_START));
+  /**
+   * 新規登録.
+   *
+   * @param customer 登録する情報
+   * @return
+   */
+  @RequestMapping(value = REQ_KAFKA_RECOVERY_OFFSET)
+  public String startRoute(@RequestBody KafkaRecoveryParm parm) {
+	  outputStartMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
 	  
+
+    return null;
+  }
+  
+  /**
+   * 新規登録.
+   *
+   * @param customer 登録する情報
+   * @return
+   */
+  @RequestMapping(value = REQ_ROUTE_START)
+  public String startRoute(@RequestBody RouteParm parm) {
+	  outputStartMessage(REQ_ROUTE_START, parm.toString());
 	  
+
+    return null;
+  }
+  /**
+   * 新規登録.
+   *
+   * @param customer 登録する情報
+   * @return
+   */
+  @RequestMapping(value = REQ_ROUTE_STOP)
+  public String stopRoute(@RequestBody RouteParm parm) {
+	  outputStartMessage(REQ_ROUTE_STOP, parm.toString());
 	  
-	  
-	  
+
+    return null;
+  }
+  private void outputStartMessage(String path,String parm) {
+	  logger.info(MessageFormat.get(EventMessageId.EVENT_COMMAND_START),path,parm);
   }
 }

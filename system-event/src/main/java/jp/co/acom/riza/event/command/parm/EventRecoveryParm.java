@@ -1,4 +1,4 @@
-package jp.co.acom.riza.event.command;
+package jp.co.acom.riza.event.command.parm;
 
 import java.time.LocalDateTime;
 

@@ -32,8 +32,8 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.util.concurrent.SuccessCallback;
 
 import jp.co.acom.riza.event.msg.Manager;
-import jp.co.acom.riza.event.command.ExecTableCreanParm;
-import jp.co.acom.riza.event.command.KafkaMessageInfo;
+import jp.co.acom.riza.event.command.parm.ExecTableCreanParm;
+import jp.co.acom.riza.event.command.parm.KafkaMessageInfo;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.event.msg.EntityEvent;
