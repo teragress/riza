@@ -1,4 +1,4 @@
-package jp.co.acom.riza.config;
+package jp.co.acom.riza.event.config;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;

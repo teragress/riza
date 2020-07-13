@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import jp.co.acom.riza.config.EventConstants;
+import jp.co.acom.riza.event.config.EventConstants;
 import jp.co.acom.riza.event.core.EntityType;
 import jp.co.acom.riza.event.msg.EntityEvent;
 import jp.co.acom.riza.event.utils.AuditEntityUtils;

@@ -1,4 +1,4 @@
-package jp.co.acom.riza.config;
+package jp.co.acom.riza.event.config;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

@@ -1,4 +1,4 @@
-package jp.co.acom.riza.config;
+package jp.co.acom.riza.event.config;
 
 /**
  * イベント用のコンスタント定義
@@ -6,7 +6,7 @@ package jp.co.acom.riza.config;
  * @author developer
  *
  */
-public class EventConstants {
+public interface EventConstants {
 	/**
 	 *　スレッドプールサイズプロパティ定義取得キー
 	 */

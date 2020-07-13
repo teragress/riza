@@ -7,7 +7,9 @@ import org.apache.camel.component.kafka.KafkaConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.system.utils.log.Logger;
+import jp.co.acom.riza.system.utils.log.MessageFormat;
 
 /**
  * ビジネス動的呼出しプロセス
@@ -47,11 +49,16 @@ public class DynamicExecuteProcess implements Processor {
 		for (String root : holder.getApplicationRoutes(group, topic)) {
 			logger.info("dynamic execute route=" + root + " group=" + group + " topic=" + topic + " body="
 					+ exchange.getIn().getBody());
-			;
 			try {
 				execute.executeRoute("direct:" + root, exchange);
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				logger.error(MessageFormat.get(EventMessageId.CONSUMER_ROUTE_EXCEPTION),
+						topic,
+						group,
+						exchange.getIn().getHeader(KafkaConstants.PARTITION),
+						exchange.getIn().getHeader(KafkaConstants.OFFSET));
+				logger.error(MessageFormat.get(EventMessageId.EXCEPTION_INFORMATION),ex);		
+						
 			}
 		}
 	}

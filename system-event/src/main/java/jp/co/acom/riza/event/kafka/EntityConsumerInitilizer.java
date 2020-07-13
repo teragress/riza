@@ -27,8 +27,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import brave.Tracer;
 import brave.propagation.TraceContext;
-import jp.co.acom.riza.config.EventConstants;
 import jp.co.acom.riza.context.CommonContext;
+import jp.co.acom.riza.event.config.EventConstants;
 import jp.co.acom.riza.event.entity.TranExecCheckEntity;
 import jp.co.acom.riza.event.msg.EntityEvent;
 import jp.co.acom.riza.event.repository.TranExecCheckEntityRepository;

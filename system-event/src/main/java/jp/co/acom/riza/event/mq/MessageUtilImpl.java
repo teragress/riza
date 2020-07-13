@@ -11,6 +11,7 @@ import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,9 @@ public class MessageUtilImpl {
 
 	@Autowired
 	CamelContext camelContext;
+	
+	@Autowired
+	Environment env;
 	/**
 	 * 
 	 */
@@ -60,6 +64,10 @@ public class MessageUtilImpl {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void flush() throws NamingException {
+		if (env.getProperty(MQConstants.MQ_MOCK,Boolean.class,false)) {
+			return;
+		}
+				
 		if (!messageMap.isEmpty()) {
 
 			ProducerTemplate producer = camelContext.createProducerTemplate();

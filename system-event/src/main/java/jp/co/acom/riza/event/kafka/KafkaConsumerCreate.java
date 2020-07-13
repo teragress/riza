@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import jp.co.acom.riza.config.EventConstants;
+
+import jp.co.acom.riza.event.config.EventConstants;
 import jp.co.acom.riza.system.utils.log.Logger;
 
 /**

@@ -3,9 +3,12 @@ package jp.co.acom.riza.event.kafka;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.camel.ProducerTemplate;
 import org.apache.kafka.common.header.Header;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -40,13 +43,24 @@ public class KafkaEventProducer {
 	ProducerTemplate producer;
 	@Autowired
 	KafkaTemplate<String, String> kafkaTemplate;
+	@Autowired
+	Environment env;
 
+	Boolean mock;
+	
+	@PostConstruct
+	public void initilize() {
+		mock = env.getProperty(KafkaConstants.KAFKA_MOCK,Boolean.class,false);
+	}
 	/**
 	 * パーシステントイベントのKafka送信
 	 * 
 	 * @param tranEvent
 	 */
 	public void sendEventMessage(TranEvent tranEvent) {
+		if (mock) {
+			return;
+		}
 		logger.debug("sendMessageEvent() started.");
 
 		for (Manager pManager : tranEvent.getManagers()) {

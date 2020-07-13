@@ -66,6 +66,11 @@ public class CepMonitorService {
 	 * REST要求用テンプレート
 	 */
 	private RestTemplate restTemplate;
+	
+	/**
+	 * テスト用のモック指定
+	 */
+	private Boolean mock;
 
 	/**
 	 * デフォルトのCEP URI
@@ -74,6 +79,12 @@ public class CepMonitorService {
 	
 	@PostConstruct
 	public void initialize() {
+		
+		mock = env.getProperty(CepConstants.CEP_MOCK,Boolean.class,false);
+		if (mock) {
+			return;
+		}
+		
 		String cepBaseUri = env.getProperty(CepConstants.CEP_BASE_URI, String.class, MONITOR_DEFAULT_CEP_URI);
 		try {
 
@@ -96,6 +107,9 @@ public class CepMonitorService {
 	 * @throws URISyntaxException
 	 */
 	public void startMonitor(String key, LocalDateTime dateTime) {
+		if (mock) {
+			return;
+		}
 		RizaCepEventStart eventStart = new RizaCepEventStart();
 		eventStart.setEntryKeyId(key);
 		ZonedDateTime zdt = dateTime.atZone(ZoneId.systemDefault());
@@ -115,6 +129,9 @@ public class CepMonitorService {
 	 * @throws URISyntaxException
 	 */
 	public void endMonitor(String key) {
+		if (mock) {
+			return;
+		}
 		RizaCepEventFinish eventEnd = new RizaCepEventFinish();
 		eventEnd.setEntryKeyId(key);
 		RequestEntity<RizaCepEventFinish> req = new RequestEntity<>(eventEnd, headers, HttpMethod.POST, endUri);

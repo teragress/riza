@@ -1,4 +1,4 @@
-package jp.co.acom.riza.config;
+package jp.co.acom.riza.event.config;
 
 import java.util.concurrent.ExecutorService;
 

@@ -55,5 +55,10 @@ public class MQConstants {
 	*/
 	public static final String MQ_CONNECTION_USER = "MQ_CONNECTION_USER";
 
+	/**
+	* MQモック指定
+	*/
+	public static final String MQ_MOCK = "MQ_MOCK";
+
 
 }

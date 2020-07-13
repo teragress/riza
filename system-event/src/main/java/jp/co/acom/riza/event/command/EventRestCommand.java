@@ -1,5 +1,6 @@
 package jp.co.acom.riza.event.command;
 
+import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
 
@@ -18,6 +19,13 @@ public class EventRestCommand {
 	 * ロガー
 	 */
 	private static Logger logger = Logger.getLogger(EventRestCommand.class);
+	
+	private static final String REQ_CHECK_POINT_CLEAN = "/CheckPointClean";
+	private static final String REQ_EXEC_TABLE_CLEAN = "/ExecTableClean";
+	private static final String REQ_EVENT_RECOVERY_DATE_TIME = "/EventRecovery/DateTime";
+	private static final String REQ_EVENT_RECOVERY_KEYS = "/EventRecovery/keys";
+	private static final String REQ_KAFKA_RECOVERY_OFFSET = "/KafkaRecovery/Offset";
+	
 
   @Autowired
   MessageFormat msg;
@@ -28,7 +36,7 @@ public class EventRestCommand {
    * @param customer 登録する情報
    * @return
    */
-  @RequestMapping("/CheckpointClean")
+  @RequestMapping(value = REQ_CHECK_POINT_CLEAN)
   public String cleanCheckpoint(@RequestBody CheckpointCleanParm parm) {
 
 
@@ -40,7 +48,7 @@ public class EventRestCommand {
    * @param customer 登録する情報
    * @return
    */
-  @RequestMapping("/ExecTableClean")
+  @RequestMapping(value = REQ_EXEC_TABLE_CLEAN)
   public String cleanExecTable(@RequestBody ExecTableCreanParm parm) {
 
 
@@ -53,7 +61,7 @@ public class EventRestCommand {
    * @param customer 登録する情報
    * @return
    */
-  @RequestMapping("/EventRecovery/DateTime")
+  @RequestMapping(value = REQ_EVENT_RECOVERY_DATE_TIME)
   public String recoveryEventDateTime(@RequestBody EventRecoveryParm parm) {
 
 
@@ -65,7 +73,7 @@ public class EventRestCommand {
    * @param customer 登録する情報
    * @return
    */
-  @RequestMapping("/EventRecovery/keys")
+  @RequestMapping(value = REQ_EVENT_RECOVERY_KEYS)
   public String recoveryEventKeys(@RequestBody EventRecoveryParm parm) {
 
 
@@ -78,24 +86,18 @@ public class EventRestCommand {
    * @param customer 登録する情報
    * @return
    */
-  @RequestMapping("/KafkaRecovery/Offset")
+  @RequestMapping(value = REQ_KAFKA_RECOVERY_OFFSET)
   public String recoveryKafkaMessageOffset(@RequestBody EventRecoveryParm parm) {
 
 
     return null;
   }
-  
-  /**
-   * 新規登録.
-   *
-   * @param customer 登録する情報
-   * @return
-   */
-  @RequestMapping("/KafkaRecovery/Time")
-  public String recoveryKafkaMessageTime(@RequestBody EventRecoveryParm parm) {
-
-
-    return null;
+  private void outputStartMessage(String cmd) {
+	  logger.info(MessageFormat.get(EventMessageId.EVENT_COMMAND_START));
+	  
+	  
+	  
+	  
+	  
   }
-
 }

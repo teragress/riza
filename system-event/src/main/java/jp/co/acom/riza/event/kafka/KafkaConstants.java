@@ -96,5 +96,14 @@ public class KafkaConstants {
 	 * デフォルトのAcks
 	 */
 	public static final String KAFKA_DEFAULT_REQUIRED_ACKS = "2";
-
+	
+	/**
+	 * KAFKAリカバリーコマンドのコンシューマグループ
+	 */
+	public static final String KAFKA_RECOVERY_COMMAND_CONSUMER_GROUP = "KAFKA_RECOVERY_COMMAND_CONSUMER";
+	
+	/**
+	 * KAFKA機能のモック指定キー
+	 */
+	public static final String KAFKA_MOCK = "KAFKA_MOCK";
 }
