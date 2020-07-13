@@ -29,7 +29,7 @@ import jp.co.acom.riza.event.msg.AuditEntity;
 import jp.co.acom.riza.event.msg.AuditMessage;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.Manager;
-import jp.co.acom.riza.event.repository.TranEventEntityRepository;
+import jp.co.acom.riza.event.repository.EventCheckPointEntityRepository;
 import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.system.CommonConstants;
 import jp.co.acom.riza.system.utils.log.Logger;
@@ -65,7 +65,7 @@ public class PostCommitPersistentNotifier {
 	private CommonContext commonContext;
 
 	@Autowired
-	private TranEventEntityRepository tranEventRepository;
+	private EventCheckPointEntityRepository tranEventRepository;
 
 	@Autowired
 	private CepMonitorService monitor;
@@ -78,6 +78,9 @@ public class PostCommitPersistentNotifier {
 
 	@Autowired
 	PostCommitPersistentNotifier eventNotifier;
+	
+	@Autowired
+	MessageUtilImpl msgUtil;
 
 	private String sepKey;
 
@@ -112,6 +115,8 @@ public class PostCommitPersistentNotifier {
 		eventHeader.setReqeustId(commonContext.getReqeustId());
 		eventHeader.setUserId(commonContext.getUserId());
 		tranEvent.setHeader(eventHeader);
+		
+		tranEvent.setMqCount(msgUtil.getMessageCount());
 
 		List<Manager> managerList = new ArrayList<Manager>();
 		for (PersistentHolder holder : holders) {

@@ -35,6 +35,13 @@ public class TranEvent {
 	private String businessProcess;
 	
 	/**
+	 * MQPUTメッセージ数
+	 */
+	@JsonDeserialize(contentAs = Integer.class)
+	@JsonProperty("mq")
+	private Integer mqCount;
+	
+	/**
 	 * エンティティマネージャー単位の更新情報リスト
 	 */
 	@JsonTypeInfo(use = Id.CLASS)

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** 処理を開始するための REST を受け付ける. */
 @RestController
-@RequestMapping(path = "rest/event", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "event/command", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
 public class EventRestCommand {
 	/**
 	 * ロガー
@@ -28,8 +28,20 @@ public class EventRestCommand {
    * @param customer 登録する情報
    * @return
    */
-  @RequestMapping("/eventClean")
-  public String cleanEventTalbe(@RequestBody RecoveryCommand command) {
+  @RequestMapping("/CheckpointClean")
+  public String cleanCheckpoint(@RequestBody CheckpointCleanParm parm) {
+
+
+    return null;
+  }
+  /**
+   * 新規登録.
+   *
+   * @param customer 登録する情報
+   * @return
+   */
+  @RequestMapping("/ExecTableClean")
+  public String cleanExecTable(@RequestBody ExecTableCreanParm parm) {
 
 
     return null;
@@ -41,8 +53,46 @@ public class EventRestCommand {
    * @param customer 登録する情報
    * @return
    */
-  @RequestMapping("/eventRecovery")
-  public String cleanEventTαalbe(@RequestBody CreanCommand customer) {
+  @RequestMapping("/EventRecovery/DateTime")
+  public String recoveryEventDateTime(@RequestBody EventRecoveryParm parm) {
+
+
+    return null;
+  }
+  /**
+   * 新規登録.
+   *
+   * @param customer 登録する情報
+   * @return
+   */
+  @RequestMapping("/EventRecovery/keys")
+  public String recoveryEventKeys(@RequestBody EventRecoveryParm parm) {
+
+
+    return null;
+  }
+  
+  /**
+   * 新規登録.
+   *
+   * @param customer 登録する情報
+   * @return
+   */
+  @RequestMapping("/KafkaRecovery/Offset")
+  public String recoveryKafkaMessageOffset(@RequestBody EventRecoveryParm parm) {
+
+
+    return null;
+  }
+  
+  /**
+   * 新規登録.
+   *
+   * @param customer 登録する情報
+   * @return
+   */
+  @RequestMapping("/KafkaRecovery/Time")
+  public String recoveryKafkaMessageTime(@RequestBody EventRecoveryParm parm) {
 
 
     return null;

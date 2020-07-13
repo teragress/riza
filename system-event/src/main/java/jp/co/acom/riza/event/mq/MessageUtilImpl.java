@@ -51,6 +51,9 @@ public class MessageUtilImpl {
 		topicMessage.add(message);
 	}
 
+	public int getMessageCount() {
+		return messageMap.keySet().size();
+	}
 	/**
 	 * キャッシュされたメツセージを全て取り出し送信する。
 	 * @throws NamingException

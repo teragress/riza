@@ -1,11 +1,22 @@
 package jp.co.acom.riza.event.kafka;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.camel.ProducerTemplate;
+import org.apache.kafka.common.header.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.FailureCallback;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
+import org.springframework.util.concurrent.SuccessCallback;
 
 import jp.co.acom.riza.event.msg.Manager;
+import jp.co.acom.riza.event.command.ExecTableCreanParm;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.event.msg.EntityEvent;
@@ -49,7 +60,22 @@ public class KafkaEventProducer {
 						+ pEntity.getEntity().substring((pEntity.getEntity().lastIndexOf('.') + 1));
 				String entityMessage = StringUtil.objectToJsonString(pEvent);
 				logger.debug("kafka-entity-send topic=" + entityTopic + " message=" + entityMessage);
-				kafkaTemplate.send(entityTopic, entityMessage);
+
+				// kafkaTemplate.send(entityTopic, entityMessage);
+//				ListenableFuture<SendResult<String, String>> sendResultList =  kafkaTemplate.send(entityTopic, entityMessage);
+				ListenableFuture<SendResult<String, String>> sendResultList = kafkaTemplate.send(entityTopic,
+						entityMessage);
+				// .get(10L,TimeUnit.SECONDS);
+				try {
+					System.out.println(
+							"************************** kafka producer result ************************************");
+					System.out.println("********partation=" + sendResultList.get().getRecordMetadata().partition());
+					System.out.println("********offset=" + sendResultList.get().getRecordMetadata().offset());
+				} catch (InterruptedException | ExecutionException e) {
+					// TODO 自動生成された catch ブロック
+					e.printStackTrace();
+				}
+		
 			}
 		}
 	}

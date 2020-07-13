@@ -1,4 +1,4 @@
-package jp.co.acom.riza.cep.event;
+package old.jp.co.acom.riza.cep.event;
 
 import lombok.Data;
 

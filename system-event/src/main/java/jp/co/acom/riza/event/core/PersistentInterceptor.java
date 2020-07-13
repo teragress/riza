@@ -12,6 +12,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import jp.co.acom.riza.event.core.PersistentHolder.AuditStatus;
 import jp.co.acom.riza.event.msg.AuditEntity;
 import jp.co.acom.riza.system.object.annotation.ObjectAnnotation.AuditMessage;
+import jp.co.acom.riza.system.object.annotation.ObjectAnnotation.NoEvent;
 import jp.co.acom.riza.system.utils.log.Logger;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,6 +34,7 @@ public class PersistentInterceptor extends EmptyInterceptor {
 	/**
 	 * エンティティ格納パッケージ
 	 */
+	// 特定のパッケージ以下のもので、@RevisionEntity が付与されてい
 	private String entityPackage = "";
 	/**
 	 * イベント通知
@@ -86,14 +88,14 @@ public class PersistentInterceptor extends EmptyInterceptor {
 	 */
 	private void notifyEvent(Object entity, Serializable id, PersistentType persistentType) {
 		logger.debug("notifyEvent() started. entity=" + entity);
+		if (isCardObject(entity)) {
+			AuditEntity auditEntity = new AuditEntity();
+			auditEntity.setType(persistentType);
+			auditEntity.setEntity(entity.getClass().getSimpleName());
+			auditEntity.setKey(id);
+			postNotifier.getAuditMessage().getAuditEntity().add(auditEntity);
+		}
 		if (isTargetEvent(entity)) {
-			if (isCardObject(entity)) {
-				AuditEntity cardEntity = new AuditEntity();
-				cardEntity.setType(persistentType);
-				cardEntity.setEntity(entity.getClass().getSimpleName());
-				cardEntity.setKey(id);
-				postNotifier.getAuditMessage().getAuditEntity().add(cardEntity);
-			}
 			if (persistentType != PersistentType.SELECT) {
 				EntityPersistent event = new EntityPersistent(persistentType, getEntityType(entity), entity, id);
 				event.setEntityId(id);
@@ -132,7 +134,8 @@ public class PersistentInterceptor extends EmptyInterceptor {
 		// 特定のパッケージ以下のもので、@RevisionEntity が付与されていないものが対象
 		// （@RevisionEntity があるクラスは、リビジョンテーブル用）
 		return entityClass.getPackage().getName().startsWith(entityPackage)
-				&& AnnotationUtils.findAnnotation(entityClass, RevisionEntity.class) == null;
+				&& AnnotationUtils.findAnnotation(entityClass, RevisionEntity.class) == null
+				&& AnnotationUtils.findAnnotation(entityClass, NoEvent.class) == null;
 	}
 	
 	/**

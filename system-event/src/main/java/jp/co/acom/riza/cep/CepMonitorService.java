@@ -3,6 +3,8 @@ package jp.co.acom.riza.cep;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
@@ -19,9 +21,9 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import jp.co.acom.riza.cep.event.RizaCepEventFinish;
-import jp.co.acom.riza.cep.event.RizaCepEventResponse;
-import jp.co.acom.riza.cep.event.RizaCepEventStart;
+import jp.co.acom.riza.cep.data.RizaCepEventFinish;
+import jp.co.acom.riza.cep.data.RizaCepEventResponse;
+import jp.co.acom.riza.cep.data.RizaCepEventStart;
 import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
@@ -96,7 +98,9 @@ public class CepMonitorService {
 	public void startMonitor(String key, LocalDateTime dateTime) {
 		RizaCepEventStart eventStart = new RizaCepEventStart();
 		eventStart.setEntryKeyId(key);
-		eventStart.setEventDateTime(dateTime);
+		ZonedDateTime zdt = dateTime.atZone(ZoneId.systemDefault());
+		Date date = Date.from(zdt.toInstant());		
+		eventStart.setEventDate(date);
 		eventStart.setExpireLimit(expireLimit);
 		RequestEntity<RizaCepEventStart> req = new RequestEntity<>(eventStart, headers, HttpMethod.POST, startUri);
 		ResponseEntity<RizaCepEventResponse> rsp = restTemplate.exchange(req, RizaCepEventResponse.class);
