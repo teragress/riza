@@ -9,6 +9,5 @@ import lombok.Data;
 
 @Data
 public class KafkaRecoveryParm {
-	@JsonDeserialize(contentAs = ArrayList.class)
-	List<KafkaMessageInfo> msgInfo;
+	List<KafkaMessageInfo> msgInfo = new ArrayList<KafkaMessageInfo>();
 }
