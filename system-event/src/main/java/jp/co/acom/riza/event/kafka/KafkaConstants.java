@@ -100,7 +100,7 @@ public class KafkaConstants {
 	/**
 	 * KAFKAリカバリーコマンドのコンシューマグループ
 	 */
-	public static final String KAFKA_RECOVERY_COMMAND_CONSUMER_GROUP = "KAFKA_RECOVERY_COMMAND_CONSUMER";
+	public static final String KAFKA_RECOVERY_COMMAND_CONSUMER_GROUP = "REST_COMMAND_CONSUMER_";
 	
 	/**
 	 * KAFKA機能のモック指定キー

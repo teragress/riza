@@ -65,7 +65,8 @@ public class KafkaCommandUtil {
 
 		putPropertie(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		putPropertie(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-		//putPropertie(ConsumerConfig.GROUP_ID_CONFIG, KafkaConstants.KAFKA_RECOVERY_COMMAND_CONSUMER_GROUP);
+		putPropertie(ConsumerConfig.GROUP_ID_CONFIG,
+				KafkaConstants.KAFKA_RECOVERY_COMMAND_CONSUMER_GROUP + env.getProperty("HOSTNAME"));
 	}
 
 	private void putPropertie(String key, Object value) {
@@ -89,19 +90,7 @@ public class KafkaCommandUtil {
 		try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
 
 			for (KafkaMessageInfo msgInfo : msgInfoList) {
-				TopicPartition topicPartition = new TopicPartition(msgInfo.getTopic(),
-						msgInfo.getPartition().intValue());
-				Collection<TopicPartition> col = new ArrayList<TopicPartition>();
-				col.add(topicPartition);
-				consumer.assign(col);
-				consumer.seek(topicPartition, msgInfo.getOffset());
-				ConsumerRecords<String, String> conRecs = consumer.poll(Duration.ofMillis(1000));
-				ConsumerRecord<String, String> conrec = conRecs.iterator().next();
-				if (conrec == null) {
-					logger.error(MessageFormat.get("REV0001E"), msgInfo.getTopic(), msgInfo.getPartition(),
-							msgInfo.getOffset());
-					throw new EventCommandException(msgInfo.toString());
-				}
+				ConsumerRecord<String, String> conrec = getKafkaMessage(msgInfo);
 				ListenableFuture<SendResult<String, String>> sendResultList = kafkaTemplate.send(msgInfo.getTopic(),
 						conrec.value());
 				KafkaMessageInfo rtnInf = new KafkaMessageInfo();
@@ -118,12 +107,16 @@ public class KafkaCommandUtil {
 	 * 
 	 * @param tranEvent
 	 */
-	public ConsumerRecord<String, String> getKafkaMessage(KafkaMessageInfo msgInfo) {
+	public synchronized ConsumerRecord<String, String> getKafkaMessage(KafkaMessageInfo msgInfo) {
 		logger.debug("getKafkaMessage() started.");
 		ConsumerRecord<String, String> conrec;
 		try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
 
-			TopicPartition topicPartition = new TopicPartition(msgInfo.getTopic(), msgInfo.getPartition());
+			TopicPartition topicPartition = new TopicPartition(msgInfo.getTopic(),
+					msgInfo.getPartition().intValue());
+			Collection<TopicPartition> col = new ArrayList<TopicPartition>();
+			col.add(topicPartition);
+			consumer.assign(col);
 			consumer.seek(topicPartition, msgInfo.getOffset());
 			ConsumerRecords<String, String> conRecs = consumer.poll(Duration.ofMillis(1000));
 			conrec = conRecs.iterator().next();
@@ -135,7 +128,7 @@ public class KafkaCommandUtil {
 		}
 		return conrec;
 	}
-
+	
 	/**
 	 * 
 	 * @param tranEvent

@@ -57,7 +57,7 @@ public class DynamicExecuteProcess implements Processor {
 						group,
 						exchange.getIn().getHeader(KafkaConstants.PARTITION),
 						exchange.getIn().getHeader(KafkaConstants.OFFSET));
-				logger.error(MessageFormat.get(EventMessageId.EXCEPTION_INFORMATION),ex);		
+				logger.error("",ex);		
 						
 			}
 		}

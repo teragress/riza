@@ -140,8 +140,9 @@ public class EventRestCommand {
 		List<KafkaMessageInfo> rspInfo;
 		EventCommandResponse resp = new EventCommandResponse();
 		resp.setRc(EventCommandResponse.RC.OK);
-		try {		EventCommandResponse resp = new EventCommandResponse();
-		resp.setRc(EventCommandResponse.RC.OK);
+		try {
+			resp = new EventCommandResponse();
+			resp.setRc(EventCommandResponse.RC.OK);
 			rspInfo = kafkaUtil.recoveryKafkaMessages(parm.getMsgInfo());
 			logger.info(MessageFormat.get(EventMessageId.KAFKA_MESSAGE_RECOVERY),
 					StringUtil.objectToJsonString(rspInfo));
@@ -157,13 +158,12 @@ public class EventRestCommand {
 		return resp;
 	}
 
-	/**			// TODO 自動生成された catch ブロック
-			resp.setRc(EventCommandResponse.RC.NG);
-			resp.setMsg(e.getLocalizedMessage());
-	 * ルート開始
+	/**
+	 * // TODO 自動生成された catch ブロック resp.setRc(EventCommandResponse.RC.NG);
+	 * resp.setMsg(e.getLocalizedMessage()); ルート開始
 	 * 
-	 * @param parm		EventCommandResponse resp = new EventCommandResponse();
-		resp.setRc(EventCommandResponse.RC.OK);
+	 * @param parm EventCommandResponse resp = new EventCommandResponse();
+	 *             resp.setRc(EventCommandResponse.RC.OK);
 	 * @return
 	 */
 	@RequestMapping(path = REQ_ROUTE_START)
@@ -178,7 +178,7 @@ public class EventRestCommand {
 			resp.setRc(EventCommandResponse.RC.NG);
 			resp.setMsg(ex.getLocalizedMessage());
 		}
-		
+
 		resp.setRc(EventCommandResponse.RC.OK);
 		resp.setMsg(RSP_NORMAL_END);
 
