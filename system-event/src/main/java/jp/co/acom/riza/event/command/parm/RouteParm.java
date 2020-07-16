@@ -5,5 +5,4 @@ import lombok.Data;
 @Data
 public class RouteParm {
 	private String routeId;
-	private String url;
 }

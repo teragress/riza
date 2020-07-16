@@ -65,7 +65,7 @@ public class KafkaCommandUtil {
 
 		putPropertie(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		putPropertie(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-		putPropertie(ConsumerConfig.GROUP_ID_CONFIG, KafkaConstants.KAFKA_RECOVERY_COMMAND_CONSUMER_GROUP);
+		//putPropertie(ConsumerConfig.GROUP_ID_CONFIG, KafkaConstants.KAFKA_RECOVERY_COMMAND_CONSUMER_GROUP);
 	}
 
 	private void putPropertie(String key, Object value) {
@@ -108,6 +108,7 @@ public class KafkaCommandUtil {
 				rtnInf.setPartition(sendResultList.get().getRecordMetadata().partition());
 				rtnInf.setOffset(sendResultList.get().getRecordMetadata().offset());
 				rtnInf.setTopic(msgInfo.getTopic());
+				respList.add(rtnInf);
 			}
 		}
 		return respList;

@@ -75,22 +75,26 @@ public class KafkaEventProducer {
 				String entityMessage = StringUtil.objectToJsonString(pEvent);
 				logger.debug("kafka-entity-send topic=" + entityTopic + " message=" + entityMessage);
 
-				// kafkaTemplate.send(entityTopic, entityMessage);
-//				ListenableFuture<SendResult<String, String>> sendResultList =  kafkaTemplate.send(entityTopic, entityMessage);
-				ListenableFuture<SendResult<String, String>> sendResultList = kafkaTemplate.send(entityTopic,
-						entityMessage);
-				// .get(10L,TimeUnit.SECONDS);
-				try {
-					System.out.println(
-							"************************** kafka producer result ************************************");
-					System.out.println("********partation=" + sendResultList.get().getRecordMetadata().partition());
-					System.out.println("********offset=" + sendResultList.get().getRecordMetadata().offset());
-				} catch (InterruptedException | ExecutionException e) {
-					// TODO 自動生成された catch ブロック
-					e.printStackTrace();
-				}
+				send(entityTopic, entityMessage); 
+//				if (true) return;
+////				ListenableFuture<SendResult<String, String>> sendResultList =  kafkaTemplate.send(entityTopic, entityMessage);
+//				ListenableFuture<SendResult<String, String>> sendResultList = kafkaTemplate.send(entityTopic,
+//						entityMessage);
+//				// .get(10L,TimeUnit.SECONDS);
+//				try {
+//					System.out.println(
+//							"************************** kafka producer result ************************************");
+//					System.out.println("********partation=" + sendResultList.get().getRecordMetadata().partition());
+//					System.out.println("********offset=" + sendResultList.get().getRecordMetadata().offset());
+//				} catch (InterruptedException | ExecutionException e) {
+//					// TODO 自動生成された catch ブロック
+//					e.printStackTrace();
+//				}
 		
 			}
 		}
+	}
+	public ListenableFuture<SendResult<String, String>> send(String topic,String message) {
+		return kafkaTemplate.send(topic,message);
 	}
 }

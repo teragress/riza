@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.concurrent.ListenableFuture;
 
+import static org.junit.Assert.assertTrue;
 //import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -29,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.co.acom.riza.event.command.parm.KafkaMessageInfo;
 import jp.co.acom.riza.event.command.parm.KafkaRecoveryParm;
 import jp.co.acom.riza.event.kafka.KafkaCommandUtil;
+import jp.co.acom.riza.system.utils.log.LogAssertAppender;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -63,7 +65,8 @@ public class CommandTest001 {
 	public void case001_StartEventNormalTest() throws Exception {
 
 		mockMvc.getDispatcherServlet().log("+++++ Test case 001 : new entry ++++++");
-
+		LogAssertAppender.clear();
+		
 		KafkaRecoveryParm parm = new KafkaRecoveryParm();
 
 		parm.getMsgInfo().add(sendKafkaTestData("testTopic01","test message001"));
@@ -72,6 +75,10 @@ public class CommandTest001 {
 		mockMvc.perform(MockMvcRequestBuilders.put("/event/command/KafkaRecovery/Offset")
 				.contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsString(parm)))
 				.andExpect(status().isOk()).andExpect(jsonPath("rc").value("OK"));
+		assertTrue(LogAssertAppender.assertString(".*RIZE0001I イベントコマンドが開始されました。.*"));
+		assertTrue(LogAssertAppender.assertString(".*RIZAE006I KAFKAメッセージをリカバリー.*topic.*testTopic01.*offset.*partition.*topic.*testTopic01.*offset.*partition.*"));
+		assertTrue(LogAssertAppender.assertString(".*RIZE0002I イベントコマンドが終了しました。.*"));
+		LogAssertAppender.clear();
 
 	}
 	private KafkaMessageInfo sendKafkaTestData(String topic,String message) {
