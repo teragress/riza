@@ -21,9 +21,9 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import jp.co.acom.riza.cep.data.RizaCepEventFinish;
 import jp.co.acom.riza.cep.data.RizaCepEventResponse;
-import jp.co.acom.riza.cep.data.RizaCepEventStart;
+import jp.co.acom.riza.cep.event.RizaCepEventFinish;
+import jp.co.acom.riza.cep.event.RizaCepEventStart;
 import jp.co.acom.riza.system.utils.log.Logger;
 
 /**

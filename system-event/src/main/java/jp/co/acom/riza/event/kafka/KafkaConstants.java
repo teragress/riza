@@ -61,6 +61,18 @@ public class KafkaConstants {
 	 */
 	public static final String KAFKA_FILE_EVENT_TOPIC = "FileEventTopic";
 	/**
+	 * 帳票出力用トピック名
+	 */
+	public static final String KAFKA_REPORT_TOPIC = "ReportOutput";
+	/**
+	 * 帳票出力用コンシューマカウント数
+	 */
+	public static final int KAFKA_REPORT_CONSUMER_COUNT = 1;
+	/**
+	 * 帳票出力用コンシューマグループ名
+	 */
+	public static final String KAFKA_REPORT_TOPIC_GROUP = "ReportOutputGroup";
+	/**
 	 * ファイル受信イベントのコンシューマグループ名
 	 */
 	public static final String KAFKA_FILE_EVENT_GROUP = "FileEventGroup";

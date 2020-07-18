@@ -1,12 +1,12 @@
-package jp.co.acom.riza.event.command;
+package jp.co.acom.riza.event.cmd;
 
-import jp.co.acom.riza.event.command.parm.CheckpointCleanParm;
-import jp.co.acom.riza.event.command.parm.EventCommandResponse;
-import jp.co.acom.riza.event.command.parm.EventRecoveryParm;
-import jp.co.acom.riza.event.command.parm.ExecTableCreanParm;
-import jp.co.acom.riza.event.command.parm.KafkaMessageInfo;
-import jp.co.acom.riza.event.command.parm.KafkaRecoveryParm;
-import jp.co.acom.riza.event.command.parm.RouteParm;
+import jp.co.acom.riza.event.cmd.parm.CheckpointCleanParm;
+import jp.co.acom.riza.event.cmd.parm.EventCommandResponse;
+import jp.co.acom.riza.event.cmd.parm.EventRecoveryParm;
+import jp.co.acom.riza.event.cmd.parm.ExecTableCreanParm;
+import jp.co.acom.riza.event.cmd.parm.KafkaMessageInfo;
+import jp.co.acom.riza.event.cmd.parm.KafkaRecoveryParm;
+import jp.co.acom.riza.event.cmd.parm.RouteParm;
 import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.event.kafka.KafkaCommandUtil;
 import jp.co.acom.riza.event.utils.StringUtil;
@@ -26,6 +26,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /** 処理を開始するための REST を受け付ける. */
+/**
+ * @author vagrant
+ *
+ */
 @RestController
 @RequestMapping(path = "event/command", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
 public class EventRestCommand {
@@ -66,12 +70,9 @@ public class EventRestCommand {
 	public EventCommandResponse cleanCheckpoint(@RequestBody CheckpointCleanParm parm) {
 		outputStartMessage(REQ_CHECK_POINT_CLEAN, parm.toString());
 
-		EventCommandResponse resp = new EventCommandResponse();
-		resp.setRc(EventCommandResponse.RC.OK);
-		resp.setMsg(RSP_NORMAL_END);
 
-		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, resp.toString());
-		return resp;
+		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
+		return createNormalResponse(null);
 	}
 
 	/**
@@ -84,12 +85,8 @@ public class EventRestCommand {
 	public EventCommandResponse cleanExecTable(@RequestBody ExecTableCreanParm parm) {
 		outputStartMessage(REQ_EXEC_TABLE_CLEAN, parm.toString());
 
-		EventCommandResponse resp = new EventCommandResponse();
-		resp.setRc(EventCommandResponse.RC.OK);
-		resp.setMsg(RSP_NORMAL_END);
-
-		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, resp.toString());
-		return resp;
+		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
+		return createNormalResponse(null);
 	}
 
 	/**
@@ -102,12 +99,8 @@ public class EventRestCommand {
 	public EventCommandResponse recoveryEventDateTime(@RequestBody EventRecoveryParm parm) {
 		outputStartMessage(REQ_EVENT_RECOVERY_DATE_TIME, parm.toString());
 
-		EventCommandResponse resp = new EventCommandResponse();
-		resp.setRc(EventCommandResponse.RC.OK);
-		resp.setMsg(RSP_NORMAL_END);
-
-		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, resp.toString());
-		return resp;
+		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
+		return createNormalResponse(null);
 	}
 
 	/**
@@ -120,12 +113,8 @@ public class EventRestCommand {
 	public EventCommandResponse recoveryEventKeys(@RequestBody EventRecoveryParm parm) {
 		outputStartMessage(REQ_EVENT_RECOVERY_KEYS, parm.toString());
 
-		EventCommandResponse resp = new EventCommandResponse();
-		resp.setRc(EventCommandResponse.RC.OK);
-		resp.setMsg(RSP_NORMAL_END);
-
-		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, resp.toString());
-		return resp;
+		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
+		return createNormalResponse(null);
 	}
 
 	/**
@@ -137,53 +126,40 @@ public class EventRestCommand {
 	@RequestMapping(path = REQ_KAFKA_RECOVERY_OFFSET)
 	public EventCommandResponse recoveryKafkaMessageOffset(@RequestBody KafkaRecoveryParm parm) {
 		outputStartMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
+		
 		List<KafkaMessageInfo> rspInfo;
-		EventCommandResponse resp = new EventCommandResponse();
-		resp.setRc(EventCommandResponse.RC.OK);
+
 		try {
-			resp = new EventCommandResponse();
-			resp.setRc(EventCommandResponse.RC.OK);
 			rspInfo = kafkaUtil.recoveryKafkaMessages(parm.getMsgInfo());
 			logger.info(MessageFormat.get(EventMessageId.KAFKA_MESSAGE_RECOVERY),
 					StringUtil.objectToJsonString(rspInfo));
-		} catch (InterruptedException | ExecutionException e) {
-			// TODO 自動生成された catch ブロック
-			resp.setRc(EventCommandResponse.RC.NG);
-			resp.setMsg(e.getLocalizedMessage());
+		} catch (InterruptedException | ExecutionException ex) {
+			return exceptionProc(ex, REQ_KAFKA_RECOVERY_OFFSET, parm);
 		}
 
-		resp.setMsg(RSP_NORMAL_END);
-		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, resp.toString());
-
-		return resp;
+		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
+		
+		return createNormalResponse(null);
 	}
 
 	/**
-	 * // TODO 自動生成された catch ブロック resp.setRc(EventCommandResponse.RC.NG);
-	 * resp.setMsg(e.getLocalizedMessage()); ルート開始
+	 * ルート開始
 	 * 
-	 * @param parm EventCommandResponse resp = new EventCommandResponse();
-	 *             resp.setRc(EventCommandResponse.RC.OK);
+	 * @param parm
 	 * @return
 	 */
 	@RequestMapping(path = REQ_ROUTE_START)
 	public EventCommandResponse startRoute(@RequestBody RouteParm parm) {
 		outputStartMessage(REQ_ROUTE_START, parm.toString());
-		EventCommandResponse resp = new EventCommandResponse();
-		resp.setRc(EventCommandResponse.RC.OK);
+
 		try {
 			camelContext.startRoute(parm.getRouteId());
 		} catch (Exception ex) {
-			// TODO 自動生成された catch ブロック
-			resp.setRc(EventCommandResponse.RC.NG);
-			resp.setMsg(ex.getLocalizedMessage());
+			return exceptionProc(ex, REQ_ROUTE_START, parm);
 		}
 
-		resp.setRc(EventCommandResponse.RC.OK);
-		resp.setMsg(RSP_NORMAL_END);
-
-		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, resp.toString());
-		return resp;
+		outputEndMessage(REQ_ROUTE_START, parm.toString());
+		return createNormalResponse(null);
 	}
 
 	/**
@@ -196,12 +172,14 @@ public class EventRestCommand {
 	public EventCommandResponse stopRoute(@RequestBody RouteParm parm) {
 		outputStartMessage(REQ_ROUTE_STOP, parm.toString());
 
-		EventCommandResponse resp = new EventCommandResponse();
-		resp.setRc(EventCommandResponse.RC.OK);
-		resp.setMsg(RSP_NORMAL_END);
+		try {
+			camelContext.stopRoute(parm.getRouteId());
+		} catch (Exception ex) {
+			return exceptionProc(ex, REQ_ROUTE_STOP, parm);
+		}
 
-		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, resp.toString());
-		return resp;
+		outputEndMessage(REQ_ROUTE_STOP, parm.toString());
+		return createNormalResponse(null);
 	}
 
 	/**
@@ -222,5 +200,39 @@ public class EventRestCommand {
 	 */
 	private void outputEndMessage(String path, String parm) {
 		logger.info(MessageFormat.get(EventMessageId.EVENT_COMMAND_END), REQ_PREFIX_PATH + path, parm);
+	}
+
+	/**
+	 * 例外共通処理
+	 * 
+	 * @param ex
+	 * @param cmdPath
+	 * @param parm
+	 * @return
+	 */
+	private EventCommandResponse exceptionProc(Exception ex, String cmdPath, Object parm) {
+		logger.error(MessageFormat.get(EventMessageId.COMMAND_EXCEPTION), REQ_PREFIX_PATH + cmdPath, parm.toString(),
+				ex.getMessage());
+		logger.error(MessageFormat.get(EventMessageId.EXCEPTION_INFORMATION), ex);
+
+		EventCommandResponse resp = new EventCommandResponse();
+		resp.setRc(EventCommandResponse.RC.NG);
+		resp.setMsg(ex.getMessage());
+		return resp;
+	}
+	
+	/**
+	 * @param addMessage
+	 * @return
+	 */
+	private EventCommandResponse createNormalResponse(String addMessage) {
+		EventCommandResponse resp = new EventCommandResponse();
+		resp.setRc(EventCommandResponse.RC.OK);
+		if (addMessage == null || addMessage.length() == 0) {
+			resp.setMsg(RSP_NORMAL_END);
+		} else {
+			resp.setMsg(addMessage);
+		}
+		return resp;
 	}
 }

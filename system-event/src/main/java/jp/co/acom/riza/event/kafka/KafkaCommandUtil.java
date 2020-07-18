@@ -23,7 +23,7 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import jp.co.acom.riza.event.command.parm.KafkaMessageInfo;
+import jp.co.acom.riza.event.cmd.parm.KafkaMessageInfo;
 import jp.co.acom.riza.exception.EventCommandException;
 import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;

@@ -46,26 +46,26 @@ public class EventTest001 {
 // KafkaTemplate<String,String> template;
 
 //	
-	@SpyBean
-	KafkaEventProducer eventProducer;
+//	@SpyBean
+//	KafkaEventProducer eventProducer;
 	
-	@Captor
-	ArgumentCaptor<String> topicCaptor;
+//	@Captor
+//	ArgumentCaptor<String> topicCaptor;
 //	
-	@Captor
-	ArgumentCaptor<String> msgCaptor;
+//	@Captor
+//	ArgumentCaptor<String> msgCaptor;
 //	
 //	@SpyBean
 //	KafkaEventProducer eventProducer;
 	
-	@Autowired
-	MockKafkaTemplate  mockTemplate;
+//	@Autowired
+//	MockKafkaTemplate  mockTemplate;
 	
 //	@MockBean(classes = KafkaTemplate.class)
 //	KafkaTemplate<String,String> template;
 	
-	@MockBean 
-	CepMonitorService cepMonitorService;
+//	@MockBean 
+//	CepMonitorService cepMonitorService;
 	
 	@Autowired
 	CustomerService customerService;
@@ -77,7 +77,7 @@ public class EventTest001 {
 	@Test
 	public void test001() throws InterruptedException {
 
-		Mockito.verify(eventProducer,Mockito.times(3)).send(Mockito.anyString(), Mockito.anyString());
+//		Mockito.verify(eventProducer,Mockito.times(3)).send(Mockito.anyString(), Mockito.anyString());
 //		Mockito.when(eventProducer.send(Mockito.anyString(),Mockito.anyString())).thenReturn(null);
 		
 		Customer customer = new Customer();

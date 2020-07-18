@@ -7,8 +7,8 @@ import javax.jms.Session;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
-import com.ibm.mq.jms.JMSC;
 import com.ibm.mq.jms.MQDestination;
+import com.ibm.msg.client.wmq.WMQConstants;
 
 /**
  *
@@ -17,7 +17,10 @@ import com.ibm.mq.jms.MQDestination;
  *
  */
 public class MQDestinationResolver extends DynamicDestinationResolver implements DestinationResolver {
-	private int targetClient = JMSC.MQJMS_CLIENT_JMS_COMPLIANT;
+	private int targetClient = WMQConstants.WMQ_CLIENT_JMS_COMPLIANT;
+			
+			
+			//JMSC.MQJMS_CLIENT_JMS_COMPLIANT;
 
 	/**
 	 * @param targetClient Control target client type (JMS compliant or not).
@@ -44,6 +47,7 @@ public class MQDestinationResolver extends DynamicDestinationResolver implements
 		if (destination instanceof MQDestination) {
 			MQDestination mqDestination = (MQDestination) destination;
 			mqDestination.setTargetClient(getTargetClient());
+			mqDestination.setBooleanProperty(WMQConstants.WMQ_MQMD_WRITE_ENABLED,true);
 		}
 		return destination;
 	}

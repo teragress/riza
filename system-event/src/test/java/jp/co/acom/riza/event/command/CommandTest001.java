@@ -28,8 +28,9 @@ import java.util.concurrent.ExecutionException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jp.co.acom.riza.event.command.parm.KafkaMessageInfo;
-import jp.co.acom.riza.event.command.parm.KafkaRecoveryParm;
+import jp.co.acom.riza.event.cmd.EventRestCommand;
+import jp.co.acom.riza.event.cmd.parm.KafkaMessageInfo;
+import jp.co.acom.riza.event.cmd.parm.KafkaRecoveryParm;
 import jp.co.acom.riza.event.kafka.KafkaCommandUtil;
 import jp.co.acom.riza.system.utils.log.LogAssertAppender;
 

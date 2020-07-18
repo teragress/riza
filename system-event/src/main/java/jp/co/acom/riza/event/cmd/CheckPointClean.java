@@ -1,4 +1,4 @@
-package jp.co.acom.riza.event.command;
+package jp.co.acom.riza.event.cmd;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
