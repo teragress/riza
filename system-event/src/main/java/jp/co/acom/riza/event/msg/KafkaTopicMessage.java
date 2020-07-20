@@ -1,17 +1,13 @@
 package jp.co.acom.riza.event.msg;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.core.serializer.Deserializer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import jp.co.acom.riza.event.core.EntityType;
-import jp.co.acom.riza.event.core.PersistentType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -32,10 +28,11 @@ public class KafkaTopicMessage {
 	 */
 	@JsonDeserialize(contentAs = String.class)
 	private String topic;
+
 	/**
 	 * エンティティマネージャー単位の更新情報リスト
 	 */
 	@JsonTypeInfo(use = Id.CLASS)
-	private List<KafkaMessage> kmsg;
+	private List<KafkaMessage> kmsg = new ArrayList<KafkaMessage>();
 
 }

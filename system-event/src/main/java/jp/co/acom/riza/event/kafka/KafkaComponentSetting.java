@@ -75,6 +75,9 @@ public class KafkaComponentSetting {
 		return kafkaConfig;
 	}
 
+	/**
+	 * @return
+	 */
 	@Bean
 	public ProducerFactory<String, String> producerFactory() {
 		Map<String, Object> configProps = new HashMap<String, Object>();
@@ -103,6 +106,9 @@ public class KafkaComponentSetting {
 		return new DefaultKafkaProducerFactory(configProps);
 	}
 
+	/**
+	 * @return
+	 */
 	@Bean
 	public KafkaTemplate<String, String> kafkaTemplate() {
 		return new KafkaTemplate<>(producerFactory());

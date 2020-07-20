@@ -14,7 +14,7 @@ import lombok.Data;
  *
  */
 @Data
-//@Table(schema = "VAGRANT", name = "TRANEVENT")
+//@Table(schema = "DP0", name = "EVENTCHECKPOINT")
 @Table(name = "EVENTCHECKPOINT")
 @Entity
 public class EventCheckpointEntity {

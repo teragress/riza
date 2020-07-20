@@ -44,9 +44,22 @@ public class TranEvent {
 	/**
 	 * エンティティマネージャー単位の更新情報リスト
 	 */
-	@JsonTypeInfo(use = Id.CLASS)
+//	@JsonTypeInfo(use = Id.CLASS)
+	@JsonDeserialize(as = ArrayList.class,contentAs = Manager.class)
 	private List<Manager> managers;
 
+	/**
+	 * KAFKAトピックメッセージリスト
+	 */
+	@JsonTypeInfo(use = Id.CLASS)
+	@JsonProperty("topics")
+	private List<KafkaTopicMessage> topicMessages;
+
+	/**
+	 * メッセージIDプレフィックス
+	 */
+	@JsonProperty(value = "msgid")
+	private byte[] messageIdPrefix;
 	/**
 	 * これ何....
 	 * @param entityClassName

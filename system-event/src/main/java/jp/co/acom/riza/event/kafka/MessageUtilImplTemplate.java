@@ -1,4 +1,4 @@
-package jp.co.acom.riza.event.mq;
+package jp.co.acom.riza.event.kafka;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +20,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.support.JmsHeaders;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,28 +39,27 @@ import com.ibm.msg.client.jms.JmsMessage;
 import com.ibm.msg.client.wmq.WMQConstants;
 
 import jp.co.acom.riza.event.mq.MQConstants;
+import jp.co.acom.riza.event.msg.KafkaMessage;
+import jp.co.acom.riza.event.msg.KafkaTopicMessage;
 import jp.co.acom.riza.system.utils.log.Logger;
 
 @Component
 @Scope(value = "transaction", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class MessageUtilImpl {
+public class MessageUtilImplTemplate {
 
 	/**
 	 * ロガー
 	 */
-	private static Logger logger = Logger.getLogger(MessageUtilImpl.class);
+	private static Logger logger = Logger.getLogger(MessageUtilImplTemplate.class);
 
 	@Autowired
 	CamelContext camelContext;
 	
 	@Autowired
-	JmsOperations jmsOperations;
-	 
-	@Autowired
 	Environment env;
 
 	@Autowired
-	MQQueueConnectionFactory mqQueueConnectionFactory;
+	KafkaEventProducer kafkaProducer;
 	
 	private HashMap<String, ArrayList<String>> messageMap = new HashMap<>();
 
@@ -90,9 +90,8 @@ public class MessageUtilImpl {
 	 * @throws NamingException
 	 * @throws JMSException 
 	 */
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void flush() throws NamingException {
-		if (env.getProperty(MQConstants.MQ_MOCK,Boolean.class,false)) {
+	public void flush(byte[] messagIdPrefix) throws NamingException {
+		if (env.getProperty(KafkaConstants.KAFKA_MOCK,Boolean.class,false)) {
 			return;
 		}
 				
@@ -104,10 +103,12 @@ public class MessageUtilImpl {
 				ArrayList<String> list = entry.getValue();
 				String queName = entry.getKey();
 				
-				for (String putMessage : list) {
+				for (int i=0; i < list.size();i++) {
+					String putMessage = list.get(i);
 					Map<String , Object> map = new HashMap<String, Object>();
 
-					jmsOperations.send(queName,messageCreator -> {
+					kafkaProducer.sendReportTopic(	
+							queName,messageCreator -> {
 						TextMessage message = messageCreator.createTextMessage(putMessage);
 						message.setObjectProperty(WMQConstants.JMS_IBM_MQMD_MSGID, "123456789012345678901234".getBytes());
 						return message;

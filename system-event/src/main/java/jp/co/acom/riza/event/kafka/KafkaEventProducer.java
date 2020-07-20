@@ -1,28 +1,24 @@
 package jp.co.acom.riza.event.kafka;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.camel.ProducerTemplate;
-import org.apache.kafka.common.header.Header;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
-import org.springframework.util.concurrent.FailureCallback;
 import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
-import org.springframework.util.concurrent.SuccessCallback;
 
 import jp.co.acom.riza.event.msg.Manager;
-import jp.co.acom.riza.event.cmd.parm.ExecTableCreanParm;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.event.msg.EntityEvent;
+import jp.co.acom.riza.event.msg.KafkaTopicMessage;
 import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.system.utils.log.Logger;
 
@@ -86,7 +82,7 @@ public class KafkaEventProducer {
 //							"************************** kafka producer result ************************************");
 //					System.out.println("********partation=" + sendResultList.get().getRecordMetadata().partition());
 //					System.out.println("********offset=" + sendResultList.get().getRecordMetadata().offset());
-//				} catch (InterruptedException | ExecutionException e) {
+//				} catch (InterruptedException | ExecutionExceptiimport jp.co.acom.riza.event.cmd.parm.ExecTableCreanParm;on e) {
 //					// TODO 自動生成された catch ブロック
 //					e.printStackTrace();
 //				}
@@ -94,7 +90,24 @@ public class KafkaEventProducer {
 			}
 		}
 	}
-	public ListenableFuture<SendResult<String, String>> send(String topic,String message) {
+	private ListenableFuture<SendResult<String, String>> send(String topic,String message) {
 		return kafkaTemplate.send(topic,message);
+	}
+	
+	public KafkaTopicMessage saveReportMessage(HashMap<String, ArrayList<String>> msgMap) {
+		
+		
+		
+		
+		
+		return null;
+		
+		
+	}
+	public ListenableFuture<SendResult<String, String>> sendReportTopic(String topic,String message,byte[] mqMessageID) {
+		ProducerRecord<String, String> rec = new ProducerRecord<String, String>(topic, message);
+		rec.headers().add("messageID",mqMessageID);
+		
+		return kafkaTemplate.send(rec);
 	}
 }

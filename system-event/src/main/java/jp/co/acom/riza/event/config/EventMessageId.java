@@ -14,6 +14,7 @@ public interface EventMessageId {
 	public static final String EXCEPTION_INFORMATION = "RIZAE005";
 	public static final String KAFKA_MESSAGE_RECOVERY = "RIZAE006";
 	public static final String COMMAND_EXCEPTION = "RIZAE007";
+	public static final String EVENT_EXCEPTION = "RIZAE008";
 	
 
 
