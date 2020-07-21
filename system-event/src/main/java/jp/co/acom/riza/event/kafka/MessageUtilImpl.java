@@ -100,7 +100,8 @@ public class MessageUtilImpl {
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
-	public List<KafkaTopics> saveReportMessage(byte[] messagIdprefix) throws IOException, InterruptedException, ExecutionException {
+	public List<KafkaTopics> saveReportMessage(byte[] messagIdprefix)
+			throws IOException, InterruptedException, ExecutionException {
 		logger.debug("saveReportMessage() startes.");
 
 		List<KafkaTopics> topicMessages = new ArrayList<KafkaTopics>();
@@ -123,8 +124,8 @@ public class MessageUtilImpl {
 				String putMessage = list.get(i);
 
 				byte[] messageId = MessageUtil.createMessageId(messagePrefix, i);
-				ListenableFuture<SendResult<String, String>> result = kafkaProducer.sendReportTopic(queName, putMessage,
-						messageId);
+				ListenableFuture<SendResult<String, String>> result = kafkaProducer
+						.sendReportTopic(KafkaConstants.KAFKA_SAVE_TOPIC_PREFIX + queName, putMessage, messageId);
 				KafkaMessage kafkaMessage = new KafkaMessage();
 				kafkaMessage.setPartition(result.get().getRecordMetadata().partition());
 				kafkaMessage.setOffset(result.get().getRecordMetadata().offset());

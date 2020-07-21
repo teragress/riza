@@ -140,6 +140,11 @@ public class KafkaConstants {
 	public static final String KAFKA_RECOVERY_COMMAND_CONSUMER_GROUP = "REST_COMMAND_CONSUMER_";
 	
 	/**
+	 * MQメッセージリカバリー用保存トピックのプレフィックス
+	 */
+	public static final String KAFKA_SAVE_TOPIC_PREFIX = "SAVE_";
+	
+	/**
 	 * KAFKA機能のモック指定キー
 	 */
 	public static final String KAFKA_MOCK = "KAFKA_MOCK";

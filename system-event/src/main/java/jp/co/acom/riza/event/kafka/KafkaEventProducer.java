@@ -72,21 +72,6 @@ public class KafkaEventProducer {
 				logger.debug("kafka-entity-send topic=" + entityTopic + " message=" + entityMessage);
 
 				send(entityTopic, entityMessage); 
-//				if (true) return;
-////				ListenableFuture<SendResult<String, String>> sendResultList =  kafkaTemplate.send(entityTopic, entityMessage);
-//				ListenableFuture<SendResult<String, String>> sendResultList = kafkaTemplate.send(entityTopic,
-//						entityMessage);
-//				// .get(10L,TimeUnit.SECONDS);
-//				try {
-//					System.out.println(
-//							"************************** kafka producer result ************************************");
-//					System.out.println("********partation=" + sendResultList.get().getRecordMetadata().partition());
-//					System.out.println("********offset=" + sendResultList.get().getRecordMetadata().offset());
-//				} catch (InterruptedException | ExecutionExceptiimport jp.co.acom.riza.event.cmd.parm.ExecTableCreanParm;on e) {
-//					// TODO 自動生成された catch ブロック
-//					e.printStackTrace();
-//				}
-		
 			}
 		}
 	}

@@ -65,7 +65,7 @@ public class PostCommitPersistentNotifier {
 	 * チェクポイント用トランザクションイベント
 	 */
 	private TranEvent tranEvent;
-
+	
 	/**
 	 * 
 	 */
@@ -169,16 +169,19 @@ public class PostCommitPersistentNotifier {
 		logger.info("insertTranEvent() started.");
 
 		try {
-			tranEvent = createTranEvent();
-			tranEvent.setMessageIdPrefix(MessageUtil.getUniqueID());
-
 			List<KafkaTopics> topicMessages = new ArrayList<KafkaTopics>();
+			byte[] messagePrefix = MessageUtil.getUniqueID();
 			if (messageUtil.getMessageCount() > 0) {
-				topicMessages = messageUtil.saveReportMessage(tranEvent.getMessageIdPrefix());
+				topicMessages = messageUtil.saveReportMessage(messagePrefix);
+			} else if (holders.size() == 0) {
+				return;
 			}
+			
+			tranEvent = createTranEvent();
+			tranEvent.setMessageIdPrefix(messagePrefix);
 			tranEvent.setTopicMessages(topicMessages);
 
-			if (tranEvent != null && tranEvent.getManagers().size() > 0) {
+			if (tranEvent != null) {
 
 				EventCheckpointEntity tranEntity = new EventCheckpointEntity();
 
@@ -238,11 +241,6 @@ public class PostCommitPersistentNotifier {
 			super.afterCommit();
 		}
 
-//		@Override
-//		public int getOrder() {
-//			return Ordered.LOWEST_PRECEDENCE;
-//		}
-
 		/**
 		 * コミット前のインターセプター<br>
 		 * イベントテーブルの挿入<br>
@@ -271,20 +269,6 @@ public class PostCommitPersistentNotifier {
 		public void beforeCompletion() {
 			logger.info("beforeCompletion() started.");
 			super.beforeCompletion();
-		}
-
-		/**
-		 * CEP監視終了(ロールバック含む)
-		 */
-		@Override
-		public void afterCompletion(int status) {
-			logger.info("afterCompletion() started. status=" + status);
-			// cep監視終了リクエスト
-			if (tranEvent != null && tranEvent.getManagers().size() > 0) {
-				monitor.endMonitor(sepKey);
-			}
-
-			super.afterCompletion(status);
 		}
 	}
 }
