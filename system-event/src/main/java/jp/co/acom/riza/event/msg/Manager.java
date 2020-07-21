@@ -1,7 +1,9 @@
 package jp.co.acom.riza.event.msg;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -23,19 +25,20 @@ public class Manager {
 	 * エンティティマネージャーファクトリー名
 	 */
 	@JsonDeserialize(contentAs = String.class)
+	@JsonProperty(value = "mg")
 	private String manager;
 	
     /**
      * エンティティ更新情報リスト
      */
-    @JsonTypeInfo(use = Id.CLASS)
-//	@JsonDeserialize(contentAs = EntityType.class)
-//	@JsonProperty("etype")    
+	@JsonDeserialize(as = ArrayList.class, contentAs = Entity.class)
+	@JsonProperty(value = "ets")
 	private List<Entity> entitys;
     
 	/**
 	 * リビジョン番号
 	 */
 	@JsonDeserialize(contentAs = Long.class)
+	@JsonProperty(value = "rev")
 	private Long revison;
 }

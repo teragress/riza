@@ -25,6 +25,7 @@ public class TranEvent {
 	 * ヘッダー
 	 */
 	@JsonDeserialize(contentAs = Header.class)
+	@JsonProperty("hed")
 	private Header header;
 	
 	/**
@@ -44,21 +45,21 @@ public class TranEvent {
 	/**
 	 * エンティティマネージャー単位の更新情報リスト
 	 */
-//	@JsonTypeInfo(use = Id.CLASS)
 	@JsonDeserialize(as = ArrayList.class,contentAs = Manager.class)
+	@JsonProperty("mgrs")
 	private List<Manager> managers;
 
 	/**
 	 * KAFKAトピックメッセージリスト
 	 */
-	@JsonTypeInfo(use = Id.CLASS)
 	@JsonProperty("topics")
-	private List<KafkaTopicMessage> topicMessages;
+	@JsonDeserialize(as = ArrayList.class,contentAs = KafkaTopics.class)
+	private List<KafkaTopics> topicMessages;
 
 	/**
 	 * メッセージIDプレフィックス
 	 */
-	@JsonProperty(value = "msgid")
+	@JsonProperty(value = "mid")
 	private byte[] messageIdPrefix;
 	/**
 	 * これ何....

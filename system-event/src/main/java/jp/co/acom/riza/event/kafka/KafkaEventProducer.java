@@ -18,7 +18,7 @@ import jp.co.acom.riza.event.msg.Manager;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.event.msg.EntityEvent;
-import jp.co.acom.riza.event.msg.KafkaTopicMessage;
+import jp.co.acom.riza.event.msg.KafkaTopics;
 import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.system.utils.log.Logger;
 
@@ -94,7 +94,7 @@ public class KafkaEventProducer {
 		return kafkaTemplate.send(topic,message);
 	}
 	
-	public KafkaTopicMessage saveReportMessage(HashMap<String, ArrayList<String>> msgMap) {
+	public KafkaTopics saveReportMessage(HashMap<String, ArrayList<String>> msgMap) {
 		
 		
 		

@@ -30,7 +30,7 @@ import jp.co.acom.riza.event.kafka.MessageUtil;
 import jp.co.acom.riza.event.kafka.MessageUtilImpl;
 import jp.co.acom.riza.event.msg.Header;
 import jp.co.acom.riza.event.msg.KafkaMessage;
-import jp.co.acom.riza.event.msg.KafkaTopicMessage;
+import jp.co.acom.riza.event.msg.KafkaTopics;
 import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.event.msg.AuditEntity;
 import jp.co.acom.riza.event.msg.AuditMessage;
@@ -91,9 +91,6 @@ public class PostCommitPersistentNotifier {
 	@Autowired
 	PostCommitPersistentNotifier eventNotifier;
 
-	@Autowired
-	MessageUtilImpl msgUtil;
-
 	private String sepKey;
 
 	@PostConstruct
@@ -128,7 +125,7 @@ public class PostCommitPersistentNotifier {
 		eventHeader.setUserId(commonContext.getUserId());
 		tranEvent.setHeader(eventHeader);
 
-		tranEvent.setMqCount(msgUtil.getMessageCount());
+		tranEvent.setMqCount(messageUtil.getMessageCount());
 
 		List<Manager> managerList = new ArrayList<Manager>();
 		for (PersistentHolder holder : holders) {
@@ -175,7 +172,7 @@ public class PostCommitPersistentNotifier {
 			tranEvent = createTranEvent();
 			tranEvent.setMessageIdPrefix(MessageUtil.getUniqueID());
 
-			List<KafkaTopicMessage> topicMessages = new ArrayList<KafkaTopicMessage>();
+			List<KafkaTopics> topicMessages = new ArrayList<KafkaTopics>();
 			if (messageUtil.getMessageCount() > 0) {
 				topicMessages = messageUtil.saveReportMessage(tranEvent.getMessageIdPrefix());
 			}

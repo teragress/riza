@@ -21,7 +21,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class KafkaTopicMessage {
+public class KafkaTopics {
 	/**
 	 * パーシステントタイプ(挿入/更新/削除)
 	 * 
@@ -32,7 +32,7 @@ public class KafkaTopicMessage {
 	/**
 	 * エンティティマネージャー単位の更新情報リスト
 	 */
-	@JsonTypeInfo(use = Id.CLASS)
+	@JsonDeserialize(as = ArrayList.class,contentAs = KafkaMessage.class)
 	private List<KafkaMessage> kmsg = new ArrayList<KafkaMessage>();
 
 }
