@@ -15,7 +15,7 @@ public class EventThreadPoolSetting {
 
 	@Autowired
 	private Environment env;
-	
+
 	@Autowired
 	CamelContext context;
 
@@ -23,14 +23,13 @@ public class EventThreadPoolSetting {
 	public ExecutorService createExecutorService() throws Exception {
 		ThreadPoolBuilder builder = new ThreadPoolBuilder(context);
 		ExecutorService executorService = builder
-						.poolSize(env.getProperty(EventConstants.EVENT_THREAD_POOL_SIZE, Integer.class,
+				.poolSize(env.getProperty(EventConstants.EVENT_THREAD_POOL_SIZE, Integer.class,
 						EventConstants.EVENT_DEFAULT_THREAD_POOL_SIZE))
 				.maxPoolSize(env.getProperty(EventConstants.EVENT_THREAD_MAX_POOL_SIZE, Integer.class,
 						EventConstants.EVENT_DEFAULT_THREAD_MAX_POOL_SIZE))
 				.maxQueueSize(env.getProperty(EventConstants.EVENT_THREAD_MAX_QUE_SIZE, Integer.class,
 						EventConstants.EVENT_DEFAULT_THREAD_MAX_QUE_SIZE))
-				.keepAliveTime(60L)
-				.rejectedPolicy(ThreadPoolRejectedPolicy.CallerRuns)
+				.keepAliveTime(60L).rejectedPolicy(ThreadPoolRejectedPolicy.CallerRuns)
 				.build(EventConstants.EVENT_THREAD_POOL_ID);
 		System.out.println("**************************************************************************");
 		System.out.println("**************************************************************************");

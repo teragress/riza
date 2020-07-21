@@ -88,7 +88,7 @@ public class EventTest001 {
 		System.out.println("**********************************************assert data******************");
 		
 
-		Thread.sleep(10000);
+		Thread.sleep(100000);
 	//	customerService.findAll();
 		Thread.sleep(10000);
 	}

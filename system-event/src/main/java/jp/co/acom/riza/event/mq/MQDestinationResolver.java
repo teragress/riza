@@ -48,6 +48,8 @@ public class MQDestinationResolver extends DynamicDestinationResolver implements
 			MQDestination mqDestination = (MQDestination) destination;
 			mqDestination.setTargetClient(getTargetClient());
 			mqDestination.setBooleanProperty(WMQConstants.WMQ_MQMD_WRITE_ENABLED,true);
+
+			
 		}
 		return destination;
 	}

@@ -15,6 +15,9 @@ public interface EventMessageId {
 	public static final String KAFKA_MESSAGE_RECOVERY = "RIZAE006";
 	public static final String COMMAND_EXCEPTION = "RIZAE007";
 	public static final String EVENT_EXCEPTION = "RIZAE008";
+	public static final String MQPUT_EXCEPTION = "RIZAE009";
+	public static final String MQPUT_RETRY_OVER = "RIZAE010";
+	public static final String WARNING_EXCEPTION_INFORMATION = "RIZAE011";
 	
 
 

@@ -24,7 +24,7 @@ public class MQConstants {
 	/**
 	 * 最大接続数デフォルト値
 	 */
-	public static final int MQ_DEFAULT_MAX_CONNECTION = 75;
+	public static final int MQ_DEFAULT_MAX_CONNECTION = 3;
 	/**
 	 * 最大未使用接続数
 	 */
@@ -32,7 +32,7 @@ public class MQConstants {
 	/**
 	 * 最大未使用接続数デフォルト値
 	 */
-	public static final int MQ_DEFAULT_MAX_UNUSE_CONNECTION = 50;
+	public static final int MQ_DEFAULT_MAX_UNUSE_CONNECTION = 1;
 
 	/**
 	 * 接続先キューマネージャー名
@@ -55,6 +55,22 @@ public class MQConstants {
 	*/
 	public static final String MQ_CONNECTION_USER = "MQ_CONNECTION_USER";
 
+	/**
+	 * MQPUT最大リトライ回数デフォルト値
+	 */
+	public static final int MQ_DEFAULT_PUT_MAX_RETRY = 10;
+	/**
+	 * MQPUTリトライ間隔(秒指定)デフォルト値
+	 */
+	public static final int MQ_DEFAULT_PUT_RETRY_TIME = 60;
+	/**
+	 * MQPUT最大リトライ回数取得キー
+	 */
+	public static final String MQ_PUT_MAX_RETRY = "MQ_PUT_MAX_RETRY";
+	/**
+	 * MQPUTリトライ間隔(秒指定)取得キー
+	 */
+	public static final String MQ_PUT_RETRY_TIME = "MQ_PUT_RETRY_TIME";
 	/**
 	* MQモック指定
 	*/

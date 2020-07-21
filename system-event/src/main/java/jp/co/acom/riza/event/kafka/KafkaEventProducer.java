@@ -1,8 +1,5 @@
 package jp.co.acom.riza.event.kafka;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.camel.ProducerTemplate;
@@ -18,7 +15,6 @@ import jp.co.acom.riza.event.msg.Manager;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.event.msg.EntityEvent;
-import jp.co.acom.riza.event.msg.KafkaTopics;
 import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.system.utils.log.Logger;
 
@@ -43,11 +39,12 @@ public class KafkaEventProducer {
 	Environment env;
 
 	Boolean mock;
-	
+
 	@PostConstruct
 	public void initilize() {
-		mock = env.getProperty(KafkaConstants.KAFKA_MOCK,Boolean.class,false);
+		mock = env.getProperty(KafkaConstants.KAFKA_MOCK, Boolean.class, false);
 	}
+
 	/**
 	 * パーシステントイベントのKafka送信
 	 * 
@@ -71,28 +68,20 @@ public class KafkaEventProducer {
 				String entityMessage = StringUtil.objectToJsonString(pEvent);
 				logger.debug("kafka-entity-send topic=" + entityTopic + " message=" + entityMessage);
 
-				send(entityTopic, entityMessage); 
+				send(entityTopic, entityMessage);
 			}
 		}
 	}
-	private ListenableFuture<SendResult<String, String>> send(String topic,String message) {
-		return kafkaTemplate.send(topic,message);
+
+	private ListenableFuture<SendResult<String, String>> send(String topic, String message) {
+		return kafkaTemplate.send(topic, message);
 	}
-	
-	public KafkaTopics saveReportMessage(HashMap<String, ArrayList<String>> msgMap) {
-		
-		
-		
-		
-		
-		return null;
-		
-		
-	}
-	public ListenableFuture<SendResult<String, String>> sendReportTopic(String topic,String message,byte[] mqMessageID) {
+
+	public ListenableFuture<SendResult<String, String>> sendReportTopic(String topic, String key, String message,
+			byte[] mqMessageID) {
 		ProducerRecord<String, String> rec = new ProducerRecord<String, String>(topic, message);
-		rec.headers().add("messageID",mqMessageID);
-		
+		rec.headers().add(KafkaConstants.KAFKA_HEADER_MQ_MESSAGE_ID, mqMessageID);
+
 		return kafkaTemplate.send(rec);
 	}
 }

@@ -75,7 +75,7 @@ public class KafkaConsumerCreate {
 			int consumersCount = env.getProperty(key, Integer.class, defaultConsumerCount);
 			String routeId = KafkaConstants.KAFKA_CONSUMER_PREFIX + "_" + groupPrefix +group;
 			logger.info("*** kafka consumer routeId=" + routeId);
-			String uri = "kafka:" + topicList + "?groupId=" + groupPrefix + group + "&consumersCount=" + consumersCount;
+			String uri = KafkaConstants.KAFKA_COMPONENT_BEAN + ":" + topicList + "?groupId=" + groupPrefix + group + "&consumersCount=" + consumersCount;
 			logger.info("*** kafka consumer uri=" + uri);
 
 			context.addRoutes(new RouteBuilder() {

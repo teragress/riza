@@ -79,6 +79,7 @@ public class MessageUtilImpl {
 			return;
 		}
 
+		String key = messagIdPrefix.toString();
 		if (!messageMap.isEmpty()) {
 			for (Entry<String, ArrayList<String>> entry : messageMap.entrySet()) {
 				ArrayList<String> list = entry.getValue();
@@ -86,7 +87,8 @@ public class MessageUtilImpl {
 
 				for (int i = 0; i < list.size(); i++) {
 					String putMessage = list.get(i);
-					kafkaProducer.sendReportTopic(queName, putMessage, MessageUtil.createMessageId(messagIdPrefix, i));
+					kafkaProducer.sendReportTopic(queName, key, putMessage,
+							MessageUtil.createMessageId(messagIdPrefix, i));
 					logger.debug("producer.send()" + putMessage);
 				}
 			}
@@ -111,6 +113,7 @@ public class MessageUtilImpl {
 		}
 
 		byte[] messagePrefix = MessageUtil.getUniqueID();
+		String key = messagePrefix.toString();
 
 		for (Entry<String, ArrayList<String>> entry : messageMap.entrySet()) {
 			String queName = entry.getKey();
@@ -125,7 +128,7 @@ public class MessageUtilImpl {
 
 				byte[] messageId = MessageUtil.createMessageId(messagePrefix, i);
 				ListenableFuture<SendResult<String, String>> result = kafkaProducer
-						.sendReportTopic(KafkaConstants.KAFKA_SAVE_TOPIC_PREFIX + queName, putMessage, messageId);
+						.sendReportTopic(KafkaConstants.KAFKA_SAVE_TOPIC_PREFIX + queName, key, putMessage, messageId);
 				KafkaMessage kafkaMessage = new KafkaMessage();
 				kafkaMessage.setPartition(result.get().getRecordMetadata().partition());
 				kafkaMessage.setOffset(result.get().getRecordMetadata().offset());

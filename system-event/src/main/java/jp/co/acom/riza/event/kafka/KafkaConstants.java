@@ -70,7 +70,7 @@ public class KafkaConstants {
 	/**
 	 * 帳票出力用トピック名
 	 */
-	public static final String KAFKA_REPORT_TOPIC = "ReportOutput";
+	public static final String KAFKA_REPORT_TOPIC = "PRT_QUEUE";
 	/**
 	 * 帳票出力用コンシューマカウント数
 	 */
@@ -143,6 +143,11 @@ public class KafkaConstants {
 	 * MQメッセージリカバリー用保存トピックのプレフィックス
 	 */
 	public static final String KAFKA_SAVE_TOPIC_PREFIX = "SAVE_";
+	
+	/**
+	 * MQメッセージリカバリー用保存トピックのプレフィックス
+	 */
+	public static final String KAFKA_HEADER_MQ_MESSAGE_ID = "mq_messageId";
 	
 	/**
 	 * KAFKA機能のモック指定キー
