@@ -84,8 +84,11 @@ public class KafkaConsumerCreate {
 					from(uri).routeId(routeId).threads()
 							.executorService(
 									(ExecutorService) aplContext.getBean(EventConstants.EVENT_THREAD_POOL_BEAN))
-							.doTry().process(DynamicExecuteProcess.PROCESS_ID).doFinally()
-							.process("manualCommitProcess").end();
+							.doTry()
+								.process(DynamicExecuteProcess.PROCESS_ID)
+							.doFinally()
+								.process(ManualCommitProcess.PROCESS_ID)
+							.end();
 				}
 			});
 		}

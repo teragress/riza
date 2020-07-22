@@ -1,4 +1,4 @@
-package jp.co.acom.riza.event.command;
+package ignore.jp.co.acom.riza.event.command;
 /*
  * Copyright 2015-2019 the original author or authors.
  *

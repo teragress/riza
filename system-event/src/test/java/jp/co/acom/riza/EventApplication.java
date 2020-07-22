@@ -1,4 +1,4 @@
-package ignore.jp.co.acom.riza;
+package jp.co.acom.riza;
 
 import javax.sql.DataSource;
 
@@ -9,16 +9,18 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.support.SimpleTransactionScope;
 
 /** A spring-boot application. */
-//@SpringBootApplication
-//@EnableConfigurationProperties
-public class EventNotifyApplication {
+@SpringBootApplication
+@EnableConfigurationProperties
+@ComponentScan("jp.co.acom.riza")
+public class EventApplication {
   // must have a main method spring-boot can run
   public static void main(String[] args) {
-    SpringApplication.run(EventNotifyApplication.class, args);
+    SpringApplication.run(EventApplication.class, args);
   }
 
   @Bean

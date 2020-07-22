@@ -1,4 +1,4 @@
-package jp.co.acom.riza.event.ita;
+package ignore.jp.co.acom.riza.event.ita;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

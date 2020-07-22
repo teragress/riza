@@ -1,4 +1,4 @@
-package ignore.jp.co.acom.riza.event.rest;
+package jp.co.acom.riza.event.rest;
 
 import jp.co.acom.riza.event.customer.entity.Customer;
 import jp.co.acom.riza.event.service.CustomerService;
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /** 処理を開始するための REST を受け付ける. */
-//@RestController
-//@RequestMapping(path = "rest/customers", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+@RestController
+@RequestMapping(path = "rest/customers", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 public class CustomerController {
 	/**
 	 * ロガー

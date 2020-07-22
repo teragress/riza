@@ -1,4 +1,4 @@
-package jp.co.acom.riza.event.command;
+package ignore.jp.co.acom.riza.event.command;
 
 import org.infinispan.Cache;
 import org.junit.Before;

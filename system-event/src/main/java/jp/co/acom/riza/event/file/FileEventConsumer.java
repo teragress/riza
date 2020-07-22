@@ -37,6 +37,6 @@ public class FileEventConsumer extends RouteBuilder {
 						.autoStartup(autoStart)
 						.routeId("kafka_file_consumer")
 						.process(fileEventProcess)
-						.process(new ManualCommitProcess());
+						.process(ManualCommitProcess.PROCESS_ID);
 	}
 }

@@ -74,8 +74,21 @@ public class ReportMessagePut implements Processor {
 				Thread.sleep(retryTime * 1000);
 			}
 		}
+		
 		logger.warn(MessageFormat.get(EventMessageId.MQPUT_RETRY_OVER), retryCount, retryCount, retryTime,
 				throwException.getMessage());
+//		Thread stop = new Thread() {
+//			@Override
+//			public void run() {
+//				try {
+//					exchange.getContext().stopRoute("report_output_consumer");
+//					
+//				} catch (Exception e) {
+//					logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION),e);
+//				}
+//			}
+//		};
+//		stop.start();
 		throw throwException;
 	}
 }

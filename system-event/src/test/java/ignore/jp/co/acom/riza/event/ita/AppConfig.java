@@ -1,4 +1,4 @@
-package jp.co.acom.riza.event.command;
+package ignore.jp.co.acom.riza.event.ita;
 
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.beans.factory.config.Scope;
