@@ -30,7 +30,7 @@ import jp.co.acom.riza.event.kafka.MessageUtil;
 import jp.co.acom.riza.event.kafka.MessageUtilImpl;
 import jp.co.acom.riza.event.msg.Header;
 import jp.co.acom.riza.event.msg.KafkaMessage;
-import jp.co.acom.riza.event.msg.KafkaTopics;
+import jp.co.acom.riza.event.msg.KafkaTopicMessage;
 import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.event.msg.AuditEntity;
 import jp.co.acom.riza.event.msg.AuditMessage;
@@ -125,7 +125,7 @@ public class PostCommitPersistentNotifier {
 		eventHeader.setUserId(commonContext.getUserId());
 		tranEvent.setHeader(eventHeader);
 
-		tranEvent.setMqCount(messageUtil.getMessageCount());
+		//tranEvent.setMqCount(messageUtil.getMessageCount());
 
 		List<Manager> managerList = new ArrayList<Manager>();
 		for (PersistentHolder holder : holders) {
@@ -169,7 +169,7 @@ public class PostCommitPersistentNotifier {
 		logger.info("insertTranEvent() started.");
 
 		try {
-			List<KafkaTopics> topicMessages = new ArrayList<KafkaTopics>();
+			List<KafkaTopicMessage> topicMessages = new ArrayList<KafkaTopicMessage>();
 			byte[] messagePrefix = MessageUtil.getUniqueID();
 			if (messageUtil.getMessageCount() > 0) {
 				topicMessages = messageUtil.saveReportMessage(messagePrefix);

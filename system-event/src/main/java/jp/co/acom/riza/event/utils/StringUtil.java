@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.co.acom.riza.event.msg.EntityEvent;
+import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
@@ -54,6 +55,23 @@ public class StringUtil {
 		EntityEvent entityEvent = objectMapper.readValue(str, EntityEvent.class);
 
 		return entityEvent;
+	}
+
+	/**
+	 * @param str
+	 * @return
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public static TranEvent stringToTranEventEventObject(String str)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		TranEvent tranEvent = objectMapper.readValue(str, TranEvent.class);
+
+		return tranEvent;
 	}
 
 	/**

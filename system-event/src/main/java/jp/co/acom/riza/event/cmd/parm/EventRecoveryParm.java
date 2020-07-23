@@ -6,7 +6,8 @@ import lombok.Data;
 
 @Data
 public class EventRecoveryParm {
-	private LocalDateTime fromDateTime;
+	private LocalDateTime dateTime;
 	private LocalDateTime toDateTime;
+	private String tranid;
 	
 }

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.ServiceStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
@@ -60,6 +61,8 @@ public class EventRestCommand {
 	@Autowired
 	KafkaCommandUtil kafkaUtil;
 
+	@Autowired
+	EventRecovery eventRecovery;
 	/**
 	 * イベントチェックポイントテーブルクリーンナップ
 	 * 
@@ -112,6 +115,12 @@ public class EventRestCommand {
 	@RequestMapping(path = REQ_EVENT_RECOVERY_KEYS)
 	public EventCommandResponse recoveryEventKeys(@RequestBody EventRecoveryParm parm) {
 		outputStartMessage(REQ_EVENT_RECOVERY_KEYS, parm.toString());
+		try {
+			eventRecovery.keyRecovery(parm);
+			
+		} catch (Exception ex) {
+			return exceptionProc(ex, REQ_EVENT_RECOVERY_KEYS, parm);
+		}
 
 		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
 		return createNormalResponse(null);
@@ -133,7 +142,7 @@ public class EventRestCommand {
 			rspInfo = kafkaUtil.recoveryKafkaMessages(parm.getMsgInfo());
 			logger.info(MessageFormat.get(EventMessageId.KAFKA_MESSAGE_RECOVERY),
 					StringUtil.objectToJsonString(rspInfo));
-		} catch (InterruptedException | ExecutionException ex) {
+		} catch (Exception ex) {
 			return exceptionProc(ex, REQ_KAFKA_RECOVERY_OFFSET, parm);
 		}
 
@@ -153,6 +162,10 @@ public class EventRestCommand {
 		outputStartMessage(REQ_ROUTE_START, parm.toString());
 
 		try {
+			ServiceStatus sts = camelContext.getRouteStatus(parm.getRouteId());
+			if (sts == null) {
+				
+			}
 			camelContext.startRoute(parm.getRouteId());
 		} catch (Exception ex) {
 			return exceptionProc(ex, REQ_ROUTE_START, parm);

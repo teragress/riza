@@ -21,7 +21,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class KafkaTopics {
+public class KafkaTopicMessage {
 	/**
 	 * パーシステントタイプ(挿入/更新/削除)
 	 * 

@@ -90,7 +90,8 @@ public class KafkaCommandUtil {
 		try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
 
 			for (KafkaMessageInfo msgInfo : msgInfoList) {
-				ConsumerRecord<String, String> conrec = getKafkaMessage(msgInfo);
+				ConsumerRecord<String, String> conrec = getKafkaMessage(msgInfo.getTopic(), msgInfo.getPartition(),
+						msgInfo.getOffset());
 				ListenableFuture<SendResult<String, String>> sendResultList = kafkaTemplate.send(msgInfo.getTopic(),
 						conrec.value());
 				KafkaMessageInfo rtnInf = new KafkaMessageInfo();
@@ -107,28 +108,53 @@ public class KafkaCommandUtil {
 	 * 
 	 * @param tranEvent
 	 */
-	public synchronized ConsumerRecord<String, String> getKafkaMessage(KafkaMessageInfo msgInfo) {
+	public synchronized ConsumerRecord<String, String> getKafkaMessage(String topic, int partition, long offset) {
 		logger.debug("getKafkaMessage() started.");
 		ConsumerRecord<String, String> conrec;
 		try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
 
-			TopicPartition topicPartition = new TopicPartition(msgInfo.getTopic(),
-					msgInfo.getPartition().intValue());
+			TopicPartition topicPartition = new TopicPartition(topic, partition);
 			Collection<TopicPartition> col = new ArrayList<TopicPartition>();
 			col.add(topicPartition);
 			consumer.assign(col);
-			consumer.seek(topicPartition, msgInfo.getOffset());
+			consumer.seek(topicPartition, offset);
 			ConsumerRecords<String, String> conRecs = consumer.poll(Duration.ofMillis(1000));
 			conrec = conRecs.iterator().next();
 			if (conrec == null) {
-				logger.error(MessageFormat.get("REV0001E"), msgInfo.getTopic(), msgInfo.getPartition(),
-						msgInfo.getOffset());
-				throw new EventCommandException(msgInfo.toString());
+				logger.error(MessageFormat.get("REV0001E"), topic, partition, offset);
+				throw new EventCommandException("kafka message notfound topic(" + topic + ") partition(" + partition
+						+ ") offset(" + offset + ")");
 			}
 		}
 		return conrec;
 	}
-	
+
+	/**
+	 * 
+	 * @param tranEvent
+	 */
+//	public synchronized ConsumerRecord<String, String> getKafkaMessage(KafkaMessageInfo msgInfo) {
+//		logger.debug("getKafkaMessage() started.");
+//		ConsumerRecord<String, String> conrec;
+//		try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
+//
+//			TopicPartition topicPartition = new TopicPartition(msgInfo.getTopic(),
+//					msgInfo.getPartition().intValue());
+//			Collection<TopicPartition> col = new ArrayList<TopicPartition>();
+//			col.add(topicPartition);
+//			consumer.assign(col);
+//			consumer.seek(topicPartition, msgInfo.getOffset());
+//			ConsumerRecords<String, String> conRecs = consumer.poll(Duration.ofMillis(1000));
+//			conrec = conRecs.iterator().next();
+//			if (conrec == null) {
+//				logger.error(MessageFormat.get("REV0001E"), msgInfo.getTopic(), msgInfo.getPartition(),
+//						msgInfo.getOffset());
+//				throw new EventCommandException(msgInfo.toString());
+//			}
+//		}
+//		return conrec;
+//	}
+
 	/**
 	 * 
 	 * @param tranEvent

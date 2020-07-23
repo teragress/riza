@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import jp.co.acom.riza.event.msg.KafkaMessage;
-import jp.co.acom.riza.event.msg.KafkaTopics;
+import jp.co.acom.riza.event.msg.KafkaTopicMessage;
 import jp.co.acom.riza.system.utils.log.Logger;
 
 @Component
@@ -102,11 +102,11 @@ public class MessageUtilImpl {
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
-	public List<KafkaTopics> saveReportMessage(byte[] messagIdprefix)
+	public List<KafkaTopicMessage> saveReportMessage(byte[] messagIdprefix)
 			throws IOException, InterruptedException, ExecutionException {
 		logger.debug("saveReportMessage() startes.");
 
-		List<KafkaTopics> topicMessages = new ArrayList<KafkaTopics>();
+		List<KafkaTopicMessage> topicMessages = new ArrayList<KafkaTopicMessage>();
 
 		if (env.getProperty(KafkaConstants.KAFKA_MOCK, Boolean.class, false)) {
 			return topicMessages;
@@ -117,7 +117,7 @@ public class MessageUtilImpl {
 
 		for (Entry<String, ArrayList<String>> entry : messageMap.entrySet()) {
 			String queName = entry.getKey();
-			KafkaTopics topicMessage = new KafkaTopics();
+			KafkaTopicMessage topicMessage = new KafkaTopicMessage();
 			topicMessage.setTopic(queName);
 			topicMessages.add(topicMessage);
 
