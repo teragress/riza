@@ -35,7 +35,7 @@ public class PersistentInterceptor extends EmptyInterceptor {
 	 * エンティティ格納パッケージ
 	 */
 	// 特定のパッケージ以下のもので、@RevisionEntity が付与されてい
-	private String entityPackage = "";
+	private String[] entityPackages;
 	/**
 	 * イベント通知
 	 */
@@ -133,7 +133,13 @@ public class PersistentInterceptor extends EmptyInterceptor {
 		Class<?> entityClass = entity.getClass();
 		// 特定のパッケージ以下のもので、@RevisionEntity が付与されていないものが対象
 		// （@RevisionEntity があるクラスは、リビジョンテーブル用）
-		return entityClass.getPackage().getName().startsWith(entityPackage)
+		boolean targetPackage = false;
+		for (String pkg:entityPackages) {
+			if (entityClass.getPackage().getName().startsWith(pkg)) {
+				targetPackage = true;
+			}
+		}
+		return targetPackage
 				&& AnnotationUtils.findAnnotation(entityClass, RevisionEntity.class) == null
 				&& AnnotationUtils.findAnnotation(entityClass, NoEvent.class) == null;
 	}

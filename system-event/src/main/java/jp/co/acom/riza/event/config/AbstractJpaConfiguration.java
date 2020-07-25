@@ -23,7 +23,7 @@ import jp.co.acom.riza.event.core.PostCommitPersistentNotifier;
  * @author vagrant
  *
  */
-public abstract class AbstructJpaConfiguration {
+public abstract class AbstractJpaConfiguration {
 
 	@Autowired
 	protected PostCommitPersistentNotifier postCommitPersistentEventNotifier;
@@ -35,11 +35,12 @@ public abstract class AbstructJpaConfiguration {
 	 * @param builder    EntityMangerFactoryBuilder
 	 * @return
 	 */
-	protected LocalContainerEntityManagerFactoryBean entityManagerFactory(String entityPackage, DataSource dataSource,
-			EntityManagerFactoryBuilder builder,PersistentEventNotifier persistentEventNotifier) {
+	protected LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource,
+			EntityManagerFactoryBuilder builder,PersistentInterceptor persistentInterceptor,String... entityPackage) {
+
 		Map<String, Object> properties = new HashMap<>();
 
-		properties.put("hibernate.ejb.interceptor", persistentEventNotifier);
+		properties.put("hibernate.ejb.interceptor", persistentInterceptor);
 
 		return builder.dataSource(dataSource).packages(entityPackage).jta(true).properties(properties).build();
 	}
@@ -47,7 +48,7 @@ public abstract class AbstructJpaConfiguration {
 	/**
 	 * EntityManager を直接 DI できるようにする定義.
 	 *
-	 * @param customerEntityManagerFactory EntityManager の Factory
+	 * @param entityManagerFactory EntityManager の Factory
 	 * @return
 	 */
 	protected SharedEntityManagerBean entityManager(EntityManagerFactory entityManagerFactory) {
@@ -65,10 +66,10 @@ public abstract class AbstructJpaConfiguration {
 	 * @return
 	 */
 	protected PersistentInterceptor persistentEventInterceptor(PersistentEventNotifier customerPersistentEventNotifier,
-			String entityPackage) {
+			String... entityPackages) {
 		PersistentInterceptor interceptor = new PersistentInterceptor();
 		interceptor.setEventNotifier(customerPersistentEventNotifier);
-		interceptor.setEntityPackage(entityPackage);
+		interceptor.setEntityPackages(entityPackages);
 		interceptor.setPostNotifier(postCommitPersistentEventNotifier);
 		return interceptor;
 	}

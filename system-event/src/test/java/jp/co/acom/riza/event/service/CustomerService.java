@@ -13,6 +13,8 @@ import jp.co.acom.riza.event.customer.entity.MultiKeyEntity;
 import jp.co.acom.riza.event.customer.repository.CustomerRepository;
 import jp.co.acom.riza.event.customer.repository.MultiKeyEntityRepository;
 import jp.co.acom.riza.event.kafka.MessageUtil;
+import jp.co.acom.riza.event.loan.entity.Loan;
+import jp.co.acom.riza.event.loan.repository.LoanRepository;
 import jp.co.acom.riza.event.trade.entity.Trade;
 import jp.co.acom.riza.event.trade.repository.TradeRepository;
 
@@ -27,6 +29,8 @@ public class CustomerService {
 	private MultiKeyEntityRepository multiKeyEntityRepository;
 	@Autowired
 	private TradeRepository tradeRepository;
+	@Autowired
+	private LoanRepository loanRepository;
 	@Autowired
 	private CommonContextInit init;
 
@@ -54,6 +58,10 @@ public class CustomerService {
 		tradeRepository.flush();
 		MessageUtil.send("PRT_QUEUE", "test message 01");
 		MessageUtil.send("PRT_QUEUE", "test message 02");
+		Loan loan = new Loan();
+		loan.setName("loan");
+		loan.setRank(new Integer(10));
+		loanRepository.save(loan);
 
 		if ("ERROR".equals(customer.getName())) {
 			// ロールバックテスト用
