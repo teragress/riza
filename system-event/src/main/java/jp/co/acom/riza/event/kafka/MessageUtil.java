@@ -32,7 +32,7 @@ public class MessageUtil implements ApplicationContextAware {
 	 * @param message
 	 */
 	public static void send(String queName, String message) {
-		applicationContext.getBean(MessageUtilImpl.class).pushString(queName, message);
+		applicationContext.getBean(MessageHolderUtil.class).pushString(queName, message);
 	}
 	
 	public static byte[] getUniqueID() throws IOException {

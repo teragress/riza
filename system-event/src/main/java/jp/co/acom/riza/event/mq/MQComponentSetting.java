@@ -47,7 +47,8 @@ public class MQComponentSetting {
 		cf.setTransportType(WMQConstants.WMQ_CM_CLIENT);
 		cf.setQueueManager(env.getProperty(MQConstants.MQ_CONNECTION_QMGR));
 		cf.setChannel(env.getProperty(MQConstants.MQ_CONNECTION_CHANNEL));
-//		cf.setStringProperty(WMQConstants.USERID, env.getProperty(MQConstants.MQ_CONNECTION_USER));
+
+		//		cf.setStringProperty(WMQConstants.USERID, env.getProperty(MQConstants.MQ_CONNECTION_USER));
 	
 		return cf;
 	}
@@ -65,7 +66,7 @@ public class MQComponentSetting {
 	public CachingConnectionFactory cachingConnectionFactory(UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter) {
 	    CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory();
 	    cachingConnectionFactory.setTargetConnectionFactory(userCredentialsConnectionFactoryAdapter);
-	    cachingConnectionFactory.setSessionCacheSize(500);
+	    cachingConnectionFactory.setSessionCacheSize(3);
 	    cachingConnectionFactory.setReconnectOnException(true);
 	    return cachingConnectionFactory;
 	}

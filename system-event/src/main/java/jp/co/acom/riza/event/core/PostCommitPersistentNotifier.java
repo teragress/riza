@@ -26,8 +26,9 @@ import jp.co.acom.riza.event.core.PersistentHolder.AuditStatus;
 import jp.co.acom.riza.event.entity.EventCheckpointEntity;
 import jp.co.acom.riza.event.entity.EventCheckpointEntityKey;
 import jp.co.acom.riza.event.kafka.KafkaEventProducer;
+import jp.co.acom.riza.event.kafka.KafkaUtil;
 import jp.co.acom.riza.event.kafka.MessageUtil;
-import jp.co.acom.riza.event.kafka.MessageUtilImpl;
+import jp.co.acom.riza.event.kafka.MessageHolderUtil;
 import jp.co.acom.riza.event.msg.Header;
 import jp.co.acom.riza.event.msg.KafkaMessage;
 import jp.co.acom.riza.event.msg.KafkaTopicMessage;
@@ -86,7 +87,10 @@ public class PostCommitPersistentNotifier {
 	KafkaEventProducer kafkaProducer;
 
 	@Autowired
-	MessageUtilImpl messageUtil;
+	MessageHolderUtil messageHolderUtil;
+	
+	@Autowired
+	KafkaUtil kafkaUtil;
 
 	@Autowired
 	PostCommitPersistentNotifier eventNotifier;
@@ -151,7 +155,7 @@ public class PostCommitPersistentNotifier {
 	public void beforeEvent() {
 
 		insertTranEvent();
-		if (tranEvent != null && tranEvent.getManagers().size() > 0) {
+		if (tranEvent != null) {
 			sepKey = commonContext.getTraceId() + commonContext.getSpanId();
 			monitor.startMonitor(sepKey, commonContext.getLjcomDateTime());
 		}
@@ -169,11 +173,12 @@ public class PostCommitPersistentNotifier {
 		logger.info("insertTranEvent() started.");
 
 		try {
-			List<KafkaTopicMessage> topicMessages = new ArrayList<KafkaTopicMessage>();
+			List<KafkaTopicMessage> topicMessages;
 			byte[] messagePrefix = MessageUtil.getUniqueID();
-			if (messageUtil.getMessageCount() > 0) {
-				topicMessages = messageUtil.saveReportMessage(messagePrefix);
-			} else if (holders.size() == 0) {
+			topicMessages = kafkaUtil.saveMqMessage(messagePrefix);
+			
+			if (topicMessages.isEmpty() && messageHolderUtil.getMessageMap().isEmpty()) {
+				tranEvent = null;
 				return;
 			}
 			
@@ -229,7 +234,7 @@ public class PostCommitPersistentNotifier {
 				kafkaProducer.sendEventMessage(tranEvent);
 			}
 			try {
-				messageUtil.flush(tranEvent.getMessageIdPrefix());
+				messageHolderUtil.flush(tranEvent.getMessageIdPrefix());
 			} catch (Exception e) {
 
 				logger.error("Mq message send Exception occurred.", e);
@@ -255,7 +260,7 @@ public class PostCommitPersistentNotifier {
 					allInit = false;
 				}
 			}
-			if (allInit && (holders.size() > 0 || messageUtil.getMessageCount() > 0)) {
+			if (allInit && (holders.size() > 0 || !messageHolderUtil.getMessageMap().isEmpty())) {
 				insertTranEvent();
 				sepKey = commonContext.getTraceId() + commonContext.getSpanId();
 				for (PersistentHolder holder : holders) {

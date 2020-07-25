@@ -6,6 +6,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.NamedQuery;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +27,9 @@ import jp.co.acom.riza.event.utils.StringUtil;
 @Service
 public class EventRecovery {
 
+	@PersistenceContext(name = "systemEntityManagerFactory")
+	EntityManager em;
+	
 	@Autowired
 	EventCheckPointEntityRepository checkPointRepository;
 
@@ -51,15 +58,31 @@ public class EventRecovery {
 		
 		
 		
-		
-		
-		
-		
-		
-		
 	}
 
 	public void rangeRecovery(EventRecoveryParm parm) {
+
+		LocalDateTime dateTime = parm.getDateTime();
+		Timestamp fromTimestamp = Timestamp.valueOf(dateTime);
+		Timestamp toTimestamp;
+		
+		if (parm.getToDateTime() == null) {
+			toTimestamp = Timestamp.valueOf(LocalDateTime.now());
+		} else {
+			toTimestamp = Timestamp.valueOf(parm.getToDateTime());
+		}
+		
+		while (true) {
+			em.createNamedQuery("findByDatetimeFirst")
+			.setParameter("fromDateTime", fromTimestamp)
+			.setParameter("toDateTime", toTimestamp)
+			.setMaxResults(100)
+			.getResultList();
+			
+			
+			
+		}
+		
 
 	}
 }

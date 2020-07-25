@@ -25,12 +25,12 @@ import jp.co.acom.riza.system.utils.log.Logger;
 
 @Component
 @Scope(value = "transaction", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class MessageUtilImpl {
+public class MessageHolderUtil {
 
 	/**
 	 * ロガー
 	 */
-	private static Logger logger = Logger.getLogger(MessageUtilImpl.class);
+	private static Logger logger = Logger.getLogger(MessageHolderUtil.class);
 
 	@Autowired
 	CamelContext camelContext;
@@ -63,9 +63,9 @@ public class MessageUtilImpl {
 		topicMessage.add(message);
 	}
 
-	public int getMessageCount() {
-		return messageMap.keySet().size();
-	}
+//	public int getMessageCount() {
+//		return messageMap.keySet().size();
+//	}
 
 	/**
 	 * キャッシュされたメツセージを全て取り出し送信する。
@@ -87,7 +87,7 @@ public class MessageUtilImpl {
 
 				for (int i = 0; i < list.size(); i++) {
 					String putMessage = list.get(i);
-					kafkaProducer.sendReportTopic(queName, key, putMessage,
+					kafkaProducer.sendTopicMqMessage(queName, key, putMessage,
 							MessageUtil.createMessageId(messagIdPrefix, i));
 					logger.debug("producer.send()" + putMessage);
 				}
@@ -96,48 +96,7 @@ public class MessageUtilImpl {
 		messageMap.clear();
 	}
 
-	/**
-	 * @return
-	 * @throws IOException
-	 * @throws InterruptedException
-	 * @throws ExecutionException
-	 */
-	public List<KafkaTopicMessage> saveReportMessage(byte[] messagIdprefix)
-			throws IOException, InterruptedException, ExecutionException {
-		logger.debug("saveReportMessage() startes.");
-
-		List<KafkaTopicMessage> topicMessages = new ArrayList<KafkaTopicMessage>();
-
-		if (env.getProperty(KafkaConstants.KAFKA_MOCK, Boolean.class, false)) {
-			return topicMessages;
-		}
-
-		byte[] messagePrefix = MessageUtil.getUniqueID();
-		String key = messagePrefix.toString();
-
-		for (Entry<String, ArrayList<String>> entry : messageMap.entrySet()) {
-			String queName = entry.getKey();
-			KafkaTopicMessage topicMessage = new KafkaTopicMessage();
-			topicMessage.setTopic(queName);
-			topicMessages.add(topicMessage);
-
-			ArrayList<String> list = entry.getValue();
-
-			for (int i = 0; i < list.size(); i++) {
-				String putMessage = list.get(i);
-
-				byte[] messageId = MessageUtil.createMessageId(messagePrefix, i);
-				ListenableFuture<SendResult<String, String>> result = kafkaProducer
-						.sendReportTopic(KafkaConstants.KAFKA_SAVE_TOPIC_PREFIX + queName, key, putMessage, messageId);
-				KafkaMessage kafkaMessage = new KafkaMessage();
-				kafkaMessage.setPartition(result.get().getRecordMetadata().partition());
-				kafkaMessage.setOffset(result.get().getRecordMetadata().offset());
-				topicMessage.getKmsg().add(kafkaMessage);
-
-				logger.debug("producer.send()" + putMessage);
-			}
-		}
-
-		return topicMessages;
+	public HashMap<String, ArrayList<String>> getMessageMap() {
+		return messageMap;
 	}
 }

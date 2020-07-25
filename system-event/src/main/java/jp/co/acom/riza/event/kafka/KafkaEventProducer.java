@@ -77,7 +77,7 @@ public class KafkaEventProducer {
 		return kafkaTemplate.send(topic, message);
 	}
 
-	public ListenableFuture<SendResult<String, String>> sendReportTopic(String topic, String key, String message,
+	public ListenableFuture<SendResult<String, String>> sendTopicMqMessage(String topic, String key, String message,
 			byte[] mqMessageID) {
 		ProducerRecord<String, String> rec = new ProducerRecord<String, String>(topic, message);
 		rec.headers().add(KafkaConstants.KAFKA_HEADER_MQ_MESSAGE_ID, mqMessageID);

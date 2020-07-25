@@ -3,9 +3,11 @@ package jp.co.acom.riza.event.entity;
 import java.sql.Timestamp;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import lombok.Data;
 
+import lombok.Data;
+@NamedQuery(name = "findTranExecCheckEntity", query = "select u from TranExecCheckEntity u where u.datetime <= :baseTimestamp")
 /**
  * トランザクションイベントエンティティ
  *

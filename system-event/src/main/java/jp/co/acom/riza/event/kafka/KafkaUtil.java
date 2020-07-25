@@ -1,14 +1,17 @@
 package jp.co.acom.riza.event.kafka;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.camel.component.kafka.KafkaProducer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -24,22 +27,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import jp.co.acom.riza.event.cmd.parm.KafkaMessageInfo;
+import jp.co.acom.riza.event.msg.KafkaMessage;
+import jp.co.acom.riza.event.msg.KafkaTopicMessage;
 import jp.co.acom.riza.exception.EventCommandException;
 import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
 
 /**
- * Kafkaイベント用Producer処理
- *
- * @author developer
+ * @author vagrant
  *
  */
 @Service
-public class KafkaCommandUtil {
+public class KafkaUtil {
 	/**
 	 * ロガー
 	 */
-	private static Logger logger = Logger.getLogger(KafkaCommandUtil.class);
+	private static Logger logger = Logger.getLogger(KafkaUtil.class);
 
 	@Autowired
 	Environment env;
@@ -47,8 +50,17 @@ public class KafkaCommandUtil {
 	@Autowired
 	KafkaTemplate<String, String> kafkaTemplate;
 
+	@Autowired
+	MessageHolderUtil messageHolderUtil;
+
+	@Autowired
+	KafkaEventProducer kafkaEventProducer;
+
 	private Properties props = new Properties();
 
+	/**
+	 * 
+	 */
 	@PostConstruct
 	public void initProperties() {
 
@@ -69,6 +81,10 @@ public class KafkaCommandUtil {
 				KafkaConstants.KAFKA_RECOVERY_COMMAND_CONSUMER_GROUP + env.getProperty("HOSTNAME"));
 	}
 
+	/**
+	 * @param key
+	 * @param value
+	 */
 	private void putPropertie(String key, Object value) {
 		if (value != null) {
 			props.put(key, value);
@@ -78,9 +94,10 @@ public class KafkaCommandUtil {
 	/**
 	 * パーシステントイベントのKafka送信
 	 * 
-	 * @param tranEvent
-	 * @throws ExecutionException
+	 * @param msgInfoList
+	 * @return
 	 * @throws InterruptedException
+	 * @throws ExecutionException
 	 */
 	public ArrayList<KafkaMessageInfo> recoveryKafkaMessages(List<KafkaMessageInfo> msgInfoList)
 			throws InterruptedException, ExecutionException {
@@ -105,8 +122,10 @@ public class KafkaCommandUtil {
 	}
 
 	/**
-	 * 
-	 * @param tranEvent
+	 * @param topic
+	 * @param partition
+	 * @param offset
+	 * @return
 	 */
 	public synchronized ConsumerRecord<String, String> getKafkaMessage(String topic, int partition, long offset) {
 		logger.debug("getKafkaMessage() started.");
@@ -130,34 +149,8 @@ public class KafkaCommandUtil {
 	}
 
 	/**
-	 * 
-	 * @param tranEvent
-	 */
-//	public synchronized ConsumerRecord<String, String> getKafkaMessage(KafkaMessageInfo msgInfo) {
-//		logger.debug("getKafkaMessage() started.");
-//		ConsumerRecord<String, String> conrec;
-//		try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
-//
-//			TopicPartition topicPartition = new TopicPartition(msgInfo.getTopic(),
-//					msgInfo.getPartition().intValue());
-//			Collection<TopicPartition> col = new ArrayList<TopicPartition>();
-//			col.add(topicPartition);
-//			consumer.assign(col);
-//			consumer.seek(topicPartition, msgInfo.getOffset());
-//			ConsumerRecords<String, String> conRecs = consumer.poll(Duration.ofMillis(1000));
-//			conrec = conRecs.iterator().next();
-//			if (conrec == null) {
-//				logger.error(MessageFormat.get("REV0001E"), msgInfo.getTopic(), msgInfo.getPartition(),
-//						msgInfo.getOffset());
-//				throw new EventCommandException(msgInfo.toString());
-//			}
-//		}
-//		return conrec;
-//	}
-
-	/**
-	 * 
-	 * @param tranEvent
+	 * @param conrec
+	 * @return
 	 */
 	public KafkaMessageInfo getKafkaMessageInfo(ConsumerRecord<String, String> conrec) {
 		logger.debug("getKafkaMessage() started.");
@@ -166,5 +159,87 @@ public class KafkaCommandUtil {
 		msgInfo.setOffset(conrec.offset());
 		msgInfo.setTopic(conrec.topic());
 		return msgInfo;
+	}
+
+	/**
+	 * @param topics
+	 * @param messageIdprefix
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
+	public List<KafkaTopicMessage> resendMqMessage(List<KafkaTopicMessage> topics, byte[] messageIdprefix)
+			throws IOException, InterruptedException, ExecutionException {
+		logger.debug("saveMqMessage() started.");
+
+		List<KafkaTopicMessage> topicMessages = new ArrayList<KafkaTopicMessage>();
+		if (env.getProperty(KafkaConstants.KAFKA_MOCK, Boolean.class, false)) {
+			return topicMessages;
+		}
+
+		for (KafkaTopicMessage topicMessage : topics) {
+			int i = 0;
+			for (KafkaMessage kafkaMessage : topicMessage.getKmsg()) {
+
+				ConsumerRecord<String, String> conrec = getKafkaMessage(topicMessage.getTopic(),
+						kafkaMessage.getPartition(), kafkaMessage.getOffset());
+				if (conrec == null) {
+					throw new RuntimeException("");
+				}
+				kafkaEventProducer.sendTopicMqMessage(topicMessage.getTopic(), messageIdprefix.toString(),
+						conrec.value(), MessageUtil.createMessageId(messageIdprefix, i));
+				logger.debug("producer.send()" + conrec.value());
+				i++;
+			}
+
+		}
+		return topicMessages;
+	}
+
+	/**
+	 * @param messagIdprefix
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
+	public List<KafkaTopicMessage> saveMqMessage(byte[] messagIdprefix)
+			throws IOException, InterruptedException, ExecutionException {
+		logger.debug("saveMqMessage() started.");
+
+		List<KafkaTopicMessage> topicMessages = new ArrayList<KafkaTopicMessage>();
+
+		if (env.getProperty(KafkaConstants.KAFKA_MOCK, Boolean.class, false)) {
+			return topicMessages;
+		}
+
+		byte[] messagePrefix = MessageUtil.getUniqueID();
+		String key = messagePrefix.toString();
+
+		for (Entry<String, ArrayList<String>> entry : messageHolderUtil.getMessageMap().entrySet()) {
+			String queName = entry.getKey();
+			KafkaTopicMessage topicMessage = new KafkaTopicMessage();
+			topicMessage.setTopic(queName);
+			topicMessages.add(topicMessage);
+
+			ArrayList<String> list = entry.getValue();
+
+			for (int i = 0; i < list.size(); i++) {
+				String putMessage = list.get(i);
+
+				byte[] messageId = MessageUtil.createMessageId(messagePrefix, i);
+				ListenableFuture<SendResult<String, String>> result = kafkaEventProducer.sendTopicMqMessage(
+						KafkaConstants.KAFKA_SAVE_TOPIC_PREFIX + queName, key, putMessage, messageId);
+				KafkaMessage kafkaMessage = new KafkaMessage();
+				kafkaMessage.setPartition(result.get().getRecordMetadata().partition());
+				kafkaMessage.setOffset(result.get().getRecordMetadata().offset());
+				topicMessage.getKmsg().add(kafkaMessage);
+
+				logger.debug("producer.send()" + putMessage);
+			}
+		}
+
+		return topicMessages;
 	}
 }
