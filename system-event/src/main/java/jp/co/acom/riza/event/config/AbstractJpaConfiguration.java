@@ -12,10 +12,10 @@ import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 
-import jp.co.acom.riza.event.core.PersistentHolder;
-import jp.co.acom.riza.event.core.PersistentInterceptor;
-import jp.co.acom.riza.event.core.PersistentEventNotifier;
-import jp.co.acom.riza.event.core.PostCommitPersistentNotifier;
+import jp.co.acom.riza.event.persist.PersistentEventNotifier;
+import jp.co.acom.riza.event.persist.PersistentHolder;
+import jp.co.acom.riza.event.persist.PersistentInterceptor;
+import jp.co.acom.riza.event.persist.PostCommitPersistentNotifier;
 
 /**
  * エンティティマネージャーを定義する抽象クラス<br>

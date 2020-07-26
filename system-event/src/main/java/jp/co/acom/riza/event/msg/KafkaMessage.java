@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import jp.co.acom.riza.event.core.EntityType;
-import jp.co.acom.riza.event.core.PersistentType;
+import jp.co.acom.riza.event.persist.EntityType;
+import jp.co.acom.riza.event.persist.PersistentType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

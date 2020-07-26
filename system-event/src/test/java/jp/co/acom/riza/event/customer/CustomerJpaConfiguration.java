@@ -16,9 +16,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 
-import jp.co.acom.riza.event.core.PersistentInterceptor;
 import jp.co.acom.riza.event.config.AbstractJpaConfiguration;
-import jp.co.acom.riza.event.core.PersistentEventNotifier;
+import jp.co.acom.riza.event.persist.PersistentEventNotifier;
+import jp.co.acom.riza.event.persist.PersistentInterceptor;
 
 /**
  * エンティティマネージャー定義の例

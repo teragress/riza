@@ -19,9 +19,9 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import jp.co.acom.riza.event.core.PostCommitPersistentNotifier;
 import jp.co.acom.riza.event.msg.KafkaMessage;
 import jp.co.acom.riza.event.msg.KafkaTopicMessage;
+import jp.co.acom.riza.event.persist.PostCommitPersistentNotifier;
 import jp.co.acom.riza.system.utils.log.Logger;
 
 @Component

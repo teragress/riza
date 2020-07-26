@@ -1,4 +1,4 @@
-package jp.co.acom.riza.event.core;
+package jp.co.acom.riza.event.persist;
 
 import java.io.Serializable;
 

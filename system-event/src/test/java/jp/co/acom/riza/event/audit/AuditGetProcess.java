@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import jp.co.acom.riza.event.config.EventConstants;
-import jp.co.acom.riza.event.core.EntityType;
 import jp.co.acom.riza.event.msg.EntityEvent;
+import jp.co.acom.riza.event.persist.EntityType;
 import jp.co.acom.riza.event.utils.AuditEntityUtils;
 import jp.co.acom.riza.system.utils.log.Logger;
 

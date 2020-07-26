@@ -17,7 +17,7 @@ public class CommonContextInit {
 	public void initCommonContxt() {
 		context.setLjcomDateTime(LocalDateTime.now());
 		context.setBusinessProcess("InsertApl");
-		context.setReqeustId("testRequestId");
+		context.setReqeustId(UUID.randomUUID().toString());
 		context.setSpanId(UUID.randomUUID().toString());
 		context.setTraceId(UUID.randomUUID().toString());
 		context.setUserId("userid");

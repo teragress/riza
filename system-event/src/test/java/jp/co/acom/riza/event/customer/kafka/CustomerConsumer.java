@@ -33,8 +33,8 @@ public class CustomerConsumer extends RouteBuilder {
     	.process(AuditGetProcess.PROC_ID)
 		.process("customerBusinessProcess");
 		
-		from("direct:" + "KAD_CUSTOMER_EntityMultiKeyEntity_CustomerBusiness")
-		.routeId("KAD_CUSTOMER_EntityMultiKeyEntity_CustomerBusiness")
+		from("direct:" + "KAD_CUSTOMER_EntityMultiKeyEntity_MultiBusiness")
+		.routeId("KAD_CUSTOMER_EntityMultiKeyEntity_MultiBusiness")
  //   	.process(EntityConsumerInitilizer.PROCESS_ID)		
 		.process("customerBusinessProcess");
 	}

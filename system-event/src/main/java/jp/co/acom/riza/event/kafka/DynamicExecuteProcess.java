@@ -7,7 +7,10 @@ import org.apache.camel.component.kafka.KafkaConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jp.co.acom.riza.event.cmd.parm.KafkaMessageInfo;
 import jp.co.acom.riza.event.config.EventMessageId;
+import jp.co.acom.riza.event.utils.StringUtil;
+import jp.co.acom.riza.exception.DuplicateExecuteException;
 import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
 
@@ -34,7 +37,7 @@ public class DynamicExecuteProcess implements Processor {
 
 	@Autowired
 	ApplicationRouteHolder holder;
-	
+
 	@Autowired
 	TransactionRouteExecute execute;
 
@@ -52,14 +55,29 @@ public class DynamicExecuteProcess implements Processor {
 			try {
 				execute.executeRoute("direct:" + root, exchange);
 			} catch (Exception ex) {
-				logger.error(MessageFormat.get(EventMessageId.CONSUMER_ROUTE_EXCEPTION),
-						topic,
-						group,
-						exchange.getIn().getHeader(KafkaConstants.PARTITION),
-						exchange.getIn().getHeader(KafkaConstants.OFFSET));
-				logger.error("",ex);		
-						
+				if (ex.getCause() != null && ex.getCause() instanceof DuplicateExecuteException) {
+					logger.warn(MessageFormat.get(EventMessageId.CONSUMER_ROUTE_DUPLICATION), group,
+							getKafkaMessageInfo(topic, exchange));
+				} else {
+
+					logger.error(MessageFormat.get(EventMessageId.CONSUMER_ROUTE_EXCEPTION), group, ex.getMessage(),
+							getKafkaMessageInfo(topic, exchange));
+					logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION), ex);
+				}
 			}
 		}
+	}
+
+	/**
+	 * @param topic
+	 * @param exchange
+	 * @return
+	 */
+	String getKafkaMessageInfo(String topic, Exchange exchange) {
+		KafkaMessageInfo msgInfo = new KafkaMessageInfo();
+		msgInfo.setTopic(topic);
+		msgInfo.setPartition((Integer) exchange.getIn().getHeader(KafkaConstants.PARTITION));
+		msgInfo.setOffset((Long) exchange.getIn().getHeader(KafkaConstants.OFFSET));
+		return StringUtil.objectToJsonString(msgInfo);
 	}
 }

@@ -1,4 +1,4 @@
-package jp.co.acom.riza.event.core;
+package jp.co.acom.riza.event.persist;
 
 import java.io.Serializable;
 
@@ -9,8 +9,8 @@ import org.hibernate.envers.RevisionEntity;
 import org.hibernate.type.Type;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import jp.co.acom.riza.event.core.PersistentHolder.AuditStatus;
 import jp.co.acom.riza.event.msg.AuditEntity;
+import jp.co.acom.riza.event.persist.PersistentHolder.AuditStatus;
 import jp.co.acom.riza.system.object.annotation.ObjectAnnotation.AuditMessage;
 import jp.co.acom.riza.system.object.annotation.ObjectAnnotation.NoEvent;
 import jp.co.acom.riza.system.utils.log.Logger;

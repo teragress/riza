@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import brave.Tracer;
 import brave.propagation.TraceContext;
 import jp.co.acom.riza.context.CommonContext;
+import jp.co.acom.riza.event.config.EventConfiguration;
 import jp.co.acom.riza.event.config.EventConstants;
 import jp.co.acom.riza.event.entity.TranExecCheckEntity;
 import jp.co.acom.riza.event.msg.EntityEvent;
@@ -97,16 +98,18 @@ public class EntityConsumerInitilizer implements Processor {
 
 	private void insertTranExecChckEntity(String key, LocalDateTime dateTime) {
 		logger.info("insertTranExecChckEntity() started.");
+
+		EntityManager em = (EntityManager) applicationContext.getBean(EventConfiguration.ENTITY_MANAGER_NAME);
+		TranExecCheckEntity checkEntity = em.find(TranExecCheckEntity.class, commonContext.getReqeustId());
+		if (checkEntity != null) {
+			throw new DuplicateExecuteException(checkEntity.toString());
+		}
 		TranExecCheckEntity execEntity = new TranExecCheckEntity();
-		execEntity.setEventKey(commonContext.getBusinessProcess());
+		execEntity.setEventKey(commonContext.getReqeustId());
+		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 		execEntity.setDatetime(commonContext.getLjcomDateTime().format(formatter));
 		logger.info("execEntity=" + execEntity);
-
-		EntityManager em = (EntityManager) applicationContext.getBean("systemEntityManager");
-		if (em.find(TranExecCheckEntity.class, commonContext.getBusinessProcess()) != null) {
-			throw new DuplicateExecuteException(commonContext.getBusinessProcess());
-		}
 		em.persist(execEntity);
 	}
 }
