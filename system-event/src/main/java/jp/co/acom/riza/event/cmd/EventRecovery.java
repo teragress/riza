@@ -1,7 +1,6 @@
 package jp.co.acom.riza.event.cmd;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
@@ -34,8 +33,8 @@ public class EventRecovery {
 	 */
 	private static Logger logger = Logger.getLogger(EventRecovery.class);
 
-//	private static final int QUERY_MAX_SIZE = 100;
-	private static final int QUERY_MAX_SIZE = 3;
+	private static final int QUERY_MAX_SIZE = 100;
+//	private static final int QUERY_MAX_SIZE = 2;
 
 	@Autowired
 	ApplicationContext applicationContext;
@@ -58,11 +57,16 @@ public class EventRecovery {
 		EventCheckpointEntityKey key = new EventCheckpointEntityKey();
 		key.setTranId(parm.getTranid());
 		key.setDatetime(parm.getDateTime());
-		Optional<EventCheckpointEntity> entity = checkPointRepository.findById(key);
-		if (entity.isPresent()) {
-			TranEvent tranEvent = StringUtil.stringToTranEventEventObject(entity.get().getEventMsg());
+		EntityManager em = (EntityManager)applicationContext.getBean(EventConfiguration.ENTITY_MANAGER_NAME);
+		EventCheckpointEntity entity = em.find(EventCheckpointEntity.class,key);
+
+		if (entity != null) {
+			String eventMessage = mergeEventMessage(entity, em);
+			TranEvent tranEvent = StringUtil.stringToTranEventEventObject(eventMessage);
 			kafkaUtil.resendMqMessage(tranEvent.getTopicMessages(), tranEvent.getMessageIdPrefix(), true);
 			kafkaEventProducer.sendEventMessage(tranEvent);
+			logger.info(MessageFormat.get(EventMessageId.EVENT_RECOVERY_EXECUTE), tranEvent.toString());
+			em.detach(entity);
 		} else {
 			throw new EventCommandException(MessageFormat.get(EventMessageId.RECORD_NOT_FOUND));
 		}
@@ -81,6 +85,7 @@ public class EventRecovery {
 		} else {
 			toDateTime = parm.getToDateTime();
 		}
+		String tranId = "";
 		EntityManager em = (EntityManager)applicationContext.getBean(EventConfiguration.ENTITY_MANAGER_NAME);
 
 		System.out.println("fromTimestamp(" + fromDateTime + ") toTimestamp(" + toDateTime + ")");
@@ -92,24 +97,26 @@ public class EventRecovery {
 
 		while (checkpointList != null && checkpointList.size() != 0) {
 			for (EventCheckpointEntity checkpoint : checkpointList) {
+				System.out.println("*************checkpoint="+checkpoint.toString());
 				String eventMessage = mergeEventMessage(checkpoint, em);
 				TranEvent tranEvent = StringUtil.stringToTranEventEventObject(eventMessage);
 				kafkaUtil.resendMqMessage(tranEvent.getTopicMessages(), tranEvent.getMessageIdPrefix(), false);
 				kafkaEventProducer.sendEventMessage(tranEvent);
 				em.detach(checkpoint);
+				fromDateTime = checkpoint.getTranEventKey().getDatetime();
+				tranId = checkpoint.getTranEventKey().getTranId();
 				logger.info(MessageFormat.get(EventMessageId.EVENT_RECOVERY_EXECUTE), tranEvent.toString());
 			}
 
-			if (checkpointList.size() >= QUERY_MAX_SIZE) {
+			if (checkpointList.size() > 0) {
 				EventCheckpointEntity lastEntity = checkpointList.get(QUERY_MAX_SIZE - 1);
-				fromDateTime = lastEntity.getTranEventKey().getDatetime();
 
+				System.out.println("*************lastckpoint="+ lastEntity.toString());
 				System.out.println("fromTimestamp(" + fromDateTime + ") toTimestamp(" + toDateTime + ")");
 				checkpointList = em
 						.createNamedQuery(EventCheckpointEntity.FIND_BY_DATETIME_NEXT, EventCheckpointEntity.class)
-						.setParameter("fromDateTime", fromDateTime)
+						.setParameter("fromDateTimeTranId", fromDateTime + tranId)
 						.setParameter("toDateTime", toDateTime)
-						.setParameter("tranid", lastEntity.getTranEventKey().getTranId())
 						.setMaxResults(QUERY_MAX_SIZE).getResultList();
 			} else {
 				checkpointList = null;

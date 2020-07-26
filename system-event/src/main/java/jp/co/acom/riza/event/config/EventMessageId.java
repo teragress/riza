@@ -22,6 +22,7 @@ public interface EventMessageId {
 	public static final String SAVE_KAFKA_MESSAGE_NOT_FOUND = "RIZAE013";
 	public static final String EVENT_RECOVERY_EXECUTE = "RIZAE014";
 	public static final String CONSUMER_ROUTE_DUPLICATION = "RIZAE015";
+	public static final String CONSUMER_THREAD_POOL = "RIZAE016";
 	
 
 

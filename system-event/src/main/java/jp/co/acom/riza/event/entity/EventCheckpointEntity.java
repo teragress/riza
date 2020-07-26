@@ -20,8 +20,8 @@ import lombok.Data;
 		+ "where u.tranEventKey.datetime >= :fromDateTime and u.tranEventKey.datetime < :toDateTime and u.tranEventKey.seq = 0 "
 		+ "order by datetime , tranId"),
 	@NamedQuery(name = EventCheckpointEntity.FIND_BY_DATETIME_NEXT, query = "select u from EventCheckpointEntity u "
-		+ "where u.tranEventKey.datetime >= :fromDateTime and u.tranEventKey.datetime < :toDateTime and "
-		+ "u.tranEventKey.tranId < :tranid and u.tranEventKey.seq = 0 "
+		+ "where concat(u.tranEventKey.datetime, u.tranEventKey.tranId) > :fromDateTimeTranId and u.tranEventKey.datetime < :toDateTime "
+		+ "and u.tranEventKey.seq = 0 "
 		+ "order by datetime , tranId")})
 @Data
 //@Table(schema = "DP0", name = "EVENTCHECKPOINT")

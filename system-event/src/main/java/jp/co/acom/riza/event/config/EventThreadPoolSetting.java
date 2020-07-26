@@ -10,9 +10,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+import jp.co.acom.riza.system.utils.log.Logger;
+import jp.co.acom.riza.system.utils.log.MessageFormat;
+
 @Configuration
 public class EventThreadPoolSetting {
 
+	/**
+	 * ロガー
+	 */
+	private static Logger logger = Logger.getLogger(EventThreadPoolSetting.class);
+	
 	@Autowired
 	private Environment env;
 
@@ -22,21 +30,20 @@ public class EventThreadPoolSetting {
 	@Bean(EventConstants.EVENT_THREAD_POOL_BEAN)
 	public ExecutorService createExecutorService() throws Exception {
 		ThreadPoolBuilder builder = new ThreadPoolBuilder(context);
+
+		Integer poolSize = env.getProperty(EventConstants.EVENT_THREAD_POOL_SIZE, Integer.class,
+				EventConstants.EVENT_DEFAULT_THREAD_POOL_SIZE);
+		Integer maxPoolSize = env.getProperty(EventConstants.EVENT_THREAD_MAX_POOL_SIZE, Integer.class,
+				EventConstants.EVENT_DEFAULT_THREAD_MAX_POOL_SIZE);
+		Integer maxQueueSize = env.getProperty(EventConstants.EVENT_THREAD_MAX_QUE_SIZE, Integer.class,
+				EventConstants.EVENT_DEFAULT_THREAD_MAX_QUE_SIZE);
 		ExecutorService executorService = builder
-				.poolSize(env.getProperty(EventConstants.EVENT_THREAD_POOL_SIZE, Integer.class,
-						EventConstants.EVENT_DEFAULT_THREAD_POOL_SIZE))
-				.maxPoolSize(env.getProperty(EventConstants.EVENT_THREAD_MAX_POOL_SIZE, Integer.class,
-						EventConstants.EVENT_DEFAULT_THREAD_MAX_POOL_SIZE))
-				.maxQueueSize(env.getProperty(EventConstants.EVENT_THREAD_MAX_QUE_SIZE, Integer.class,
-						EventConstants.EVENT_DEFAULT_THREAD_MAX_QUE_SIZE))
+				.poolSize(poolSize)
+				.maxPoolSize(maxPoolSize)
+				.maxQueueSize(maxQueueSize)
 				.keepAliveTime(60L).rejectedPolicy(ThreadPoolRejectedPolicy.CallerRuns)
 				.build(EventConstants.EVENT_THREAD_POOL_ID);
-		System.out.println("**************************************************************************");
-		System.out.println("**************************************************************************");
-		System.out.println("**********Event Thread Pool Info******************************************");
-		System.out.println(executorService.toString());
-		System.out.println("**************************************************************************");
-		System.out.println("**************************************************************************");
+		logger.info(MessageFormat.get(EventMessageId.CONSUMER_THREAD_POOL),poolSize,maxPoolSize,maxQueueSize);
 		return executorService;
 	}
 }
