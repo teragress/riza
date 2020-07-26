@@ -112,4 +112,8 @@ public class PersistentHolder implements PersistentEventNotifier {
 		}
 		return normalized;
 	}
+	@Override
+	public void notify(AuditStatus auditStatus) {
+		this.auditStatus = auditStatus;
+	}
 }

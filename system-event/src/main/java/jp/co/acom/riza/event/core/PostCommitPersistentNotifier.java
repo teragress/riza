@@ -1,26 +1,24 @@
 package jp.co.acom.riza.event.core;
 
 import java.io.IOException;
-import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
-import javax.naming.NamingException;
-import javax.xml.soap.MessageFactory;
 
-import org.jgroups.protocols.tom.MessageID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import jp.co.acom.riza.cep.CepMonitorService;
 import jp.co.acom.riza.context.CommonContext;
+import jp.co.acom.riza.event.config.EventConstants;
 import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.event.core.PersistentHolder.AuditStatus;
 import jp.co.acom.riza.event.entity.EventCheckpointEntity;
@@ -33,7 +31,6 @@ import jp.co.acom.riza.event.msg.Header;
 import jp.co.acom.riza.event.msg.KafkaMessage;
 import jp.co.acom.riza.event.msg.KafkaTopicMessage;
 import jp.co.acom.riza.event.msg.TranEvent;
-import jp.co.acom.riza.event.msg.AuditEntity;
 import jp.co.acom.riza.event.msg.AuditMessage;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.Manager;
@@ -53,7 +50,7 @@ import lombok.Setter;
 public class PostCommitPersistentNotifier {
 	private static final Logger logger = Logger.getLogger(PostCommitPersistentNotifier.class);
 
-	private static final int TRAN_MESSAGE_MAX_SIZE = 24000;
+	private Integer TranMessageSplitSize;
 	/**
 	 * エンティティマネージャー単位のホルダー
 	 */
@@ -66,11 +63,19 @@ public class PostCommitPersistentNotifier {
 	 * チェクポイント用トランザクションイベント
 	 */
 	private TranEvent tranEvent;
-	
+
+	/**
+	 * パーシステントイベント有無
+	 */
+	private boolean persistentEvent = false;
 	/**
 	 * 
 	 */
 	private List<KafkaMessage> kafkaMessages = new ArrayList<KafkaMessage>();
+
+	@Autowired
+	Environment env;
+
 	/**
 	 * CommonContext
 	 */
@@ -88,7 +93,7 @@ public class PostCommitPersistentNotifier {
 
 	@Autowired
 	MessageHolderUtil messageHolderUtil;
-	
+
 	@Autowired
 	KafkaUtil kafkaUtil;
 
@@ -100,7 +105,10 @@ public class PostCommitPersistentNotifier {
 	@PostConstruct
 	public void initialize() {
 		logger.info("initialize() started.");
+		TranMessageSplitSize = env.getProperty(EventConstants.CHECK_POINT_SPLIT_SIZE, Integer.class,
+				EventConstants.DEFAULT_CHECK_POINT_SPLIT_SIZE);
 		TransactionSynchronizationManager.registerSynchronization(new TransactionListener());
+
 	}
 
 	/**
@@ -129,7 +137,7 @@ public class PostCommitPersistentNotifier {
 		eventHeader.setUserId(commonContext.getUserId());
 		tranEvent.setHeader(eventHeader);
 
-		//tranEvent.setMqCount(messageUtil.getMessageCount());
+		// tranEvent.setMqCount(messageUtil.getMessageCount());
 
 		List<Manager> managerList = new ArrayList<Manager>();
 		for (PersistentHolder holder : holders) {
@@ -154,8 +162,8 @@ public class PostCommitPersistentNotifier {
 
 	public void beforeEvent() {
 
-		insertTranEvent();
-		if (tranEvent != null) {
+		if (tranEvent == null && persistentEvent) {
+			insertTranEvent();
 			sepKey = commonContext.getTraceId() + commonContext.getSpanId();
 			monitor.startMonitor(sepKey, commonContext.getLjcomDateTime());
 		}
@@ -176,38 +184,31 @@ public class PostCommitPersistentNotifier {
 			List<KafkaTopicMessage> topicMessages;
 			byte[] messagePrefix = MessageUtil.getUniqueID();
 			topicMessages = kafkaUtil.saveMqMessage(messagePrefix);
-			
-			if (topicMessages.isEmpty() && messageHolderUtil.getMessageMap().isEmpty()) {
-				tranEvent = null;
-				return;
-			}
-			
+
 			tranEvent = createTranEvent();
 			tranEvent.setMessageIdPrefix(messagePrefix);
 			tranEvent.setTopicMessages(topicMessages);
 
-			if (tranEvent != null) {
+			EventCheckpointEntity tranEntity = new EventCheckpointEntity();
 
-				EventCheckpointEntity tranEntity = new EventCheckpointEntity();
+			String evMsg = StringUtil.objectToJsonString(tranEvent);
+			List<String> splitStr = StringUtil.splitByLength(evMsg, TranMessageSplitSize);
 
-				String evMsg = StringUtil.objectToJsonString(tranEvent);
-				List<String> splitStr = StringUtil.splitByLength(evMsg, TRAN_MESSAGE_MAX_SIZE);
-
-				for (int i = 0; i < splitStr.size(); i++) {
-					EventCheckpointEntityKey tranKey = new EventCheckpointEntityKey();
-					tranKey.setTranId(commonContext.getTraceId() + commonContext.getSpanId());
-					tranKey.setDatetime(Timestamp.valueOf(commonContext.getLjcomDateTime()));
-					tranKey.setSeq(i);
-					tranEntity.setTranEventKey(tranKey);
-					tranEntity.setCnt(splitStr.size());
-					tranEntity.setEventMsg(splitStr.get(i));
-					logger.info("******* TranEntity=" + tranEntity);
-					tranEventRepository.save(tranEntity);
-				}
+			for (int i = 0; i < splitStr.size(); i++) {
+				EventCheckpointEntityKey tranKey = new EventCheckpointEntityKey();
+				tranKey.setTranId(commonContext.getTraceId() + commonContext.getSpanId());
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+				tranKey.setDatetime(commonContext.getLjcomDateTime().format(formatter));
+				tranKey.setSeq(i);
+				tranEntity.setTranEventKey(tranKey);
+				tranEntity.setCnt(splitStr.size());
+				tranEntity.setEventMsg(splitStr.get(i));
+				logger.info("******* TranEntity=" + tranEntity);
+				tranEventRepository.save(tranEntity);
 			}
 		} catch (Exception ex) {
-			logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION),ex.getMessage());
-			logger.error(MessageFormat.get(EventMessageId.EXCEPTION_INFORMATION),ex);
+			logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION), ex.getMessage());
+			logger.error(MessageFormat.get(EventMessageId.EXCEPTION_INFORMATION), ex);
 			Integer forceNullException = null;
 			forceNullException.intValue();
 		}
@@ -230,18 +231,20 @@ public class PostCommitPersistentNotifier {
 				logger.info(MessageFormat.get("RIZA0001"), StringUtil.objectToJsonString(auditMessage));
 			}
 
-			if (tranEvent != null && tranEvent.getManagers().size() > 0) {
-				kafkaProducer.sendEventMessage(tranEvent);
+			if (!persistentEvent) {
+				super.afterCommit();
+				return;
 			}
+			kafkaProducer.sendEventMessage(tranEvent);
+
 			try {
 				messageHolderUtil.flush(tranEvent.getMessageIdPrefix());
 			} catch (Exception e) {
 
 				logger.error("Mq message send Exception occurred.", e);
 			}
-			if (tranEvent != null && tranEvent.getManagers().size() > 0) {
-				monitor.endMonitor(commonContext.getTraceId() + commonContext.getSpanId());
-			}
+
+			monitor.endMonitor(commonContext.getTraceId() + commonContext.getSpanId());
 
 			super.afterCommit();
 		}
@@ -254,26 +257,16 @@ public class PostCommitPersistentNotifier {
 		@Override
 		public void beforeCommit(boolean readOnly) {
 			logger.info("beforCommit() started. readOnly=" + readOnly);
-			boolean allInit = true;
-			for (PersistentHolder holder : holders) {
-				if (holder.getAuditStatus() != AuditStatus.INIT && holder.getAuditStatus() != AuditStatus.COMPLETE) {
-					allInit = false;
-				}
-			}
-			if (allInit && (holders.size() > 0 || !messageHolderUtil.getMessageMap().isEmpty())) {
+
+			if (holders.size() == 0 && persistentEvent) {
 				insertTranEvent();
-				sepKey = commonContext.getTraceId() + commonContext.getSpanId();
 				for (PersistentHolder holder : holders) {
 					holder.setAuditStatus(AuditStatus.COMPLETE);
 				}
+				sepKey = commonContext.getTraceId() + commonContext.getSpanId();
+				monitor.startMonitor(sepKey, commonContext.getLjcomDateTime());
 			}
 			super.beforeCommit(readOnly);
-		}
-
-		@Override
-		public void beforeCompletion() {
-			logger.info("beforeCompletion() started.");
-			super.beforeCompletion();
 		}
 	}
 }

@@ -97,6 +97,7 @@ public class PersistentInterceptor extends EmptyInterceptor {
 		}
 		if (isTargetEvent(entity)) {
 			if (persistentType != PersistentType.SELECT) {
+				postNotifier.setPersistentEvent(true);
 				EntityPersistent event = new EntityPersistent(persistentType, getEntityType(entity), entity, id);
 				event.setEntityId(id);
 				eventNotifier.notify(event);		// TODO 自動生成されたメソッド・スタブ
@@ -172,14 +173,16 @@ public class PersistentInterceptor extends EmptyInterceptor {
 	public void beforeTransactionCompletion(Transaction tx) {
 		logger.info("********beforeTransactionComplition() started.*************");
 		boolean allReady = true;
+		eventNotifier.notify(AuditStatus.COMPLETE);
+		
 		for (PersistentHolder persistentEventHolder : postNotifier.getHolders()) {
-			if (persistentEventHolder.getAuditStatus() == AuditStatus.AUDIT_ENTITY_ON
-					|| persistentEventHolder.getAuditStatus() == AuditStatus.COMPLETE) {
+			if (persistentEventHolder.getAuditStatus() != AuditStatus.COMPLETE) {
 				allReady = false;
 			}
 		}
 		if (allReady) {
-			if (postNotifier.getHolders().size() > 0) {
+			//MQ判定が必要と思われるここで
+			if (postNotifier.isPersistentEvent()) {
 				postNotifier.beforeEvent();
 				for (PersistentHolder persistentEventHolder : postNotifier.getHolders()) {
 					persistentEventHolder.setAuditStatus(AuditStatus.COMPLETE);

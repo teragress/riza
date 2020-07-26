@@ -29,7 +29,10 @@ public class FileEventConsumer extends RouteBuilder {
 		int consumersCount = env.getProperty(KafkaConstants.KAFKA_FILE_CONSUMER_COUNT, Integer.class,
 				KafkaConstants.KAFKA_DEFAULT_FILE_CONSUMER_COUNT);
 
-		Boolean autoStart = env.getProperty(KafkaConstants.KAFKA_MOCK,Boolean.class,true);
+		Boolean autoStart = true;
+		if (env.getProperty(KafkaConstants.KAFKA_MOCK,Boolean.class,false)) {
+			autoStart = false;
+		};
 		
 		logger.debug("configure() start");
 		from("kafka:" + KafkaConstants.KAFKA_FILE_EVENT_TOPIC + "?groupId=" + KafkaConstants.KAFKA_FILE_EVENT_GROUP

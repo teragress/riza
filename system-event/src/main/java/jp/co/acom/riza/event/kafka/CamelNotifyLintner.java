@@ -5,6 +5,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.management.event.CamelContextStartedEvent;
 import org.apache.camel.support.EventNotifierSupport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import jp.co.acom.riza.system.utils.log.Logger;
@@ -26,12 +27,18 @@ public class CamelNotifyLintner extends EventNotifierSupport {
 
 	@Autowired
 	KafkaConsumerCreate create;
+	
+	@Autowired
+	Environment env;
 	/**
 	 * CamelcontextStartedEventトリガー
 	 */
 	@Override
 	public void notify(EventObject event) throws Exception {
 		logger.info("notify() started. ************************************************::");
+		if (env.getProperty(KafkaConstants.KAFKA_MOCK,Boolean.class,false)) {
+			return;
+		}
 		if (event instanceof CamelContextStartedEvent) {
 			CamelContextStartedEvent startEvent = (CamelContextStartedEvent)event;
 			CamelContext context = startEvent.getContext();

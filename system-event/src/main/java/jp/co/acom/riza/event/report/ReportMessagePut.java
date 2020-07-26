@@ -48,7 +48,10 @@ public class ReportMessagePut implements Processor {
 	 */
 	public void process(Exchange exchange) throws Exception {
 		logger.debug("process() started.");
-
+		if (env.getProperty(MQConstants.MQ_MOCK,Boolean.class,false)) {
+			return;
+		}
+		
 		int retryCount = env.getProperty(MQConstants.MQ_PUT_MAX_RETRY, Integer.class,
 				MQConstants.MQ_DEFAULT_PUT_MAX_RETRY);
 		int retryTime = env.getProperty(MQConstants.MQ_PUT_RETRY_TIME, Integer.class,
@@ -77,18 +80,6 @@ public class ReportMessagePut implements Processor {
 		
 		logger.warn(MessageFormat.get(EventMessageId.MQPUT_RETRY_OVER), retryCount, retryCount, retryTime,
 				throwException.getMessage());
-//		Thread stop = new Thread() {
-//			@Override
-//			public void run() {
-//				try {
-//					exchange.getContext().stopRoute("report_output_consumer");
-//					
-//				} catch (Exception e) {
-//					logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION),e);
-//				}
-//			}
-//		};
-//		stop.start();
 		throw throwException;
 	}
 }

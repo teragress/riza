@@ -18,9 +18,9 @@ public class EventCheckpointEntityKey implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	/**
-	 * 日時
+	 * 日時(YYYYMMDDHHMMSS)
 	 */
-	private Timestamp datetime;
+	private String datetime;
 	/**
 	 * トランザクション識別
 	 */

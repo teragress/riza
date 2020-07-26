@@ -47,6 +47,17 @@ public class CustomerController {
   }
 
   /**
+   * 新規登録.
+   *
+   * @param customer 登録する情報
+   * @return
+   */
+  @RequestMapping("/findput")
+  public Customer findAndMqput(@RequestBody Customer customer) {
+    return customerService.findAndMqput(customer);
+  }
+  
+  /**
    * 登録されている情報をすべて取得する.
    * @return 情報のリスト
    */

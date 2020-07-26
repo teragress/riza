@@ -1,6 +1,5 @@
 package jp.co.acom.riza.event.entity;
 
-import java.sql.Timestamp;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
@@ -24,7 +23,7 @@ public class TranExecCheckEntity {
 	@Id
 	private String eventKey;
 	/**
-	 * イベント挿入日時
+	 * イベント挿入日時(yyyyMMddHHmmss)
 	 */
-	private Timestamp datetime;
+	private String datetime;
 }

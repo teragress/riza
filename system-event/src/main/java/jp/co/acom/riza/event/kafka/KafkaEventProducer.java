@@ -73,10 +73,22 @@ public class KafkaEventProducer {
 		}
 	}
 
+	/**
+	 * @param topic
+	 * @param message
+	 * @return
+	 */
 	private ListenableFuture<SendResult<String, String>> send(String topic, String message) {
 		return kafkaTemplate.send(topic, message);
 	}
 
+	/**
+	 * @param topic
+	 * @param key
+	 * @param message
+	 * @param mqMessageID
+	 * @return
+	 */
 	public ListenableFuture<SendResult<String, String>> sendTopicMqMessage(String topic, String key, String message,
 			byte[] mqMessageID) {
 		ProducerRecord<String, String> rec = new ProducerRecord<String, String>(topic, message);

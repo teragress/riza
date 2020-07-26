@@ -19,6 +19,7 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 
+import jp.co.acom.riza.event.core.PostCommitPersistentNotifier;
 import jp.co.acom.riza.event.msg.KafkaMessage;
 import jp.co.acom.riza.event.msg.KafkaTopicMessage;
 import jp.co.acom.riza.system.utils.log.Logger;
@@ -40,6 +41,9 @@ public class MessageHolderUtil {
 
 	@Autowired
 	KafkaEventProducer kafkaProducer;
+	
+	@Autowired
+	PostCommitPersistentNotifier postNotifier;
 
 	private HashMap<String, ArrayList<String>> messageMap = new HashMap<>();
 
@@ -61,6 +65,7 @@ public class MessageHolderUtil {
 			messageMap.put(queName, topicMessage);
 		}
 		topicMessage.add(message);
+		postNotifier.setPersistentEvent(true);
 	}
 
 //	public int getMessageCount() {

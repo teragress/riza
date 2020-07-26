@@ -1,6 +1,8 @@
 package jp.co.acom.riza.event.service;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,7 @@ public class CustomerService {
 	@Autowired
 	private CommonContextInit init;
 
-	@Transactional
+	@Transactional(timeout = 3600)
 	public void save(Customer customer) {
 		LOGGER.info("start save.");
 		
@@ -89,8 +91,20 @@ public class CustomerService {
 		
 		return customerRepository.findAll();
 	}
+	
+	@Transactional(timeout = 3600)
+	public Customer findAndMqput(Customer customer) {
+		init.initCommonContxt();
+		Long key = new Long(1);
+		Optional<Customer> findCustomer = customerRepository.findById(key);
+		System.out.println(findCustomer.get().toString());
+		MessageUtil.send("PRT_QUEUE", "test message 03");
+		MessageUtil.send("PRT_QUEUE", "test message 04");
+		return findCustomer.get();
+	}
 
-	@Transactional
+
+	@Transactional(timeout = 3600)
 	public void modify(Customer customer) {
 		LOGGER.info("start modify.");
 		init.initCommonContxt();

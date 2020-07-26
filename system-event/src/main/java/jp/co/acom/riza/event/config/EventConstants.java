@@ -44,4 +44,7 @@ public interface EventConstants {
 	 *　エンティティイベントを伝搬するexchangeのヘッダーキー
 	 */
 	public static final String EXCHANGE_HEADER_ENTITY_EVENT = "EntityEvent";
+	
+	public static final String CHECK_POINT_SPLIT_SIZE = "CHECK_POINT_SPLIT_SIZE";
+	public static final Integer DEFAULT_CHECK_POINT_SPLIT_SIZE = 240000;
 }

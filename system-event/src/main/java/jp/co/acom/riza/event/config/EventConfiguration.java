@@ -27,6 +27,8 @@ import jp.co.acom.riza.event.core.PersistentHolder;
 public class EventConfiguration {
 	// 当該エンティティマネージャーのエンティティが存在するパッケージ.
 	private static final String ENTITY_PACKAGE = "jp.co.acom.riza.event.entity";
+	public static final String ENTITY_MANAGER_NAME = "systemEntityManager";
+	
 	/**
 	 * system パッケージ用の EntityManagerFactory の定義.
 	 *

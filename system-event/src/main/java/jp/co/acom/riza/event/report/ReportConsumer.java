@@ -25,7 +25,11 @@ public class ReportConsumer extends RouteBuilder {
 	 */
 	@Override
 	public void configure() throws Exception {
-		Boolean autoStart = env.getProperty(KafkaConstants.KAFKA_MOCK,Boolean.class,true);
+		
+		Boolean autoStart = true;
+		if (env.getProperty(KafkaConstants.KAFKA_MOCK,Boolean.class,false)) {
+			autoStart = false;
+		};
 		
 		logger.debug("configure() start");
 		from(KafkaConstants.KAFKA_COMPONENT_BEAN + ":" + KafkaConstants.KAFKA_REPORT_TOPIC + "?groupId=" + KafkaConstants.KAFKA_REPORT_TOPIC_GROUP

@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import jp.co.acom.riza.event.cmd.parm.KafkaMessageInfo;
+import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.event.msg.KafkaMessage;
 import jp.co.acom.riza.event.msg.KafkaTopicMessage;
 import jp.co.acom.riza.exception.EventCommandException;
@@ -169,8 +170,8 @@ public class KafkaUtil {
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
-	public List<KafkaTopicMessage> resendMqMessage(List<KafkaTopicMessage> topics, byte[] messageIdprefix)
-			throws IOException, InterruptedException, ExecutionException {
+	public List<KafkaTopicMessage> resendMqMessage(List<KafkaTopicMessage> topics, byte[] messageIdprefix,
+			boolean notFoundError) throws IOException, InterruptedException, ExecutionException {
 		logger.debug("saveMqMessage() started.");
 
 		List<KafkaTopicMessage> topicMessages = new ArrayList<KafkaTopicMessage>();
@@ -184,15 +185,18 @@ public class KafkaUtil {
 
 				ConsumerRecord<String, String> conrec = getKafkaMessage(topicMessage.getTopic(),
 						kafkaMessage.getPartition(), kafkaMessage.getOffset());
-				if (conrec == null) {
-					throw new RuntimeException("");
+				if (conrec == null && notFoundError) {
+					logger.error(MessageFormat.get(EventMessageId.SAVE_KAFKA_MESSAGE_NOT_FOUND),
+							topicMessage.getTopic(), kafkaMessage.getPartition(), kafkaMessage.getOffset());
+					throw new EventCommandException("Save kafka message not found");
 				}
-				kafkaEventProducer.sendTopicMqMessage(topicMessage.getTopic(), messageIdprefix.toString(),
-						conrec.value(), MessageUtil.createMessageId(messageIdprefix, i));
-				logger.debug("producer.send()" + conrec.value());
+				if (conrec != null) {
+					kafkaEventProducer.sendTopicMqMessage(topicMessage.getTopic(), messageIdprefix.toString(),
+							conrec.value(), MessageUtil.createMessageId(messageIdprefix, i));
+					logger.debug("producer.send()" + conrec.value());
+				}
 				i++;
 			}
-
 		}
 		return topicMessages;
 	}

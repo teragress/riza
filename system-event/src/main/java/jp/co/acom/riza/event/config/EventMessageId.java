@@ -18,6 +18,9 @@ public interface EventMessageId {
 	public static final String MQPUT_EXCEPTION = "RIZAE009";
 	public static final String MQPUT_RETRY_OVER = "RIZAE010";
 	public static final String WARNING_EXCEPTION_INFORMATION = "RIZAE011";
+	public static final String RECORD_NOT_FOUND = "RIZAE012";
+	public static final String SAVE_KAFKA_MESSAGE_NOT_FOUND = "RIZAE013";
+	public static final String EVENT_RECOVERY_EXECUTE = "RIZAE014";
 	
 
 

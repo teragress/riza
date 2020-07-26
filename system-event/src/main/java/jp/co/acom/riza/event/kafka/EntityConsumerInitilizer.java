@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import javax.persistence.EntityManager;
@@ -98,7 +99,8 @@ public class EntityConsumerInitilizer implements Processor {
 		logger.info("insertTranExecChckEntity() started.");
 		TranExecCheckEntity execEntity = new TranExecCheckEntity();
 		execEntity.setEventKey(commonContext.getBusinessProcess());
-		execEntity.setDatetime(Timestamp.valueOf(commonContext.getLjcomDateTime()));
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+		execEntity.setDatetime(commonContext.getLjcomDateTime().format(formatter));
 		logger.info("execEntity=" + execEntity);
 
 		EntityManager em = (EntityManager) applicationContext.getBean("systemEntityManager");

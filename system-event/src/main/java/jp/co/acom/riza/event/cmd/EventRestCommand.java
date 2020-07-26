@@ -14,7 +14,6 @@ import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ServiceStatus;
@@ -101,6 +100,12 @@ public class EventRestCommand {
 	@RequestMapping(path = REQ_EVENT_RECOVERY_DATE_TIME)
 	public EventCommandResponse recoveryEventDateTime(@RequestBody EventRecoveryParm parm) {
 		outputStartMessage(REQ_EVENT_RECOVERY_DATE_TIME, parm.toString());
+		try {
+			eventRecovery.rangeRecovery(parm);
+			
+		} catch (Exception ex) {
+			return exceptionProc(ex, REQ_EVENT_RECOVERY_DATE_TIME, parm);
+		}
 
 		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
 		return createNormalResponse(null);

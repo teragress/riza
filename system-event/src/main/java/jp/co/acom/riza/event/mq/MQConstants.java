@@ -9,15 +9,6 @@ package jp.co.acom.riza.event.mq;
 public class MQConstants {
 
 	/**
-	 * 接続維持タイムアウト(㍉秒指定)
-	 */
-	public static final String MQ_CONNECTION_KEEP_TIMEOUT = "MQ_CONNECTION_KEEP_TIMEOUT";
-	/**
-	 * 接続維持タイムアウトデフォルト値(一時間<㍉秒指定>)
-	 */
-	public static final int MQ_DEFAULT_CONNECTION_KEEP_TIMEOUT = 3600000;
-
-	/**
 	 * 最大接続数
 	 */
 	public static final String MQ_MAX_CONNECTION = "MQ_MAX_CONNECTION";
@@ -25,14 +16,6 @@ public class MQConstants {
 	 * 最大接続数デフォルト値
 	 */
 	public static final int MQ_DEFAULT_MAX_CONNECTION = 3;
-	/**
-	 * 最大未使用接続数
-	 */
-	public static final String MQ_MAX_UNUSE_CONNECTION = "MQ_MAX_UNUSE_CONNECTION";
-	/**
-	 * 最大未使用接続数デフォルト値
-	 */
-	public static final int MQ_DEFAULT_MAX_UNUSE_CONNECTION = 1;
 
 	/**
 	 * 接続先キューマネージャー名
@@ -75,6 +58,5 @@ public class MQConstants {
 	* MQモック指定
 	*/
 	public static final String MQ_MOCK = "MQ_MOCK";
-
 
 }
