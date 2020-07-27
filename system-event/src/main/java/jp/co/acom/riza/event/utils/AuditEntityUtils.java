@@ -17,7 +17,7 @@ import jp.co.acom.riza.event.persist.EntityType;
 
 /**
  * 監査（履歴）エンティティの取得ユーティリティ
- * @author vagrant
+ * @author teratani
  *
  */
 @Service

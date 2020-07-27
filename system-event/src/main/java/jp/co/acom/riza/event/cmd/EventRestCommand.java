@@ -8,7 +8,7 @@ import jp.co.acom.riza.event.cmd.parm.KafkaMessageInfo;
 import jp.co.acom.riza.event.cmd.parm.KafkaRecoveryParm;
 import jp.co.acom.riza.event.cmd.parm.RouteParm;
 import jp.co.acom.riza.event.config.EventMessageId;
-import jp.co.acom.riza.event.kafka.KafkaUtil;
+import jp.co.acom.riza.event.kafka.KafkaEventUtil;
 import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
@@ -27,9 +27,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-/** 処理を開始するための REST を受け付ける. */
 /**
- * @author vagrant
+ * イベントコマンド受け付け処理(REST)
+ * 
+ * @author teratani
  *
  */
 @RestController
@@ -63,21 +64,21 @@ public class EventRestCommand {
 	CamelContext camelContext;
 
 	@Autowired
-	KafkaUtil kafkaUtil;
+	KafkaEventUtil kafkaEventUtil;
 
 	@Autowired
 	EventRecovery eventRecovery;
 
 	@Autowired
 	CheckPointTableClean checkPointTableClean;
-	
+
 	@Autowired
 	ExecTableClean execTableClean;
 
 	/**
 	 * イベントチェックポイントテーブルクリーンナップ
 	 * 
-	 * @param parm
+	 * @param parm コマンドパラメータ
 	 * @return
 	 */
 	@RequestMapping(path = REQ_CHECK_POINT_CLEAN)
@@ -86,19 +87,25 @@ public class EventRestCommand {
 
 		try {
 
+			// 保存日数
 			int keepDay = DEFAULT_KEEP_DAYS;
 			if (parm.getKeepDays() != null) {
 				keepDay = parm.getKeepDays();
 			}
 
+			// 削除基準日付
 			LocalDateTime baseDatetime = LocalDateTime.now();
 			if (parm.getBaseDatetime() != null) {
 				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-				baseDatetime = LocalDateTime.parse(parm.getBaseDatetime(),dtf);
+				baseDatetime = LocalDateTime.parse(parm.getBaseDatetime(), dtf);
 			}
-			
+
 			baseDatetime = baseDatetime.minusDays(keepDay);
+			
+			// トータル削除件数
 			int allDeleteCount = 0;
+			
+			// 分割削除件数
 			int splitCount = DEFAULT_DELETION_SPLIT_COUNT;
 			if (parm.getDeletionSplitCount() != null) {
 				splitCount = parm.getDeletionSplitCount();
@@ -108,11 +115,14 @@ public class EventRestCommand {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 			String baseDatetimeStr = baseDatetime.format(formatter);
 
+			// すべて削除できるまでクリーンナップ処理呼出
 			while (deleteCount != 0) {
 				deleteCount = checkPointTableClean.cleanCheckPoint(baseDatetimeStr, splitCount);
 				allDeleteCount = allDeleteCount + deleteCount;
 			}
-			logger.info(MessageFormat.get(EventMessageId.CHECKPOINT_CLEANUP),allDeleteCount);
+			
+			logger.info(MessageFormat.get(EventMessageId.CHECKPOINT_CLEANUP), allDeleteCount);
+			
 		} catch (Exception ex) {
 			return exceptionProc(ex, REQ_CHECK_POINT_CLEAN, parm);
 		}
@@ -124,7 +134,7 @@ public class EventRestCommand {
 	/**
 	 * イベント実行テーブルクリーンナップ
 	 * 
-	 * @param parm
+	 * @param parm コマンドパラメータ
 	 * @return
 	 */
 	@RequestMapping(path = REQ_EXEC_TABLE_CLEAN)
@@ -141,9 +151,9 @@ public class EventRestCommand {
 			LocalDateTime baseDatetime = LocalDateTime.now();
 			if (parm.getBaseDatetime() != null) {
 				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-				baseDatetime = LocalDateTime.parse(parm.getBaseDatetime(),dtf);
+				baseDatetime = LocalDateTime.parse(parm.getBaseDatetime(), dtf);
 			}
-			
+
 			baseDatetime = baseDatetime.minusDays(keepDay);
 			int allDeleteCount = 0;
 			int splitCount = DEFAULT_DELETION_SPLIT_COUNT;
@@ -159,13 +169,12 @@ public class EventRestCommand {
 				deleteCount = execTableClean.cleanTranExec(baseDatetimeStr, splitCount);
 				allDeleteCount = allDeleteCount + deleteCount;
 			}
-			
-			logger.info(MessageFormat.get(EventMessageId.TRANEXEC_CLEANUP),allDeleteCount);
-			
+
+			logger.info(MessageFormat.get(EventMessageId.TRANEXEC_CLEANUP), allDeleteCount);
+
 		} catch (Exception ex) {
 			return exceptionProc(ex, REQ_EXEC_TABLE_CLEAN, parm);
 		}
-
 
 		outputEndMessage(REQ_EXEC_TABLE_CLEAN, parm.toString());
 		return createNormalResponse(null);
@@ -174,7 +183,7 @@ public class EventRestCommand {
 	/**
 	 * イベントリカバリー（日時指定）
 	 * 
-	 * @param parm
+	 * @param parm コマンドパラメータ
 	 * @return
 	 */
 	@RequestMapping(path = REQ_EVENT_RECOVERY_DATE_TIME)
@@ -194,7 +203,7 @@ public class EventRestCommand {
 	/**
 	 * イベントリカバリー（個別（キー）指定）
 	 * 
-	 * @param parm
+	 * @param parm コマンドパラメータ
 	 * @return
 	 */
 	@RequestMapping(path = REQ_EVENT_RECOVERY_KEYS)
@@ -214,7 +223,7 @@ public class EventRestCommand {
 	/**
 	 * KAFKAメッセージリカバリー(再送信）
 	 * 
-	 * @param parm
+	 * @param parm コマンドパラメータ
 	 * @return
 	 */
 	@RequestMapping(path = REQ_KAFKA_RECOVERY_OFFSET)
@@ -224,7 +233,7 @@ public class EventRestCommand {
 		List<KafkaMessageInfo> rspInfo;
 
 		try {
-			rspInfo = kafkaUtil.recoveryKafkaMessages(parm.getMsgInfo());
+			rspInfo = kafkaEventUtil.recoveryKafkaMessages(parm.getMsgInfo());
 			logger.info(MessageFormat.get(EventMessageId.KAFKA_MESSAGE_RECOVERY),
 					StringUtil.objectToJsonString(rspInfo));
 		} catch (Exception ex) {
@@ -239,7 +248,7 @@ public class EventRestCommand {
 	/**
 	 * ルート開始
 	 * 
-	 * @param parm
+	 * @param parm コマンドパラメータ
 	 * @return
 	 */
 	@RequestMapping(path = REQ_ROUTE_START)
@@ -263,7 +272,7 @@ public class EventRestCommand {
 	/**
 	 * ルート停止
 	 * 
-	 * @param parm
+	 * @param parm コマンドパラメータ
 	 * @return
 	 */
 	@RequestMapping(path = REQ_ROUTE_STOP)
@@ -283,8 +292,8 @@ public class EventRestCommand {
 	/**
 	 * コマンド開始メッセージ出力
 	 * 
-	 * @param path
-	 * @param parm
+	 * @param cmdPath コマンドパス
+	 * @param parm コマンドパラメータ
 	 */
 	private void outputStartMessage(String path, String parm) {
 		logger.info(MessageFormat.get(EventMessageId.EVENT_COMMAND_START), REQ_PREFIX_PATH + path, parm);
@@ -293,8 +302,8 @@ public class EventRestCommand {
 	/**
 	 * コマンド終了メッセージ出力
 	 * 
-	 * @param path
-	 * @param parm
+	 * @param cmdPath コマンドパス
+	 * @param parm コマンドパラメータ
 	 */
 	private void outputEndMessage(String path, String parm) {
 		logger.info(MessageFormat.get(EventMessageId.EVENT_COMMAND_END), REQ_PREFIX_PATH + path, parm);
@@ -303,9 +312,9 @@ public class EventRestCommand {
 	/**
 	 * 例外共通処理
 	 * 
-	 * @param ex
-	 * @param cmdPath
-	 * @param parm
+	 * @param ex 例外
+	 * @param cmdPath コマンドパス
+	 * @param parm コマンドパラメータ
 	 * @return
 	 */
 	private EventCommandResponse exceptionProc(Exception ex, String cmdPath, Object parm) {
@@ -320,8 +329,9 @@ public class EventRestCommand {
 	}
 
 	/**
-	 * @param addMessage
-	 * @return
+	 * イベントコマンド応答編集
+	 * @param addMessage 付加メッセージ
+	 * @return  EventCommandResponse
 	 */
 	private EventCommandResponse createNormalResponse(String addMessage) {
 		EventCommandResponse resp = new EventCommandResponse();

@@ -1,8 +1,10 @@
 package jp.co.acom.riza.event.mq;
 
 import javax.jms.JMSException;
+import javax.jms.QueueConnectionFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +21,7 @@ import com.ibm.msg.client.wmq.WMQConstants;
 /**
  * MQコンポーネントの登録クラス
  *
- * @author developer
+ * @author teratani
  *
  */
 @Configuration
@@ -29,7 +31,7 @@ public class MQComponentSetting {
 
 	@Bean
 	@Primary
-	public MQQueueConnectionFactory mqQueueConnectionFactory() throws JMSException {
+	public QueueConnectionFactory mqQueueConnectionFactory() throws JMSException {
 		
 		MQQueueConnectionFactory cf = new MQQueueConnectionFactory();
 		cf.setHostName(env.getProperty(MQConstants.MQ_CONNECTION_HOST));
@@ -61,7 +63,7 @@ public class MQComponentSetting {
 	}
 
 	@Bean
-	public JmsOperations jmsOperations(CachingConnectionFactory cachingConnectionFactory) {
+	public JmsTemplate jmsOperations(CachingConnectionFactory cachingConnectionFactory) {
 	    JmsTemplate jmsTemplate = new JmsTemplate(cachingConnectionFactory);
 		MQDestinationResolver resolver = new MQDestinationResolver();
 		resolver.setTargetClient(WMQConstants.WMQ_CLIENT_NONJMS_MQ);

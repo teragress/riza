@@ -2,7 +2,7 @@ package jp.co.acom.riza.event.persist;
 
 /**
  * 更新タイプ
- * @author vagrant
+ * @author teratani
  *
  */
 public enum PersistentType {

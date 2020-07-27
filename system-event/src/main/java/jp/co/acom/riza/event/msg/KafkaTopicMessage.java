@@ -15,7 +15,7 @@ import lombok.ToString;
 /**
  * 更新エンティティ情報
  * 
- * @author vagrant
+ * @author teratani
  *
  */
 @Getter

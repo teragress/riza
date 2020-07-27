@@ -21,7 +21,7 @@ import jp.co.acom.riza.system.utils.log.Logger;
 /**
  * Kafkaイベント用Producer処理
  *
- * @author developer
+ * @author teratani
  *
  */
 @Service
@@ -33,8 +33,10 @@ public class KafkaEventProducer {
 
 	@Autowired
 	ProducerTemplate producer;
+	
 	@Autowired
 	KafkaTemplate<String, String> kafkaTemplate;
+	
 	@Autowired
 	Environment env;
 
@@ -74,20 +76,25 @@ public class KafkaEventProducer {
 	}
 
 	/**
-	 * @param topic
-	 * @param message
-	 * @return
+	 * KAFKAメッセージを送信して、送信したメッセージメタ情報を返す
+	 * 
+	 * @param topic トピック名
+	 * @param message 送信メッセージ
+	 * @return 送信メッセージのメタ情報
 	 */
 	private ListenableFuture<SendResult<String, String>> send(String topic, String message) {
 		return kafkaTemplate.send(topic, message);
 	}
 
 	/**
-	 * @param topic
-	 * @param key
-	 * @param message
-	 * @param mqMessageID
-	 * @return
+	 * MQ用のKAFKAメッセージを送信する<br>
+	 * MQ用はKAFKAヘッダーにメッセージIDとキーを付与する。キーは同一トランザクションで同じパーティションにアサインする目的。
+	 * 
+	 * @param topic トピック名
+	 * @param key キー
+	 * @param message 送信メッセージ
+	 * @param mqMessageID メッセージID
+	 * @return 送信メッセージのメタ情報
 	 */
 	public ListenableFuture<SendResult<String, String>> sendTopicMqMessage(String topic, String key, String message,
 			byte[] mqMessageID) {

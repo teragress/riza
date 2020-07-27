@@ -12,7 +12,7 @@ import lombok.Data;
 /**
  * トランザクションイベントエンティティ
  *
- * @author vagrant
+ * @author teratani
  *
  */
 @Data

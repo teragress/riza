@@ -14,7 +14,7 @@ import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.event.entity.EventCheckpointEntity;
 import jp.co.acom.riza.event.entity.EventCheckpointEntityKey;
 import jp.co.acom.riza.event.kafka.KafkaEventProducer;
-import jp.co.acom.riza.event.kafka.KafkaUtil;
+import jp.co.acom.riza.event.kafka.KafkaEventUtil;
 import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.event.repository.EventCheckPointEntityRepository;
 import jp.co.acom.riza.event.utils.StringUtil;
@@ -23,7 +23,9 @@ import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
 
 /**
- * @author vagrant
+ * チェックポイントテーブルからイベントのリカバリーを行う
+ * 
+ * @author teratani
  *
  */
 @Service
@@ -43,16 +45,18 @@ public class EventRecovery {
 	EventCheckPointEntityRepository checkPointRepository;
 
 	@Autowired
-	KafkaUtil kafkaUtil;
+	KafkaEventUtil kafkaEventUtil;
 
 	@Autowired
 	KafkaEventProducer kafkaEventProducer;
 
 	/**
-	 * @param parm
+	 * 個別キー指定のリカバリー処理
+	 * @param parm コマンドパラメータ
 	 * @throws Exception
 	 */
 	public void keyRecovery(EventRecoveryParm parm) throws Exception {
+		logger.debug("keyRecovery() started."); 
 
 		EventCheckpointEntityKey key = new EventCheckpointEntityKey();
 		key.setTranId(parm.getTranid());
@@ -63,7 +67,7 @@ public class EventRecovery {
 		if (entity != null) {
 			String eventMessage = mergeEventMessage(entity, em);
 			TranEvent tranEvent = StringUtil.stringToTranEventEventObject(eventMessage);
-			kafkaUtil.resendMqMessage(tranEvent.getTopicMessages(), tranEvent.getMessageIdPrefix(), true);
+			kafkaEventUtil.resendMqMessage(tranEvent.getTopicMessages(), tranEvent.getMessageIdPrefix(), true);
 			kafkaEventProducer.sendEventMessage(tranEvent);
 			logger.info(MessageFormat.get(EventMessageId.EVENT_RECOVERY_EXECUTE), tranEvent.toString());
 			em.detach(entity);
@@ -73,10 +77,12 @@ public class EventRecovery {
 	}
 
 	/**
-	 * @param parm
+	 * 日時範囲指定でのリカバリー処理
+	 * @param parm コマンドパラメータ
 	 * @throws Exception
 	 */
 	public void rangeRecovery(EventRecoveryParm parm) throws Exception {
+		logger.debug("rangeRecovery() started."); 
 
 		String fromDateTime = parm.getDateTime();
 		String toDateTime;
@@ -88,7 +94,7 @@ public class EventRecovery {
 		String tranId = "";
 		EntityManager em = (EntityManager)applicationContext.getBean(EventConfiguration.ENTITY_MANAGER_NAME);
 
-		System.out.println("fromTimestamp(" + fromDateTime + ") toTimestamp(" + toDateTime + ")");
+		logger.debug("fromTimestamp(" + fromDateTime + ") toTimestamp(" + toDateTime + ")");
 		
 		List<EventCheckpointEntity> checkpointList = em
 				.createNamedQuery(EventCheckpointEntity.FIND_BY_DATETIME_FIRST, EventCheckpointEntity.class)
@@ -97,10 +103,10 @@ public class EventRecovery {
 
 		while (checkpointList != null && checkpointList.size() != 0) {
 			for (EventCheckpointEntity checkpoint : checkpointList) {
-				System.out.println("*************checkpoint="+checkpoint.toString());
+				logger.debug("checkpoint="+checkpoint.toString());
 				String eventMessage = mergeEventMessage(checkpoint, em);
 				TranEvent tranEvent = StringUtil.stringToTranEventEventObject(eventMessage);
-				kafkaUtil.resendMqMessage(tranEvent.getTopicMessages(), tranEvent.getMessageIdPrefix(), false);
+				kafkaEventUtil.resendMqMessage(tranEvent.getTopicMessages(), tranEvent.getMessageIdPrefix(), false);
 				kafkaEventProducer.sendEventMessage(tranEvent);
 				em.detach(checkpoint);
 				fromDateTime = checkpoint.getTranEventKey().getDatetime();
@@ -111,8 +117,8 @@ public class EventRecovery {
 			if (checkpointList.size() > 0) {
 				EventCheckpointEntity lastEntity = checkpointList.get(QUERY_MAX_SIZE - 1);
 
-				System.out.println("*************lastckpoint="+ lastEntity.toString());
-				System.out.println("fromTimestamp(" + fromDateTime + ") toTimestamp(" + toDateTime + ")");
+				logger.debug("lastckpoint="+ lastEntity.toString());
+				logger.debug("fromTimestamp(" + fromDateTime + ") toTimestamp(" + toDateTime + ")");
 				checkpointList = em
 						.createNamedQuery(EventCheckpointEntity.FIND_BY_DATETIME_NEXT, EventCheckpointEntity.class)
 						.setParameter("fromDateTimeTranId", fromDateTime + tranId)
@@ -125,9 +131,10 @@ public class EventRecovery {
 	}
 	
 	/**
-	 * @param checkpoint
-	 * @param em
-	 * @return
+	 * チェックポイントテーブルのレコードが分割された場合のマージ処理
+	 * @param checkpoint イベントチェックポイントエンティティ
+	 * @param em エンティティマネージャー
+	 * @return イベントメッセージ
 	 */
 	private String mergeEventMessage(EventCheckpointEntity checkpoint,EntityManager em) {
 		if (checkpoint.getCnt() == 1) {
@@ -142,7 +149,7 @@ public class EventRecovery {
 			key.setSeq(i);
 			EventCheckpointEntity entity = em.find(EventCheckpointEntity.class, key);
 			if (entity == null) {
-				throw new EventCommandException("aaaaaaaaaaa");
+				throw new EventCommandException("EventCheckpointEntity not found key=" + key.toString());
 			}
 			stringBuilder.append(entity.getEventMsg());
 			em.detach(checkpoint);

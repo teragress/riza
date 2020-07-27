@@ -13,6 +13,11 @@ import jp.co.acom.riza.event.config.EventConfiguration;
 import jp.co.acom.riza.event.entity.EventCheckpointEntity;
 import jp.co.acom.riza.event.repository.EventCheckPointEntityRepository;
 
+/**
+ * チェックポイントテーブルクリーンナップ
+ * @author teratani
+ *
+ */
 @Service
 public class CheckPointTableClean {
 
@@ -22,6 +27,13 @@ public class CheckPointTableClean {
 	@Autowired
 	ApplicationContext applicationContext;
 	
+	/**
+	 * チェックポイントクリーンナップ<br>
+	 * 最大削除件数の指定で分割コミットで実施する
+	 * @param baseDateTime 基準日時
+	 * @param maxDelete 最大削除件数
+	 * @return
+	 */
 	@Transactional
 	public int cleanCheckPoint(String baseDateTime,int maxDelete) {
 		EntityManager em = (EntityManager)applicationContext.getBean(EventConfiguration.ENTITY_MANAGER_NAME);

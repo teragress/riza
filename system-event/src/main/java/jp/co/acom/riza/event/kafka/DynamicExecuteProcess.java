@@ -15,9 +15,9 @@ import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
 
 /**
- * ビジネス動的呼出しプロセス
+ * ビジネスプロセス動的呼出しプロセス
  *
- * @author developer
+ * @author teratani
  *
  */
 @Service(DynamicExecuteProcess.PROCESS_ID)
@@ -50,7 +50,7 @@ public class DynamicExecuteProcess implements Processor {
 		String group = ids[1];
 		String topic = exchange.getIn().getHeader(KafkaConstants.TOPIC, String.class);
 		for (String root : holder.getApplicationRoutes(group, topic)) {
-			logger.info("dynamic execute route=" + root + " group=" + group + " topic=" + topic + " body="
+			logger.debug("dynamic execute route=" + root + " group=" + group + " topic=" + topic + " body="
 					+ exchange.getIn().getBody());
 			try {
 				execute.executeRoute("direct:" + root, exchange);
@@ -69,9 +69,11 @@ public class DynamicExecuteProcess implements Processor {
 	}
 
 	/**
-	 * @param topic
-	 * @param exchange
-	 * @return
+	 * KAFKAメッセージ情報の取得
+	 * 
+	 * @param topic トピック名
+	 * @param exchange Exchange
+	 * @return KAFKAメッセージ情報(コマンドパラメータで利用できるjson形式)
 	 */
 	String getKafkaMessageInfo(String topic, Exchange exchange) {
 		KafkaMessageInfo msgInfo = new KafkaMessageInfo();

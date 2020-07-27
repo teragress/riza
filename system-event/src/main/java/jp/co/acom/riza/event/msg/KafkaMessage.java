@@ -18,7 +18,7 @@ import lombok.ToString;
 /**
  * kAFKAメッセージ情報
  * 
- * @author vagrant
+ * @author teratani
  *
  */
 @Getter

@@ -24,12 +24,14 @@ import org.springframework.web.client.RestTemplate;
 import jp.co.acom.riza.cep.data.RizaCepEventResponse;
 import jp.co.acom.riza.cep.event.RizaCepEventFinish;
 import jp.co.acom.riza.cep.event.RizaCepEventStart;
+import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.system.utils.log.Logger;
+import jp.co.acom.riza.system.utils.log.MessageFormat;
 
 /**
- * CEP監視サービス
+ * CEPリクエストサービス
  *
- * @author developer
+ * @author teratani
  *
  */
 @Service
@@ -50,23 +52,27 @@ public class CepMonitorService {
 	 * 処理待ち時間(秒)
 	 */
 	private int expireLimit;
+
 	/**
 	 * HttpHeaders
 	 */
 	private HttpHeaders headers;
+
 	/**
 	 * CEP監視開始用URI
 	 */
 	private URI startUri;
+
 	/**
 	 * CEP監視終了用URI
 	 */
 	private URI endUri;
+
 	/**
 	 * REST要求用テンプレート
 	 */
 	private RestTemplate restTemplate;
-	
+
 	/**
 	 * テスト用のモック指定
 	 */
@@ -76,15 +82,18 @@ public class CepMonitorService {
 	 * デフォルトのCEP URI
 	 */
 	private static final String MONITOR_DEFAULT_CEP_URI = "http://localhost:8080/rest/sep";
-	
+
+	/**
+	 * 初期化
+	 */
 	@PostConstruct
 	public void initialize() {
-		
-		mock = env.getProperty(CepConstants.CEP_MOCK,Boolean.class,false);
+
+		mock = env.getProperty(CepConstants.CEP_MOCK, Boolean.class, false);
 		if (mock) {
 			return;
 		}
-		
+
 		String cepBaseUri = env.getProperty(CepConstants.CEP_BASE_URI, String.class, MONITOR_DEFAULT_CEP_URI);
 		try {
 
@@ -102,42 +111,55 @@ public class CepMonitorService {
 
 	/**
 	 * CEP監視開始
-	 * @param key
-	 * @param date
+	 * 
+	 * @param key キー
+	 * @param date キー日時
 	 * @throws URISyntaxException
 	 */
 	public void startMonitor(String key, LocalDateTime dateTime) {
 		if (mock) {
 			return;
 		}
-		RizaCepEventStart eventStart = new RizaCepEventStart();
-		eventStart.setEntryKeyId(key);
-		ZonedDateTime zdt = dateTime.atZone(ZoneId.systemDefault());
-		Date date = Date.from(zdt.toInstant());		
-		eventStart.setEventDate(date);
-		eventStart.setExpireLimit(expireLimit);
-		RequestEntity<RizaCepEventStart> req = new RequestEntity<>(eventStart, headers, HttpMethod.POST, startUri);
-		ResponseEntity<RizaCepEventResponse> rsp = restTemplate.exchange(req, RizaCepEventResponse.class);
-		if (rsp == null || rsp.getBody().getRc() != RizaCepEventResponse.RC.NORMAL) {
-			logger.error(rsp.getBody().toString());
+		try {
+			RizaCepEventStart eventStart = new RizaCepEventStart();
+			eventStart.setEntryKeyId(key);
+			ZonedDateTime zdt = dateTime.atZone(ZoneId.systemDefault());
+			Date date = Date.from(zdt.toInstant());
+			eventStart.setEventDate(date);
+			eventStart.setExpireLimit(expireLimit);
+			RequestEntity<RizaCepEventStart> req = new RequestEntity<>(eventStart, headers, HttpMethod.POST, startUri);
+			ResponseEntity<RizaCepEventResponse> rsp = restTemplate.exchange(req, RizaCepEventResponse.class);
+			if (rsp == null || rsp.getBody().getRc() != RizaCepEventResponse.RC.NORMAL) {
+				logger.error(MessageFormat.get(EventMessageId.CEP_ERROR), "start", key, dateTime, rsp);
+			}
+		} catch (Exception ex) {
+			logger.error(MessageFormat.get(EventMessageId.CEP_ERROR), "start", key, dateTime, ex.getMessage());
+			logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION),ex);
 		}
 	}
 
 	/**
 	 * CEP監視終了
-	 * @param key
+	 * 
+	 * @param key キー
+	 * @param date キー日時
 	 * @throws URISyntaxException
 	 */
-	public void endMonitor(String key) {
+	public void endMonitor(String key, LocalDateTime dateTime) {
 		if (mock) {
 			return;
 		}
-		RizaCepEventFinish eventEnd = new RizaCepEventFinish();
-		eventEnd.setEntryKeyId(key);
-		RequestEntity<RizaCepEventFinish> req = new RequestEntity<>(eventEnd, headers, HttpMethod.POST, endUri);
-		ResponseEntity<RizaCepEventResponse> rsp = restTemplate.exchange(req, RizaCepEventResponse.class);
-		if (rsp == null || rsp.getBody().getRc() != RizaCepEventResponse.RC.NORMAL) {
-			logger.error(rsp.getBody().toString());
+		try {
+			RizaCepEventFinish eventEnd = new RizaCepEventFinish();
+			eventEnd.setEntryKeyId(key);
+			RequestEntity<RizaCepEventFinish> req = new RequestEntity<>(eventEnd, headers, HttpMethod.POST, endUri);
+			ResponseEntity<RizaCepEventResponse> rsp = restTemplate.exchange(req, RizaCepEventResponse.class);
+			if (rsp == null || rsp.getBody().getRc() != RizaCepEventResponse.RC.NORMAL) {
+				logger.error(MessageFormat.get(EventMessageId.CEP_ERROR), "end", key, dateTime, rsp);
+			}
+		} catch (Exception ex) {
+			logger.error(MessageFormat.get(EventMessageId.CEP_ERROR), "end", key, dateTime, ex.getMessage());
+			logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION),ex);
 		}
 	}
 }

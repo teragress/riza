@@ -24,7 +24,7 @@ import jp.co.acom.riza.system.utils.log.Logger;
  * 受信ファイルイベントを処理するクラス。<br>
  * 受信ファイルを読み込み指定されたトピックにイベントを書き込む。
  * 
- * @author developer
+ * @author teratani
  *
  */
 @Service

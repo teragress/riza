@@ -20,7 +20,7 @@ import jp.co.acom.riza.system.utils.log.MessageFormat;
 /**
  * レポートメッセージのMQPUT
  *
- * @author developer
+ * @author teratani
  *
  */
 @Service(ReportConsumerStop.PROCESS_ID)

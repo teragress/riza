@@ -2,7 +2,7 @@ package jp.co.acom.riza.event.file;
 /**
  * ファイル受信イベントのパラメーター<br>
  * このパラメーターのjson形式で受け取る
- * @author developer
+ * @author teratani
  *
  */
 public class FileEventParameter {

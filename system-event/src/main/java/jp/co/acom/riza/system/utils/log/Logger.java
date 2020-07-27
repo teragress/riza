@@ -7,7 +7,7 @@ import org.slf4j.Marker;
 /**
  * Logger.
  * 
- * @author developer
+ * @author teratani
  */
 public class Logger {
 

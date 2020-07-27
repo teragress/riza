@@ -13,6 +13,11 @@ import org.springframework.core.env.Environment;
 import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
 
+/**
+ * イベント用スレッドプール定義
+ * @author teratani
+ *
+ */
 @Configuration
 public class EventThreadPoolSetting {
 
@@ -27,6 +32,11 @@ public class EventThreadPoolSetting {
 	@Autowired
 	CamelContext context;
 
+	/**
+	 * スレッドプール作成メソッド
+	 * @return ExecutorService
+	 * @throws Exception 例外
+	 */
 	@Bean(EventConstants.EVENT_THREAD_POOL_BEAN)
 	public ExecutorService createExecutorService() throws Exception {
 		ThreadPoolBuilder builder = new ThreadPoolBuilder(context);

@@ -3,7 +3,7 @@ package jp.co.acom.riza.event.mq;
 /**
  * MQ関連のコンスタント定義
  *
- * @author developer
+ * @author teratani
  *
  */
 public class MQConstants {

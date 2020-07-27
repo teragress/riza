@@ -13,10 +13,9 @@ import jp.co.acom.riza.system.utils.log.Logger;
 /**
  * 起動されているビジネス用コンシューマからKAFKAのコンシューマを作成する
  *
- * @author developer
+ * @author teratani
  *
  */
-
 @Component
 public class CamelNotifyLintner extends EventNotifierSupport {
 
@@ -31,14 +30,19 @@ public class CamelNotifyLintner extends EventNotifierSupport {
 	@Autowired
 	Environment env;
 	/**
-	 * CamelcontextStartedEventトリガー
+	 * CamelcontextStartedEventトリガー<br>
+	 * アプリケーション呼出用のホルダー作成処理の呼出し<br>
+	 * KAFKAコンシューマの作成処理呼出し
 	 */
 	@Override
 	public void notify(EventObject event) throws Exception {
-		logger.info("notify() started. ************************************************::");
+		logger.debug("notify() started. ");
+		
 		if (env.getProperty(KafkaConstants.KAFKA_MOCK,Boolean.class,false)) {
 			return;
 		}
+		
+		// CAMELの初期化完了イベント
 		if (event instanceof CamelContextStartedEvent) {
 			CamelContextStartedEvent startEvent = (CamelContextStartedEvent)event;
 			CamelContext context = startEvent.getContext();

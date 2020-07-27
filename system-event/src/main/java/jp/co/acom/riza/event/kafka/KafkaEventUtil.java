@@ -11,7 +11,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.camel.component.kafka.KafkaProducer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -35,15 +34,17 @@ import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
 
 /**
- * @author vagrant
+ * KAFKAイベント用ユーティリティ
+ * 
+ * @author teratani
  *
  */
 @Service
-public class KafkaUtil {
+public class KafkaEventUtil {
 	/**
 	 * ロガー
 	 */
-	private static Logger logger = Logger.getLogger(KafkaUtil.class);
+	private static Logger logger = Logger.getLogger(KafkaEventUtil.class);
 
 	@Autowired
 	Environment env;
@@ -60,7 +61,7 @@ public class KafkaUtil {
 	private Properties props = new Properties();
 
 	/**
-	 * 
+	 * 初期化処理としてKAFKA接続用のプロパティを設定する
 	 */
 	@PostConstruct
 	public void initProperties() {
@@ -83,8 +84,10 @@ public class KafkaUtil {
 	}
 
 	/**
-	 * @param key
-	 * @param value
+	 * プロパティの設定メソッド(例外となるため未指定のものは設定しない)
+	 * 
+	 * @param key キー
+	 * @param value 値
 	 */
 	private void putPropertie(String key, Object value) {
 		if (value != null) {
@@ -93,15 +96,13 @@ public class KafkaUtil {
 	}
 
 	/**
-	 * パーシステントイベントのKafka送信
+	 * パーシステントイベントのKafka再送信
 	 * 
-	 * @param msgInfoList
-	 * @return
-	 * @throws InterruptedException
-	 * @throws ExecutionException
+	 * @param msgInfoList 送信用メッセージ情報リスト
+	 * @return 再送信したメッセージ情報リスト
+	 * @throws Exception
 	 */
-	public ArrayList<KafkaMessageInfo> recoveryKafkaMessages(List<KafkaMessageInfo> msgInfoList)
-			throws InterruptedException, ExecutionException {
+	public ArrayList<KafkaMessageInfo> recoveryKafkaMessages(List<KafkaMessageInfo> msgInfoList) throws Exception {
 		logger.debug("sendMessageEvent() started.");
 
 		ArrayList<KafkaMessageInfo> respList = new ArrayList<KafkaMessageInfo>();
@@ -123,10 +124,12 @@ public class KafkaUtil {
 	}
 
 	/**
-	 * @param topic
-	 * @param partition
-	 * @param offset
-	 * @return
+	 * メタ情報(パーティション、オフセットなど)指定のKAFKAメッセージ取得
+	 * 
+	 * @param topic トピック
+	 * @param partition パーティション
+	 * @param offset オフセット
+	 * @return メッセージのレコード
 	 */
 	public synchronized ConsumerRecord<String, String> getKafkaMessage(String topic, int partition, long offset) {
 		logger.debug("getKafkaMessage() started.");
@@ -150,6 +153,7 @@ public class KafkaUtil {
 	}
 
 	/**
+	 * 
 	 * @param conrec
 	 * @return
 	 */
@@ -163,15 +167,16 @@ public class KafkaUtil {
 	}
 
 	/**
-	 * @param topics
-	 * @param messageIdprefix
-	 * @return
-	 * @throws IOException
-	 * @throws InterruptedException
-	 * @throws ExecutionException
+	 * MQ用KAFKAメッセージの再送信
+	 * 
+	 * @param topics トピック
+	 * @param messageIdprefix メッセージIDプレフィックス
+	 * @param notFoundError 対象メッセージが存在しない場合にエラーとするか
+	 * @return 
+	 * @throws Exception
 	 */
 	public List<KafkaTopicMessage> resendMqMessage(List<KafkaTopicMessage> topics, byte[] messageIdprefix,
-			boolean notFoundError) throws IOException, InterruptedException, ExecutionException {
+			boolean notFoundError) throws Exception {
 		logger.debug("saveMqMessage() started.");
 
 		List<KafkaTopicMessage> topicMessages = new ArrayList<KafkaTopicMessage>();
@@ -202,14 +207,14 @@ public class KafkaUtil {
 	}
 
 	/**
-	 * @param messagIdprefix
+	 * MQメッセージ用のKAFKAメッセージをコミット前に退避するメソッド
+	 * 
+	 * @param messageIdprefix メッセージIDプレフィックス
 	 * @return
-	 * @throws IOException
-	 * @throws InterruptedException
-	 * @throws ExecutionException
+	 * @throws Exception
 	 */
 	public List<KafkaTopicMessage> saveMqMessage(byte[] messagIdprefix)
-			throws IOException, InterruptedException, ExecutionException {
+			throws Exception {
 		logger.debug("saveMqMessage() started.");
 
 		List<KafkaTopicMessage> topicMessages = new ArrayList<KafkaTopicMessage>();

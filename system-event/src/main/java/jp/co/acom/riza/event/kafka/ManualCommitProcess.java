@@ -11,7 +11,7 @@ import jp.co.acom.riza.system.utils.log.Logger;
 /**
  * マニュアルコミット
  *
- * @author developer
+ * @author teratani
  *
  */
 @Component(ManualCommitProcess.PROCESS_ID)

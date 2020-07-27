@@ -3,7 +3,7 @@ package jp.co.acom.riza.event.config;
 /**
  * イベント用のメッセージID定義
  *
- * @author developer
+ * @author teratani
  *
  */
 public interface EventMessageId {
@@ -25,6 +25,7 @@ public interface EventMessageId {
 	public static final String CONSUMER_THREAD_POOL = "RIZAE016";
 	public static final String CHECKPOINT_CLEANUP = "RIZAE017";
 	public static final String TRANEXEC_CLEANUP = "RIZAE018";
+	public static final String CEP_ERROR = "RIZAE019";
 	
 
 }

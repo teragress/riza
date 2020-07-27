@@ -8,15 +8,15 @@ import lombok.ToString;
 
 /**
  * エンティティイベントメッセージ
- * @author vagrant
+ * @author teratani
  *
  */
 /**
- * @author vagrant
+ * @author teratani
  *
  */
 /**
- * @author vagrant
+ * @author teratani
  *
  */
 @Getter

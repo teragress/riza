@@ -1,13 +1,12 @@
 package jp.co.acom.riza.event.entity;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 import javax.persistence.Embeddable;
 import lombok.Data;
 /**
  * トランザクションイベントテーブルキー
- * @author vagrant
+ * @author teratani
  *
  */
 @Data

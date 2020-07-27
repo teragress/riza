@@ -12,7 +12,7 @@ import lombok.ToString;
 
 /**
  * トランザクションイベントチェックポイント情報
- * @author vagrant
+ * @author teratani
  *
  */
 @Getter

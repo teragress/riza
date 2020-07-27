@@ -12,7 +12,7 @@ import lombok.Data;
 /**
  * トランザクションイベントエンティティ
  *
- * @author vagrant
+ * @author teratani
  *
  */
 @NamedQueries({
@@ -40,10 +40,12 @@ public class EventCheckpointEntity {
 	 */
 	@EmbeddedId
 	private EventCheckpointEntityKey tranEventKey;
+	
 	/**
 	 * 分割数
 	 */
 	private Integer cnt;
+	
 	/**
 	 * イベントメッセージ
 	 */

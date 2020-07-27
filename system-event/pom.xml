@@ -9,25 +9,32 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<name>EventNotify</name>
 	<packaging>jar</packaging>
-	<properties>
-		<fuse.version>7.5.0.fuse-sb2-750029-redhat-00003</fuse.version>
-		<maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
-		<!-- SR3以降だと Fuse（kafka-zipkin）が使用している brave のバージョンの互換性がなく起動しない -->
-		<spring-cloud.version>Greenwich.SR2</spring-cloud.version>
-	</properties>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.jboss.redhat-fuse</groupId>
-				<artifactId>fuse-springboot-bom</artifactId>
-				<version>${fuse.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+  <properties>
+    <fuse.version>7.5.0.fuse-sb2-750029-redhat-00003</fuse.version>
+    <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
+    <!-- SR3以降だと Fuse（kafka-zipkin）が使用している brave のバージョンの互換性がなく起動しない -->
+    <spring-cloud.version>Greenwich.SR2</spring-cloud.version>
+  </properties>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.jboss.redhat-fuse</groupId>
+        <artifactId>fuse-springboot-bom</artifactId>
+        <version>${fuse.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>jp.co.acom.riza.cep</groupId>
@@ -62,7 +69,10 @@
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-zipkin</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>me.snowdrop</groupId>
 			<artifactId>narayana-spring-boot-starter</artifactId>
@@ -117,9 +127,6 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<!-- <dependency> <groupId>org.junit.jupiter</groupId> <artifactId>junit-jupiter-api</artifactId> 
-			<scope>test</scope> </dependency> <dependency> <groupId>org.junit.jupiter</groupId> 
-			<artifactId>junit-jupiter-engine</artifactId> <scope>test</scope> </dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test-autoconfigure</artifactId>

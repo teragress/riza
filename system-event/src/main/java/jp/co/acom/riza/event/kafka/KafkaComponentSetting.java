@@ -21,11 +21,10 @@ import jp.co.acom.riza.system.utils.log.Logger;
 /**
  * KAFKAコンポーネントの登録クラス
  *
- * @author developer
+ * @author teratani
  *
  */
 @Configuration
-//@Controller("SystemUtilKafkaComponentSetting")
 public class KafkaComponentSetting {
 	/**
 	 * ロガー
@@ -42,9 +41,8 @@ public class KafkaComponentSetting {
 	 */
 	@Bean(KafkaConstants.KAFKA_COMPONENT_BEAN)
 	public KafkaComponent createKafkaConsumerComponent() {
-		System.out.println("***********************createKafkaComponent() start");
+		logger.debug("createKafkaComponent() start");
 		KafkaConfiguration kafkaConfig = createKafkaConfiguration();
-		// kafkaConfig.setGroupId(KafkaConstants.KAFKA_FILE_EVENT_GROUP);
 		kafkaConfig.setAutoCommitEnable(false);
 		kafkaConfig.setAllowManualCommit(true);
 		KafkaComponent kafka = new KafkaComponent();
@@ -54,7 +52,8 @@ public class KafkaComponentSetting {
 	}
 
 	/**
-	 *
+	 * KAFKA構成情報の設定
+	 * @return
 	 */
 	private KafkaConfiguration createKafkaConfiguration() {
 		logger.debug("createKafkaConfiguration() start");
@@ -71,11 +70,11 @@ public class KafkaComponentSetting {
 				env.getProperty(KafkaConstants.KAFKA_REQUIRED_ACKS, KafkaConstants.KAFKA_DEFAULT_REQUIRED_ACKS));
 		kafkaConfig.setConsumerStreams(1);
 
-//		System.out.println("Brokers:" + kafkaConfig.getBrokers());
 		return kafkaConfig;
 	}
 
 	/**
+	 * KAFKプロデューサー構成の設定
 	 * @return
 	 */
 	@Bean
@@ -103,10 +102,12 @@ public class KafkaComponentSetting {
 				env.getProperty(KafkaConstants.KAFKA_REQUIRED_ACKS, KafkaConstants.KAFKA_DEFAULT_REQUIRED_ACKS));
 		configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-		return new DefaultKafkaProducerFactory(configProps);
+		
+		return new DefaultKafkaProducerFactory<String,String>(configProps);
 	}
 
 	/**
+	 * KAFKAプロデューサー送信用メソッドの定義
 	 * @return
 	 */
 	@Bean

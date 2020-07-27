@@ -17,7 +17,7 @@ import jp.co.acom.riza.system.utils.log.Logger;
 /**
  * マニュアルコミット
  *
- * @author developer
+ * @author teratani
  *
  */
 @Service(AuditGetProcess.PROC_ID)

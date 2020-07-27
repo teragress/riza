@@ -3,7 +3,7 @@ package jp.co.acom.riza.event.kafka;
 /**
  * KAFKAユーティリティのコンスタント定義
  *
- * @author developer
+ * @author teratani
  *
  */
 public class KafkaConstants {
@@ -70,7 +70,11 @@ public class KafkaConstants {
 	/**
 	 * 帳票出力用トピック名
 	 */
-	public static final String KAFKA_REPORT_TOPIC = "PRT_QUEUE";
+	public static final String KAFKA_DEFAULT_REPORT_TOPIC = "PRT_QUEUE";
+	/**
+	 * 帳票出力用トピック名取得キー
+	 */
+	public static final String KAFKA_REPORT_TOPIC = "KAFKA_REPORT_TOPIC";
 	/**
 	 * 帳票出力用コンシューマカウント数
 	 */

@@ -23,7 +23,7 @@ import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.event.entity.EventCheckpointEntity;
 import jp.co.acom.riza.event.entity.EventCheckpointEntityKey;
 import jp.co.acom.riza.event.kafka.KafkaEventProducer;
-import jp.co.acom.riza.event.kafka.KafkaUtil;
+import jp.co.acom.riza.event.kafka.KafkaEventUtil;
 import jp.co.acom.riza.event.kafka.MessageUtil;
 import jp.co.acom.riza.event.kafka.MessageHolderUtil;
 import jp.co.acom.riza.event.msg.Header;
@@ -95,7 +95,7 @@ public class PostCommitPersistentNotifier {
 	MessageHolderUtil messageHolderUtil;
 
 	@Autowired
-	KafkaUtil kafkaUtil;
+	KafkaEventUtil kafkaEventUtil;
 
 	@Autowired
 	PostCommitPersistentNotifier eventNotifier;
@@ -183,7 +183,7 @@ public class PostCommitPersistentNotifier {
 		try {
 			List<KafkaTopicMessage> topicMessages;
 			byte[] messagePrefix = MessageUtil.getUniqueID();
-			topicMessages = kafkaUtil.saveMqMessage(messagePrefix);
+			topicMessages = kafkaEventUtil.saveMqMessage(messagePrefix);
 
 			tranEvent = createTranEvent();
 			tranEvent.setMessageIdPrefix(messagePrefix);
@@ -244,7 +244,7 @@ public class PostCommitPersistentNotifier {
 				logger.error("Mq message send Exception occurred.", e);
 			}
 
-			monitor.endMonitor(commonContext.getTraceId() + commonContext.getSpanId());
+			monitor.endMonitor(commonContext.getTraceId() + commonContext.getSpanId(),commonContext.getLjcomDateTime());
 
 			super.afterCommit();
 		}

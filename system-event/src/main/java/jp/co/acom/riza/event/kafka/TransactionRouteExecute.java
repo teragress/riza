@@ -1,24 +1,17 @@
 package jp.co.acom.riza.event.kafka;
 
-import java.io.IOException;
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.component.kafka.KafkaConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
- * ビジネス動的呼出しプロセス
+ * トランザクション生成のビジネスルート呼出し
  *
- * @author developer
+ * @author teratani
  *
  */
 @Service
@@ -35,8 +28,9 @@ public class TransactionRouteExecute {
 	ProducerTemplate template;
 	
 	/**
-	 * @param route
-	 * @param exchange
+	 * トランザクション生成のビジネスルート呼出し
+	 * @param route 実行ルートID
+	 * @param exchange camel exchange
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void executeRoute(String route, Exchange exchange) {

@@ -16,7 +16,7 @@ import jp.co.acom.riza.system.utils.log.Logger;
 /**
  * 起動されているビジネス用コンシューマからKAFKAのコンシューマを作成する
  *
- * @author developer
+ * @author teratani
  *
  */
 @Component
@@ -43,6 +43,8 @@ public class KafkaConsumerCreate {
 
 	/**
 	 * アプリケーションルートの設定
+	 * 
+	 * @param context アプリケーションコンテキスト
 	 */
 	public void setApplicationRouteHolder(CamelContext context) {
 		logger.debug("setApplicationrouteHolder() started.");

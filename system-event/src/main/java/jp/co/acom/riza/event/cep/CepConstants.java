@@ -3,7 +3,7 @@ package jp.co.acom.riza.event.cep;
 /**
  * CEPのコンスタント定義
  *
- * @author developer
+ * @author teratani
  *
  */
 public class CepConstants {
@@ -29,7 +29,7 @@ public class CepConstants {
 	 */
 	public static final int CEP_DEFAULT_EXPIRE_LIMIT = 30;
 	/**
-	 * CEPの無効化フラグ
+	 * CEPの無効化フラグ(true/false)
 	 */
 	public static final String CEP_MOCK = "CEP_MOCK";
 }

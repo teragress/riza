@@ -22,7 +22,7 @@ import jp.co.acom.riza.event.persist.PersistentInterceptor;
 
 /**
  * エンティティマネージャー定義の例
- * @author vagrant
+ * @author teratani
  *
  */
 //****************************************************************************************

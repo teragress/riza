@@ -20,7 +20,7 @@ import lombok.Setter;
 /**
  * Hibernate でのエンティマネージャー単位の更新通知を受け、イベント通知を行う
  * 
- * @author vagrant
+ * @author teratani
  *
  */
 @Getter

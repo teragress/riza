@@ -10,7 +10,7 @@ import lombok.ToString;
 
 /**
  * ヘッダーメッセージ
- * @author vagrant
+ * @author teratani
  *
  */
 @Getter

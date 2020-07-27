@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.co.acom.riza.event.cmd.EventRestCommand;
 import jp.co.acom.riza.event.cmd.parm.KafkaMessageInfo;
 import jp.co.acom.riza.event.cmd.parm.KafkaRecoveryParm;
-import jp.co.acom.riza.event.kafka.KafkaUtil;
+import jp.co.acom.riza.event.kafka.KafkaEventUtil;
 import jp.co.acom.riza.system.utils.log.LogAssertAppender;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -47,7 +47,7 @@ public class CommandTest001 {
 	EventRestCommand target;
 	
 	@Autowired
-	KafkaUtil kafkaUtil;
+	KafkaEventUtil kafkaEventUtil;
 	
 	@Autowired
 	KafkaTemplate<String, String> kafkaTemplate;

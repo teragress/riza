@@ -13,6 +13,11 @@ import jp.co.acom.riza.event.config.EventConfiguration;
 import jp.co.acom.riza.event.entity.TranExecCheckEntity;
 import jp.co.acom.riza.event.repository.TranExecCheckEntityRepository;
 
+/**
+ * トランザクション実行テーブルクリーンナップ
+ * @author teratani
+ *
+ */
 @Service
 public class ExecTableClean {
 
@@ -22,6 +27,12 @@ public class ExecTableClean {
 	@Autowired
 	ApplicationContext applicationContext;
 	
+	/**
+	 *  トランザクション実行テーブルクリーンナップ
+	 * @param baseDatetime 基準日時
+	 * @param maxDelete 最大削除件数
+	 * @return
+	 */
 	@Transactional
 	public int cleanTranExec(String baseDatetime,int maxDelete) {
 		EntityManager em = (EntityManager)applicationContext.getBean(EventConfiguration.ENTITY_MANAGER_NAME);

@@ -11,18 +11,27 @@ import org.springframework.stereotype.Component;
 
 /**
  * コンシューマグループ、トピック、アプリケーションルートの関係を保持する
- * @author mtera1003
+ * @author teratani
  *
  */
 @Component
-//@Scope("singleton")
 public class ApplicationRouteHolder {
+	/**
+	 *  ロガー
+	 */
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationRouteHolder.class);
 
+	/**
+	 * ホルダー
+	 */
 	private static Map<String, Map<String, List<String>>> holder = new HashMap<String, Map<String, List<String>>>();
 
 	/**
 	 * アプリケーションルートを登録する
+	 * 
+	 * @param consumerGroup コンシューマグループ
+	 * @param topic トピック
+	 * @param applicationRoute アプリケーションルートID
 	 */
 	public void addApplicationRoute(String consumerGroup, String topic, String applicationRoute) {
 		LOGGER.debug("addAppoicationRoute() consumerGroup=" + consumerGroup + " topic=" + topic +

@@ -20,7 +20,7 @@ import jp.co.acom.riza.event.persist.PostCommitPersistentNotifier;
 /**
  * エンティティマネージャーを定義する抽象クラス<br>
  * エンティティマネージャーを作成する場合は当該クラスを継承して作成すること。
- * @author vagrant
+ * @author teratani
  *
  */
 public abstract class AbstractJpaConfiguration {

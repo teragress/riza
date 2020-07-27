@@ -1,26 +1,17 @@
 package jp.co.acom.riza.event.kafka;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.transaction.Transactional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.ProducerTemplate;
-import org.apache.camel.component.kafka.KafkaConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -33,7 +24,6 @@ import jp.co.acom.riza.event.config.EventConfiguration;
 import jp.co.acom.riza.event.config.EventConstants;
 import jp.co.acom.riza.event.entity.TranExecCheckEntity;
 import jp.co.acom.riza.event.msg.EntityEvent;
-import jp.co.acom.riza.event.repository.TranExecCheckEntityRepository;
 import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.exception.DuplicateExecuteException;
 import jp.co.acom.riza.system.utils.log.Logger;
@@ -41,7 +31,7 @@ import jp.co.acom.riza.system.utils.log.Logger;
 /**
  * ビジネス動的呼出しプロセス
  *
- * @author developer
+ * @author teratani
  *
  */
 @Service(EntityConsumerInitilizer.PROCESS_ID)
@@ -52,6 +42,9 @@ public class EntityConsumerInitilizer implements Processor {
 	 */
 	private static Logger logger = Logger.getLogger(EntityConsumerInitilizer.class);
 
+	/**
+	 * 当該プロセスID
+	 */
 	public static final String PROCESS_ID = "entityConsumerInitilizer";
 	/**
 	 * Producer Template
@@ -61,16 +54,17 @@ public class EntityConsumerInitilizer implements Processor {
 
 	@Autowired
 	private ApplicationContext applicationContext;
+	
+	@Autowired
+	Tracer tracer;
 
 	/**
-	 * ダイナミック業務呼出し
+	 * コンシューマ初期化
 	 * 
-	 * @throws IOException
-	 * @throws JsonMappingException
-	 * @throws JsonParseException
+	 * @throws Exception
 	 */
-	public void process(Exchange exchange) throws JsonParseException, JsonMappingException, IOException {
-		logger.info("*********************************process() started.");
+	public void process(Exchange exchange) throws Exception {
+		logger.debug("process() started.");
 
 		EntityEvent entityEvent = StringUtil.stringToEntityEventObject((String) exchange.getIn().getBody());
 		setCommonContext(exchange.getFromRouteId(), entityEvent);
@@ -80,8 +74,14 @@ public class EntityConsumerInitilizer implements Processor {
 		exchange.getOut().setHeader(EventConstants.EXCHANGE_HEADER_ENTITY_EVENT, entityEvent);
 	}
 
+	/**
+	 * 共通コンテキストの設定
+	 * 
+	 * @param routeId CAMELルートID
+	 * @param entityEvent イベントエンティティ情報
+	 */
 	private void setCommonContext(String routeId, EntityEvent entityEvent) {
-		logger.info("setCommonContext() started.");
+		logger.debug("setCommonContext() started.");
 
 		LocalDateTime now = LocalDateTime.now();
 		commonContext.setLjcomDateTime(now);
@@ -90,12 +90,19 @@ public class EntityConsumerInitilizer implements Processor {
 		String[] splitStr = routeId.split("_", 4);
 		commonContext.setBusinessProcess(splitStr[3]);
 		commonContext.setReqeustId(entityEvent.getHeader().getReqeustId() + ":" + commonContext.getBusinessProcess());
-//		TraceContext traceContext = tracer.currentSpan().context();
-//		commonContext.setTraceId(traceContext.traceIdString());
-//		commonContext.setSpanId(Long.toHexString(traceContext.spanId()));
+		
+		TraceContext traceContext = tracer.currentSpan().context();
+		commonContext.setTraceId(traceContext.traceIdString());
+		commonContext.setSpanId(Long.toHexString(traceContext.spanId()));
 		commonContext.setUserId(entityEvent.getHeader().getUserId());
 	}
 
+	/**
+	 * トランザクション実行テーブルインサート(重複実行チェック)
+	 * 
+	 * @param key 重複チェックトランザクション識別キー
+	 * @param dateTime 日時
+	 */
 	private void insertTranExecChckEntity(String key, LocalDateTime dateTime) {
 		logger.info("insertTranExecChckEntity() started.");
 

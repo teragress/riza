@@ -8,7 +8,7 @@ import lombok.ToString;
 
 /**
  * 変更時のイベント情報
- * @author vagrant
+ * @author teratani
  *
  */
 @Getter
