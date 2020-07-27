@@ -5,6 +5,7 @@ import jp.co.acom.riza.event.service.CustomerService;
 import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -87,4 +88,15 @@ public class CustomerController {
     customerService.modify(customer);
     return customer;
   }
-}
+  @RequestMapping("/createCheckpoint")
+  public Customer createCheckpoint(@RequestBody Customer customer) {
+	  LocalDateTime baseDateTime = LocalDateTime.now().minusDays(1);
+      customerService.createCheckpoint(100, baseDateTime);
+    return customer;
+  }
+  @RequestMapping("/createExec")
+  public Customer createExec(@RequestBody Customer customer) {
+	  LocalDateTime baseDateTime = LocalDateTime.now().minusDays(1);
+      customerService.createExec(100, baseDateTime);
+    return customer;
+  }}

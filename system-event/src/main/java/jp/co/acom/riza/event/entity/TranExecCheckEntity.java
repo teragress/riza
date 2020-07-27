@@ -6,7 +6,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import lombok.Data;
-@NamedQuery(name = "findTranExecCheckEntity", query = "select u from TranExecCheckEntity u where u.datetime <= :baseTimestamp")
+
+@NamedQuery(name = TranExecCheckEntity.FIND_BY_CLEAN, query = "select u from TranExecCheckEntity u "
+		+ "where u.datetime < :baseDatetime")
 /**
  * トランザクションイベントエンティティ
  *
@@ -17,6 +19,8 @@ import lombok.Data;
 @Table(name = "TRANEXECCHECK")
 @Entity
 public class TranExecCheckEntity {
+
+	public static final String FIND_BY_CLEAN = "tranExec.findByClean";
 	/**
 	 * イベントキークラス
 	 */

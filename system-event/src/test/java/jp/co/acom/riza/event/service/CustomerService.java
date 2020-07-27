@@ -1,7 +1,10 @@
 package jp.co.acom.riza.event.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +17,14 @@ import jp.co.acom.riza.event.customer.entity.MultiKey;
 import jp.co.acom.riza.event.customer.entity.MultiKeyEntity;
 import jp.co.acom.riza.event.customer.repository.CustomerRepository;
 import jp.co.acom.riza.event.customer.repository.MultiKeyEntityRepository;
+import jp.co.acom.riza.event.entity.EventCheckpointEntity;
+import jp.co.acom.riza.event.entity.EventCheckpointEntityKey;
+import jp.co.acom.riza.event.entity.TranExecCheckEntity;
 import jp.co.acom.riza.event.kafka.MessageUtil;
 import jp.co.acom.riza.event.loan.entity.Loan;
 import jp.co.acom.riza.event.loan.repository.LoanRepository;
+import jp.co.acom.riza.event.repository.EventCheckPointEntityRepository;
+import jp.co.acom.riza.event.repository.TranExecCheckEntityRepository;
 import jp.co.acom.riza.event.trade.entity.Trade;
 import jp.co.acom.riza.event.trade.repository.TradeRepository;
 
@@ -34,12 +42,17 @@ public class CustomerService {
 	@Autowired
 	private LoanRepository loanRepository;
 	@Autowired
+	private EventCheckPointEntityRepository eventRepository;
+	@Autowired
+	private TranExecCheckEntityRepository tranRepository;
+	
+	@Autowired
 	private CommonContextInit init;
 
 	@Transactional(timeout = 3600)
 	public void save(Customer customer) {
 		LOGGER.info("start save.");
-		
+
 		init.initCommonContxt();
 		customerRepository.save(customer);
 		customerRepository.flush();
@@ -83,15 +96,13 @@ public class CustomerService {
 	@Transactional
 	public List<Customer> findAll() {
 		init.initCommonContxt();
-		for (Customer customer: customerRepository.findAll()) {
-			System.out.println("*********************** "
-					+ "customer=" + customer);
+		for (Customer customer : customerRepository.findAll()) {
+			System.out.println("*********************** " + "customer=" + customer);
 		}
-			
-		
+
 		return customerRepository.findAll();
 	}
-	
+
 	@Transactional(timeout = 3600)
 	public Customer findAndMqput(Customer customer) {
 		init.initCommonContxt();
@@ -103,7 +114,6 @@ public class CustomerService {
 		return findCustomer.get();
 	}
 
-
 	@Transactional(timeout = 3600)
 	public void modify(Customer customer) {
 		LOGGER.info("start modify.");
@@ -113,5 +123,50 @@ public class CustomerService {
 			target.setRank(customer.getRank());
 		});
 		LOGGER.info("end modify.");
+	}
+
+	@Transactional(timeout = 3600)
+	public void createCheckpoint(int createCount, LocalDateTime baseDatetime) {
+		LOGGER.info("createCheckpoint() started.");
+
+		LocalDateTime insertDatetime = baseDatetime;
+
+		for (int i = 0; i < createCount; i++) {
+
+			EventCheckpointEntity entity = new EventCheckpointEntity();
+			EventCheckpointEntityKey key = new EventCheckpointEntityKey();
+			key.setSeq(0);
+			key.setTranId(UUID.randomUUID().toString());
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+			String insertDatetimeStr = insertDatetime.format(formatter);
+			key.setDatetime(insertDatetimeStr);
+
+			entity.setTranEventKey(key);
+			entity.setEventMsg(UUID.randomUUID().toString());
+			eventRepository.save(entity);
+			
+			LOGGER.info("create event checkpoint " + entity.toString());
+			insertDatetime = insertDatetime.plusHours(1);
+		}
+	}
+	@Transactional(timeout = 3600)
+	public void createExec(int createCount, LocalDateTime baseDatetime) {
+		LOGGER.info("createExec() started.");
+
+		LocalDateTime insertDatetime = baseDatetime;
+
+		for (int i = 0; i < createCount; i++) {
+
+			TranExecCheckEntity entity = new TranExecCheckEntity();
+			
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+			String insertDatetimeStr = insertDatetime.format(formatter);
+			entity.setDatetime(insertDatetimeStr);
+			entity.setEventKey(UUID.randomUUID().toString());
+			tranRepository.save(entity);
+			
+			LOGGER.info("create event checkpoint " + entity.toString());
+			insertDatetime = insertDatetime.plusHours(1);
+		}
 	}
 }

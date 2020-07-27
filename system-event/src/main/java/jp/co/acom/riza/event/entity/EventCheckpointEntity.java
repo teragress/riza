@@ -22,7 +22,10 @@ import lombok.Data;
 	@NamedQuery(name = EventCheckpointEntity.FIND_BY_DATETIME_NEXT, query = "select u from EventCheckpointEntity u "
 		+ "where concat(u.tranEventKey.datetime, u.tranEventKey.tranId) > :fromDateTimeTranId and u.tranEventKey.datetime < :toDateTime "
 		+ "and u.tranEventKey.seq = 0 "
-		+ "order by datetime , tranId")})
+		+ "order by datetime , tranId"),
+	@NamedQuery(name = EventCheckpointEntity.FIND_BY_CLEAN, query = "select u from EventCheckpointEntity u "
+		+ "where u.tranEventKey.datetime < :dateTime")})
+
 @Data
 //@Table(schema = "DP0", name = "EVENTCHECKPOINT")
 @Table(name = "EVENTCHECKPOINT")
@@ -30,6 +33,7 @@ import lombok.Data;
 public class EventCheckpointEntity {
 	public static final String FIND_BY_DATETIME_FIRST = "eventCheckpoint.findByDatetimeFirst";
 	public static final String FIND_BY_DATETIME_NEXT = "eventCheckpoint.findByDatetimeNext";
+	public static final String FIND_BY_CLEAN = "eventCheckpoint.findByClean";
 	
 	/**
 	 * イベントキークラス

@@ -23,12 +23,8 @@ public interface EventMessageId {
 	public static final String EVENT_RECOVERY_EXECUTE = "RIZAE014";
 	public static final String CONSUMER_ROUTE_DUPLICATION = "RIZAE015";
 	public static final String CONSUMER_THREAD_POOL = "RIZAE016";
+	public static final String CHECKPOINT_CLEANUP = "RIZAE017";
+	public static final String TRANEXEC_CLEANUP = "RIZAE018";
 	
-
-
-
-
-
-
 
 }

@@ -13,6 +13,8 @@ import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.apache.camel.CamelContext;
@@ -39,7 +41,7 @@ public class EventRestCommand {
 	private static Logger logger = Logger.getLogger(EventRestCommand.class);
 
 	private static final String REQ_PREFIX_PATH = "event/command";
-	private static final String REQ_CHECK_POINT_CLEAN = "/CheckPointClean";
+	private static final String REQ_CHECK_POINT_CLEAN = "/CheckPointTableClean";
 	private static final String REQ_EXEC_TABLE_CLEAN = "/ExecTableClean";
 	private static final String REQ_EVENT_RECOVERY_DATE_TIME = "/EventRecovery/DateTime";
 	private static final String REQ_EVENT_RECOVERY_KEYS = "/EventRecovery/keys";
@@ -47,6 +49,9 @@ public class EventRestCommand {
 	private static final String REQ_ROUTE_START = "/Route/Start";
 	private static final String REQ_ROUTE_STOP = "/Route/Stop";
 	private static final String RSP_NORMAL_END = "Normal end.";
+
+	private static final int DEFAULT_KEEP_DAYS = 1;
+	private static final int DEFAULT_DELETION_SPLIT_COUNT = 1;
 
 	@Autowired
 	MessageFormat msg;
@@ -62,6 +67,13 @@ public class EventRestCommand {
 
 	@Autowired
 	EventRecovery eventRecovery;
+
+	@Autowired
+	CheckPointTableClean checkPointTableClean;
+	
+	@Autowired
+	ExecTableClean execTableClean;
+
 	/**
 	 * イベントチェックポイントテーブルクリーンナップ
 	 * 
@@ -72,8 +84,40 @@ public class EventRestCommand {
 	public EventCommandResponse cleanCheckpoint(@RequestBody CheckpointCleanParm parm) {
 		outputStartMessage(REQ_CHECK_POINT_CLEAN, parm.toString());
 
+		try {
 
-		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
+			int keepDay = DEFAULT_KEEP_DAYS;
+			if (parm.getKeepDays() != null) {
+				keepDay = parm.getKeepDays();
+			}
+
+			LocalDateTime baseDatetime = LocalDateTime.now();
+			if (parm.getBaseDatetime() != null) {
+				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+				baseDatetime = LocalDateTime.parse(parm.getBaseDatetime(),dtf);
+			}
+			
+			baseDatetime = baseDatetime.minusDays(keepDay);
+			int allDeleteCount = 0;
+			int splitCount = DEFAULT_DELETION_SPLIT_COUNT;
+			if (parm.getDeletionSplitCount() != null) {
+				splitCount = parm.getDeletionSplitCount();
+			}
+			int deleteCount = -1;
+
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+			String baseDatetimeStr = baseDatetime.format(formatter);
+
+			while (deleteCount != 0) {
+				deleteCount = checkPointTableClean.cleanCheckPoint(baseDatetimeStr, splitCount);
+				allDeleteCount = allDeleteCount + deleteCount;
+			}
+			logger.info(MessageFormat.get(EventMessageId.CHECKPOINT_CLEANUP),allDeleteCount);
+		} catch (Exception ex) {
+			return exceptionProc(ex, REQ_CHECK_POINT_CLEAN, parm);
+		}
+
+		outputEndMessage(REQ_CHECK_POINT_CLEAN, parm.toString());
 		return createNormalResponse(null);
 	}
 
@@ -87,7 +131,43 @@ public class EventRestCommand {
 	public EventCommandResponse cleanExecTable(@RequestBody ExecTableCreanParm parm) {
 		outputStartMessage(REQ_EXEC_TABLE_CLEAN, parm.toString());
 
-		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
+		try {
+
+			int keepDay = DEFAULT_KEEP_DAYS;
+			if (parm.getKeepDays() != null) {
+				keepDay = parm.getKeepDays();
+			}
+
+			LocalDateTime baseDatetime = LocalDateTime.now();
+			if (parm.getBaseDatetime() != null) {
+				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+				baseDatetime = LocalDateTime.parse(parm.getBaseDatetime(),dtf);
+			}
+			
+			baseDatetime = baseDatetime.minusDays(keepDay);
+			int allDeleteCount = 0;
+			int splitCount = DEFAULT_DELETION_SPLIT_COUNT;
+			if (parm.getDeletionSplitCount() != null) {
+				splitCount = parm.getDeletionSplitCount();
+			}
+			int deleteCount = -1;
+
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+			String baseDatetimeStr = baseDatetime.format(formatter);
+
+			while (deleteCount != 0) {
+				deleteCount = execTableClean.cleanTranExec(baseDatetimeStr, splitCount);
+				allDeleteCount = allDeleteCount + deleteCount;
+			}
+			
+			logger.info(MessageFormat.get(EventMessageId.TRANEXEC_CLEANUP),allDeleteCount);
+			
+		} catch (Exception ex) {
+			return exceptionProc(ex, REQ_EXEC_TABLE_CLEAN, parm);
+		}
+
+
+		outputEndMessage(REQ_EXEC_TABLE_CLEAN, parm.toString());
 		return createNormalResponse(null);
 	}
 
@@ -102,12 +182,12 @@ public class EventRestCommand {
 		outputStartMessage(REQ_EVENT_RECOVERY_DATE_TIME, parm.toString());
 		try {
 			eventRecovery.rangeRecovery(parm);
-			
+
 		} catch (Exception ex) {
 			return exceptionProc(ex, REQ_EVENT_RECOVERY_DATE_TIME, parm);
 		}
 
-		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
+		outputEndMessage(REQ_EVENT_RECOVERY_DATE_TIME, parm.toString());
 		return createNormalResponse(null);
 	}
 
@@ -122,12 +202,12 @@ public class EventRestCommand {
 		outputStartMessage(REQ_EVENT_RECOVERY_KEYS, parm.toString());
 		try {
 			eventRecovery.keyRecovery(parm);
-			
+
 		} catch (Exception ex) {
 			return exceptionProc(ex, REQ_EVENT_RECOVERY_KEYS, parm);
 		}
 
-		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
+		outputEndMessage(REQ_EVENT_RECOVERY_KEYS, parm.toString());
 		return createNormalResponse(null);
 	}
 
@@ -140,7 +220,7 @@ public class EventRestCommand {
 	@RequestMapping(path = REQ_KAFKA_RECOVERY_OFFSET)
 	public EventCommandResponse recoveryKafkaMessageOffset(@RequestBody KafkaRecoveryParm parm) {
 		outputStartMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
-		
+
 		List<KafkaMessageInfo> rspInfo;
 
 		try {
@@ -152,7 +232,7 @@ public class EventRestCommand {
 		}
 
 		outputEndMessage(REQ_KAFKA_RECOVERY_OFFSET, parm.toString());
-		
+
 		return createNormalResponse(null);
 	}
 
@@ -169,7 +249,7 @@ public class EventRestCommand {
 		try {
 			ServiceStatus sts = camelContext.getRouteStatus(parm.getRouteId());
 			if (sts == null) {
-				
+
 			}
 			camelContext.startRoute(parm.getRouteId());
 		} catch (Exception ex) {
@@ -238,7 +318,7 @@ public class EventRestCommand {
 		resp.setMsg(ex.getMessage());
 		return resp;
 	}
-	
+
 	/**
 	 * @param addMessage
 	 * @return
