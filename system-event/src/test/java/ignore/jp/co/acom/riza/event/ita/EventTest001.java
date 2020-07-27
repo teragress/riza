@@ -25,7 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import jp.co.acom.riza.cep.CepMonitorService;
+import jp.co.acom.riza.event.cep.CepMonitorService;
 import jp.co.acom.riza.event.customer.entity.Customer;
 import jp.co.acom.riza.event.kafka.KafkaEventProducer;
 import jp.co.acom.riza.event.service.CustomerService;

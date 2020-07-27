@@ -1,4 +1,4 @@
-package jp.co.acom.riza.cep;
+package jp.co.acom.riza.event.cep;
 
 /**
  * CEPのコンスタント定義

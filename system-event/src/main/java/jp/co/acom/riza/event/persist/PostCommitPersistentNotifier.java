@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import jp.co.acom.riza.cep.CepMonitorService;
 import jp.co.acom.riza.context.CommonContext;
+import jp.co.acom.riza.event.cep.CepMonitorService;
 import jp.co.acom.riza.event.config.EventConstants;
 import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.event.entity.EventCheckpointEntity;
