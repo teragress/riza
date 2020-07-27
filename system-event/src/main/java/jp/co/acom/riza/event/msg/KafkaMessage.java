@@ -1,16 +1,7 @@
 package jp.co.acom.riza.event.msg;
 
-import java.io.Serializable;
-
-import org.springframework.core.serializer.Deserializer;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import jp.co.acom.riza.event.persist.EntityType;
-import jp.co.acom.riza.event.persist.PersistentType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

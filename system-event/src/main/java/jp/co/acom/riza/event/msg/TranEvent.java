@@ -12,6 +12,7 @@ import lombok.ToString;
 
 /**
  * トランザクションイベントチェックポイント情報
+ * 
  * @author teratani
  *
  */
@@ -19,6 +20,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class TranEvent {
+	
 	/**
 	 * ヘッダー
 	 */

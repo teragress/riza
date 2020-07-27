@@ -35,14 +35,17 @@ public class EntityPersistent {
 	* 変更の種類
 	*/
 	private PersistentType persistentType;
+	
 	/**
 	* エンティティの種類
 	*/
 	private EntityType entityType;
+	
 	/**
 	*　エンティティのId(キー)
 	*/
 	private Serializable entityId;
+	
 	/**
 	 * エンティティオブジェクト
 	 */

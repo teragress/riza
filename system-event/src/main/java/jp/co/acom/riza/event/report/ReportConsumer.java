@@ -9,12 +9,18 @@ import jp.co.acom.riza.event.kafka.KafkaConstants;
 import jp.co.acom.riza.event.kafka.ManualCommitProcess;
 import jp.co.acom.riza.system.utils.log.Logger;
 
+/**
+ * 帳票向けコンシューマ
+ * @author vagrant
+ *
+ */
 @Component
 public class ReportConsumer extends RouteBuilder {
 	/**
 	 * ロガー
 	 */
 	private static Logger logger = Logger.getLogger(ReportConsumer.class);
+	
 	public static final String REPORT_CONSUMER_ROUTE_ID = "report_output_consumer";
 
 	@Autowired

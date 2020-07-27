@@ -42,7 +42,12 @@ import jp.co.acom.riza.system.utils.log.MessageFormat;
 import lombok.Getter;
 import lombok.Setter;
 
-/** 中のイベントを Commit 後に送信する. */
+/**
+ * トランザクション単位のインタセプター関連を制御する
+ * 
+ * @author teratani
+ *
+ */
 @Getter
 @Setter
 @Service
@@ -50,15 +55,21 @@ import lombok.Setter;
 public class PostCommitPersistentNotifier {
 	private static final Logger logger = Logger.getLogger(PostCommitPersistentNotifier.class);
 
+	/**
+	 * チェックポイントのトランザクションメッセージ分割サイズ 
+	 */
 	private Integer TranMessageSplitSize;
+	
 	/**
 	 * エンティティマネージャー単位のホルダー
 	 */
 	private List<PersistentHolder> holders = new ArrayList<>();
+	
 	/**
 	 * 監査メッセージホルダー
 	 */
 	private AuditMessage auditMessage = new AuditMessage();
+	
 	/**
 	 * チェクポイント用トランザクションイベント
 	 */
@@ -68,8 +79,9 @@ public class PostCommitPersistentNotifier {
 	 * パーシステントイベント有無
 	 */
 	private boolean persistentEvent = false;
+	
 	/**
-	 * 
+	 * MQ用KAFKA退避メッセージ情報
 	 */
 	private List<KafkaMessage> kafkaMessages = new ArrayList<KafkaMessage>();
 
@@ -102,6 +114,9 @@ public class PostCommitPersistentNotifier {
 
 	private String sepKey;
 
+	/**
+	 * 初期化処理として環境変数の取り込みとトランザクションリスナーの登録
+	 */
 	@PostConstruct
 	public void initialize() {
 		logger.info("initialize() started.");
@@ -122,7 +137,7 @@ public class PostCommitPersistentNotifier {
 	}
 
 	/**
-	 * フローイベント作成
+	 * トランザクションイベント作成
 	 * 
 	 * @return
 	 */
@@ -160,6 +175,9 @@ public class PostCommitPersistentNotifier {
 		return tranEvent;
 	}
 
+	/**
+	 * コミット前のイベント処理
+	 */
 	public void beforeEvent() {
 
 		if (tranEvent == null && persistentEvent) {
@@ -218,14 +236,14 @@ public class PostCommitPersistentNotifier {
 	 * Kafkaパーシステントイベントメッセージ送信<br>
 	 * MQメッセージ送信<br>
 	 * 
-	 * @author mtera1003
+	 * @author teratani
 	 *
 	 */
 	private class TransactionListener extends TransactionSynchronizationAdapter {
 
 		@Override
 		public void afterCommit() {
-			logger.info("*****************************************afterCommit() started.");
+			logger.debug("afterCommit() started.");
 			if (auditMessage.getAuditEntity().size() > 0) {
 				auditMessage.setUser(commonContext.getUserId());
 				logger.info(MessageFormat.get("RIZA0001"), StringUtil.objectToJsonString(auditMessage));

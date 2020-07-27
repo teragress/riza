@@ -4,15 +4,12 @@ import javax.jms.JMSException;
 import javax.jms.QueueConnectionFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter;
-import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.ibm.mq.jms.MQQueueConnectionFactory;
@@ -29,6 +26,11 @@ public class MQComponentSetting {
 	@Autowired
 	Environment env;
 
+	/**
+	 * キューコネクションファクトリーの設定
+	 * @return
+	 * @throws JMSException
+	 */
 	@Bean
 	@Primary
 	public QueueConnectionFactory mqQueueConnectionFactory() throws JMSException {
@@ -43,6 +45,11 @@ public class MQComponentSetting {
 		return cf;
 	}
 	
+	/**
+	 * ユーザー情報設定
+	 * @param mqQueueConnectionFactory
+	 * @return
+	 */
 	@Bean
 	UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter(MQQueueConnectionFactory mqQueueConnectionFactory) {
 	    UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter = new UserCredentialsConnectionFactoryAdapter();
@@ -51,6 +58,11 @@ public class MQComponentSetting {
 	    return userCredentialsConnectionFactoryAdapter;
 	}
 	
+	/**
+	 * コネクションプーリングを実施するための設定
+	 * @param userCredentialsConnectionFactoryAdapter
+	 * @return
+	 */
 	@Bean
 	@Primary
 	public CachingConnectionFactory cachingConnectionFactory(UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter) {
@@ -62,6 +74,11 @@ public class MQComponentSetting {
 	    return cachingConnectionFactory;
 	}
 
+	/**
+	 * 送信メソッド用定義
+	 * @param cachingConnectionFactory
+	 * @return
+	 */
 	@Bean
 	public JmsTemplate jmsOperations(CachingConnectionFactory cachingConnectionFactory) {
 	    JmsTemplate jmsTemplate = new JmsTemplate(cachingConnectionFactory);

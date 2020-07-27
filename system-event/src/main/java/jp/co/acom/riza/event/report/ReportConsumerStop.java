@@ -1,19 +1,10 @@
 package jp.co.acom.riza.event.report;
 
-import javax.jms.TextMessage;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.component.kafka.KafkaConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.jms.core.JmsOperations;
 import org.springframework.stereotype.Service;
 
-import com.ibm.msg.client.wmq.WMQConstants;
-
 import jp.co.acom.riza.event.config.EventMessageId;
-import jp.co.acom.riza.event.mq.MQConstants;
 import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
 

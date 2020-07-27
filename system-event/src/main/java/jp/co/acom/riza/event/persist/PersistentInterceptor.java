@@ -26,21 +26,28 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PersistentInterceptor extends EmptyInterceptor {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * ロガー
+	 */
 	private static final Logger logger = Logger.getLogger(PersistentInterceptor.class);
+	
 	/**
 	 * エンティティ格納パッケージ
 	 */
 	// 特定のパッケージ以下のもので、@RevisionEntity が付与されてい
 	private String[] entityPackages;
+	
 	/**
-	 * イベント通知
+	 * パーシステントインターセプター
 	 */
 	private PersistentEventNotifier eventNotifier;
 
+	/**
+	 *  
+	 */
 	private PostCommitPersistentNotifier postNotifier;
 
 	/**
@@ -74,6 +81,10 @@ public class PersistentInterceptor extends EmptyInterceptor {
 		notifyEvent(entity, id, PersistentType.DELETE);
 		super.onDelete(entity, id, state, propertyNames, types);
 	}
+	
+	/**
+	 * 参照イベント処理
+	 */
 	@Override
 	public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 		notifyEvent(entity, id, PersistentType.SELECT);
@@ -169,9 +180,12 @@ public class PersistentInterceptor extends EmptyInterceptor {
 		}
 	}
 
+	/**
+	 * トランザクション完了前のインターセプター処理
+	 */
 	@Override
 	public void beforeTransactionCompletion(Transaction tx) {
-		logger.info("********beforeTransactionComplition() started.*************");
+		logger.info("beforeTransactionComplition() started.");
 		boolean allReady = true;
 		eventNotifier.notify(AuditStatus.COMPLETE);
 		

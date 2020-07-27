@@ -14,7 +14,9 @@ import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
- * @author mtera1003
+ * ストリングユーティリティ
+ * 
+ * @author teratani
  *
  */
 public class StringUtil {
@@ -41,14 +43,14 @@ public class StringUtil {
 	}
 
 	/**
+	 * エンティティイベントストリングからエンティティイベントオブジェクトへ変換する
+	 * 
 	 * @param str
 	 * @return
-	 * @throws JsonParseException
-	 * @throws JsonMappingException
-	 * @throws IOException
+	 * @throws Exception
 	 */
 	public static EntityEvent stringToEntityEventObject(String str)
-			throws JsonParseException, JsonMappingException, IOException {
+			throws Exception {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -58,6 +60,8 @@ public class StringUtil {
 	}
 
 	/**
+	 * トランザクションイベントオブジェクトから文字列に変換
+	 * 
 	 * @param str
 	 * @return
 	 * @throws JsonParseException
@@ -75,6 +79,7 @@ public class StringUtil {
 	}
 
 	/**
+	 * 文字列を指定サイズで分割してリストを返す
 	 * @param s
 	 * @param length
 	 * @return

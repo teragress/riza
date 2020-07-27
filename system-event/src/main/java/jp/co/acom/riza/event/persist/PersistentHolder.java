@@ -12,24 +12,37 @@ import lombok.Setter;
 
 /**
  * 変更イベントを保持する
- * @author mtera1003
+ * @author  teratani
  *
  */
 @Getter
 @Setter
 public class PersistentHolder implements PersistentEventNotifier {
 	
+	/**
+	 * ロガー
+	 */
 	private static final Logger logger = Logger.getLogger(PersistentHolder.class);
+	
+	/**
+	 * エンティティパーシステントリスト
+	 */
 	private List<EntityPersistent> events = new ArrayList<>();
+	
 	/**
 	 * エンティティマネージャーBean名
 	 */
 	private String entityManagerBeanName;
+	
 	/**
 	 * リビジョン番号
 	 */
 	private long revision = -1;
 	
+	/**
+	 * 監査レコードステータス
+	 *
+	 */
 	public enum AuditStatus {
 		INIT,
 		AUDIT_ENTITY_ON,
@@ -37,10 +50,12 @@ public class PersistentHolder implements PersistentEventNotifier {
 		COMPLETE
 	}
 	private AuditStatus auditStatus = AuditStatus.INIT;
+	
 	/**
-	 * 
+	 * トランザクション単位のインターセプター 
 	 */
 	private PostCommitPersistentNotifier postCommitPersistentEventNotifier;
+	
 	/**
 	 * @param entityManagerBeanName
 	 */
@@ -112,6 +127,10 @@ public class PersistentHolder implements PersistentEventNotifier {
 		}
 		return normalized;
 	}
+		
+	/**
+	 * 監査レコード有無の通知ステータス|を更新
+	 */
 	@Override
 	public void notify(AuditStatus auditStatus) {
 		this.auditStatus = auditStatus;

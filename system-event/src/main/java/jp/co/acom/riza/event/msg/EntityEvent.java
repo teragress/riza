@@ -15,10 +15,6 @@ import lombok.ToString;
  * @author teratani
  *
  */
-/**
- * @author teratani
- *
- */
 @Getter
 @Setter
 @ToString

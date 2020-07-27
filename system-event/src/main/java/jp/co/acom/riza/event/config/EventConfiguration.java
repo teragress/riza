@@ -13,7 +13,7 @@ import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 
 /**
  * system_eventパッケージ用のEntityManagerの設定
- * @author mtera1003
+ * @author teratani
  *
  */
 @EnableJpaRepositories(entityManagerFactoryRef = "systemEntityManagerFactory", basePackages = "jp.co.acom.riza.event.repository")
