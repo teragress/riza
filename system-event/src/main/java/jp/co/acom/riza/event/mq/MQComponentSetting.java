@@ -1,12 +1,11 @@
 package jp.co.acom.riza.event.mq;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
-import javax.jms.QueueConnectionFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter;
@@ -32,8 +31,7 @@ public class MQComponentSetting {
 	 * @throws JMSException
 	 */
 	@Bean
-	@Primary
-	public QueueConnectionFactory mqQueueConnectionFactory() throws JMSException {
+	public ConnectionFactory mqQueueConnectionFactory() throws JMSException {
 		
 		MQQueueConnectionFactory cf = new MQQueueConnectionFactory();
 		cf.setHostName(env.getProperty(MQConstants.MQ_CONNECTION_HOST));
@@ -51,7 +49,7 @@ public class MQComponentSetting {
 	 * @return
 	 */
 	@Bean
-	UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter(MQQueueConnectionFactory mqQueueConnectionFactory) {
+	public UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter(ConnectionFactory mqQueueConnectionFactory) {
 	    UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter = new UserCredentialsConnectionFactoryAdapter();
 	    userCredentialsConnectionFactoryAdapter.setUsername(env.getProperty(MQConstants.MQ_CONNECTION_USER));
 	    userCredentialsConnectionFactoryAdapter.setTargetConnectionFactory(mqQueueConnectionFactory);
@@ -64,8 +62,7 @@ public class MQComponentSetting {
 	 * @return
 	 */
 	@Bean
-	@Primary
-	public CachingConnectionFactory cachingConnectionFactory(UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter) {
+	public CachingConnectionFactory cachingConnectionFactory(ConnectionFactory userCredentialsConnectionFactoryAdapter) {
 	    CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory();
 	    cachingConnectionFactory.setTargetConnectionFactory(userCredentialsConnectionFactoryAdapter);
 	    cachingConnectionFactory.setSessionCacheSize(env.getProperty(MQConstants.MQ_MAX_CONNECTION, Integer.class, MQConstants.MQ_DEFAULT_MAX_CONNECTION));
@@ -80,7 +77,7 @@ public class MQComponentSetting {
 	 * @return
 	 */
 	@Bean
-	public JmsTemplate jmsOperations(CachingConnectionFactory cachingConnectionFactory) {
+	public JmsTemplate jmsOperations(ConnectionFactory cachingConnectionFactory) {
 	    JmsTemplate jmsTemplate = new JmsTemplate(cachingConnectionFactory);
 		MQDestinationResolver resolver = new MQDestinationResolver();
 		resolver.setTargetClient(WMQConstants.WMQ_CLIENT_NONJMS_MQ);

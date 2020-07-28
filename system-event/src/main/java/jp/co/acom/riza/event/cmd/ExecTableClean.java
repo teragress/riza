@@ -1,5 +1,6 @@
 package jp.co.acom.riza.event.cmd;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -26,17 +27,22 @@ public class ExecTableClean {
 	
 	@Autowired
 	ApplicationContext applicationContext;
+
+	@Autowired
+	ClientInfoSet clientInfoSet;
 	
 	/**
 	 *  トランザクション実行テーブルクリーンナップ
 	 * @param baseDatetime 基準日時
 	 * @param maxDelete 最大削除件数
 	 * @return
+	 * @throws SQLException 
 	 */
 	@Transactional
-	public int cleanTranExec(String baseDatetime,int maxDelete) {
+	public int cleanTranExec(String baseDatetime,int maxDelete) throws SQLException {
 		EntityManager em = (EntityManager)applicationContext.getBean(EventConfiguration.ENTITY_MANAGER_NAME);
 
+		clientInfoSet.setClientInfo();
 		
 		List<TranExecCheckEntity> tranExecList = em
 				.createNamedQuery(TranExecCheckEntity.FIND_BY_CLEAN, TranExecCheckEntity.class)

@@ -23,9 +23,9 @@ import jp.co.acom.riza.context.CommonContext;
 import jp.co.acom.riza.event.config.EventConfiguration;
 import jp.co.acom.riza.event.config.EventConstants;
 import jp.co.acom.riza.event.entity.TranExecCheckEntity;
+import jp.co.acom.riza.event.exception.DuplicateExecuteException;
 import jp.co.acom.riza.event.msg.EntityEvent;
 import jp.co.acom.riza.event.utils.StringUtil;
-import jp.co.acom.riza.exception.DuplicateExecuteException;
 import jp.co.acom.riza.system.utils.log.Logger;
 
 /**

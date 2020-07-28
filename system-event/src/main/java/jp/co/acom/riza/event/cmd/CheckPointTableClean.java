@@ -1,5 +1,6 @@
 package jp.co.acom.riza.event.cmd;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -26,6 +27,9 @@ public class CheckPointTableClean {
 	
 	@Autowired
 	ApplicationContext applicationContext;
+
+	@Autowired
+	ClientInfoSet clientInfoSet;
 	
 	/**
 	 * チェックポイントクリーンナップ<br>
@@ -33,11 +37,12 @@ public class CheckPointTableClean {
 	 * @param baseDateTime 基準日時
 	 * @param maxDelete 最大削除件数
 	 * @return
+	 * @throws SQLException 
 	 */
 	@Transactional
-	public int cleanCheckPoint(String baseDateTime,int maxDelete) {
+	public int cleanCheckPoint(String baseDateTime,int maxDelete) throws SQLException {
 		EntityManager em = (EntityManager)applicationContext.getBean(EventConfiguration.ENTITY_MANAGER_NAME);
-
+		clientInfoSet.setClientInfo();
 		
 		List<EventCheckpointEntity> checkpointList = em
 				.createNamedQuery(EventCheckpointEntity.FIND_BY_CLEAN, EventCheckpointEntity.class)

@@ -1,4 +1,4 @@
-package jp.co.acom.riza.exception;
+package jp.co.acom.riza.event.exception;
 
 /**
  * 重複実行例外

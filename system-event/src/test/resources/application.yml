@@ -25,9 +25,9 @@ spring:
   sleuth:
     sampler:
       probability: 1.0
-    messaging:
-      jms:
-        enabled: false
+#    messaging:
+#      jms:
+#        enabled: false
 
 camel:
   springboot:
