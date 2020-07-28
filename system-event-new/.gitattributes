@@ -1,0 +1,13 @@
+* text eol=lf
+
+# ascii
+*.csv text eol=crlf
+
+# binary
+*.png binary
+*.jpg binary
+*.xls binary
+*.xlsx binary
+*.xlsm binary
+*.jar binary
+*.ico binary

@@ -1,0 +1,57 @@
+logging:
+  config: classpath:logback.xml
+
+app:
+  zipkin:
+    base-url: http://zipkin:9411/
+
+spring:
+  datasource:
+    #    url: jdbc:h2:./target/db/test;AUTO_SERVER=true;TRACE_LEVEL_FILE=3
+    url: jdbc:h2:mem:test
+    username: vagrant
+    type: org.h2.jdbcx.JdbcDataSource
+  jpa:
+    properties:
+      # version フィールドを Audit 対象とする
+      'org.hibernate.envers.do_not_audit_optimistic_locking_field': false
+      hibernate.hbm2ddl.auto: create
+  jta:
+    log-dir: target/transaction-logs
+
+  zipkin:
+    enabled: true
+    base-url: ${app.zipkin.base-url}
+  sleuth:
+    sampler:
+      probability: 1.0
+#    messaging:
+#      jms:
+#        enabled: false
+
+camel:
+  springboot:
+    name: MyCamel
+    main-run-controller: true
+  zipkin:
+    endpoint: ${app.zipkin.base-url}api/v2/spans
+    server-service-mappings:
+      "[kafka-receive-route]": "fuse-kafka"
+      "[wiretap-test]": "fuse-wiretap"
+    client-service-mappings:
+      "messageLoggingProcess": "logging-process"
+      "[kafka:topic*]": "fuse-kafka"
+
+server:
+  address: 0.0.0.0
+  port: 8085
+
+management:
+  server:
+    address: 0.0.0.0
+    port: 8086
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true
