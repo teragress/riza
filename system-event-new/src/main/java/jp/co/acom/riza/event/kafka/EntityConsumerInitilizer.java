@@ -20,7 +20,9 @@ import jp.co.acom.riza.event.config.EventConfiguration;
 import jp.co.acom.riza.event.config.EventConstants;
 import jp.co.acom.riza.event.entity.TranExecCheckEntity;
 import jp.co.acom.riza.event.exception.DuplicateExecuteException;
+import jp.co.acom.riza.event.msg.DomainEvent;
 import jp.co.acom.riza.event.msg.EntityEvent;
+import jp.co.acom.riza.event.msg.Header;
 import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.system.utils.log.Logger;
 
@@ -49,7 +51,7 @@ public class EntityConsumerInitilizer implements Processor {
 
 	@Autowired
 	private ApplicationContext applicationContext;
-	
+
 	@Autowired
 	Tracer tracer;
 
@@ -61,21 +63,39 @@ public class EntityConsumerInitilizer implements Processor {
 	public void process(Exchange exchange) throws Exception {
 		logger.debug("process() started.");
 
-		EntityEvent entityEvent = StringUtil.stringToEntityEventObject((String) exchange.getIn().getBody());
-		setCommonContext(exchange.getFromRouteId(), entityEvent);
-		insertTranExecChckEntity(commonContext.getReqeustId(), commonContext.getLjcomDateTime());
-		exchange.getOut().setBody(exchange.getIn().getBody());
-		exchange.getOut().setHeaders(exchange.getIn().getHeaders());
-		exchange.getOut().setHeader(EventConstants.EXCHANGE_HEADER_ENTITY_EVENT, entityEvent);
+		String topic = exchange.getIn().getHeader(org.apache.camel.component.kafka.KafkaConstants.TOPIC, String.class);
+		String prefix;
+		prefix	= KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX;
+		int len;
+		len = KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX.length();
+		
+		if (topic != null && topic.length() > len	&& prefix.equals(topic.substring(len))) {
+			EntityEvent entityEvent = StringUtil.stringToEntityEventObject((String) exchange.getIn().getBody());
+			setCommonContext(exchange.getFromRouteId(), entityEvent.getHeader());
+			insertTranExecChckEntity(commonContext.getReqeustId(), commonContext.getLjcomDateTime());
+			exchange.getOut().setBody(exchange.getIn().getBody());
+			exchange.getOut().setHeaders(exchange.getIn().getHeaders());
+			exchange.getOut().setHeader(EventConstants.EXCHANGE_HEADER_EVENT_OBJECT, entityEvent);
+		}
+		prefix	= KafkaConstants.KAFKA_DOMAIN_TOPIC_PREFIX;
+		len = KafkaConstants.KAFKA_DOMAIN_TOPIC_PREFIX.length();
+		if (topic != null && topic.length() > len	&& prefix.equals(topic.substring(len))) {
+			DomainEvent domainEvent = StringUtil.stringToDomainEventObject((String) exchange.getIn().getBody());
+			setCommonContext(exchange.getFromRouteId(), domainEvent.getHeader());
+			insertTranExecChckEntity(commonContext.getReqeustId(), commonContext.getLjcomDateTime());
+			exchange.getOut().setBody(exchange.getIn().getBody());
+			exchange.getOut().setHeaders(exchange.getIn().getHeaders());
+			exchange.getOut().setHeader(EventConstants.EXCHANGE_HEADER_EVENT_OBJECT, domainEvent);
+		}
 	}
 
 	/**
 	 * 共通コンテキストの設定
 	 * 
-	 * @param routeId CAMELルートID
+	 * @param routeId     CAMELルートID
 	 * @param entityEvent イベントエンティティ情報
 	 */
-	private void setCommonContext(String routeId, EntityEvent entityEvent) {
+	private void setCommonContext(String routeId, Header header) {
 		logger.debug("setCommonContext() started.");
 
 		LocalDateTime now = LocalDateTime.now();
@@ -84,18 +104,18 @@ public class EntityConsumerInitilizer implements Processor {
 		commonContext.setLjcomTime(LocalTime.of(now.getHour(), now.getMinute(), now.getSecond()));
 		String[] splitStr = routeId.split("_", 4);
 		commonContext.setBusinessProcess(splitStr[3]);
-		commonContext.setReqeustId(entityEvent.getHeader().getReqeustId() + ":" + commonContext.getBusinessProcess());
-		
+		commonContext.setReqeustId(header.getReqeustId() + ":" + commonContext.getBusinessProcess());
+
 		TraceContext traceContext = tracer.currentSpan().context();
 		commonContext.setTraceId(traceContext.traceIdString());
 		commonContext.setSpanId(Long.toHexString(traceContext.spanId()));
-		commonContext.setUserId(entityEvent.getHeader().getUserId());
+		commonContext.setUserId(header.getUserId());
 	}
 
 	/**
 	 * トランザクション実行テーブルインサート(重複実行チェック)
 	 * 
-	 * @param key 重複チェックトランザクション識別キー
+	 * @param key      重複チェックトランザクション識別キー
 	 * @param dateTime 日時
 	 */
 	private void insertTranExecChckEntity(String key, LocalDateTime dateTime) {
@@ -108,7 +128,7 @@ public class EntityConsumerInitilizer implements Processor {
 		}
 		TranExecCheckEntity execEntity = new TranExecCheckEntity();
 		execEntity.setEventKey(commonContext.getReqeustId());
-		
+
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 		execEntity.setDatetime(commonContext.getLjcomDateTime().format(formatter));
 		logger.info("execEntity=" + execEntity);

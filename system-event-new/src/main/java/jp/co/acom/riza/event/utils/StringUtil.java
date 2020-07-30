@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jp.co.acom.riza.event.msg.DomainEvent;
 import jp.co.acom.riza.event.msg.EntityEvent;
 import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.system.utils.log.Logger;
@@ -59,6 +60,23 @@ public class StringUtil {
 		return entityEvent;
 	}
 
+	/**
+	 * ドメインイベントストリングからドメインイベントオブジェクトへ変換する
+	 * 
+	 * @param str
+	 * @return
+	 * @throws Exception
+	 */
+	public static DomainEvent stringToDomainEventObject(String str)
+			throws Exception {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		DomainEvent domainEvent = objectMapper.readValue(str, DomainEvent.class);
+
+		return domainEvent;
+	}
+	
 	/**
 	 * トランザクションイベントオブジェクトから文字列に変換
 	 * 

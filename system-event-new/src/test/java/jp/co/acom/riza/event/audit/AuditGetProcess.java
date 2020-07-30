@@ -34,7 +34,7 @@ public class AuditGetProcess implements Processor {
 	public void process(Exchange exchange) throws Exception {
 		logger.info("process() started.");
 
-		EntityEvent entityEvent = (EntityEvent) exchange.getIn().getHeader(EventConstants.EXCHANGE_HEADER_ENTITY_EVENT);
+		EntityEvent entityEvent = (EntityEvent) exchange.getIn().getHeader(EventConstants.EXCHANGE_HEADER_EVENT_OBJECT);
 		logger.info("EntityEvent=" + entityEvent);
 		logger.info("current entity=" + auditEntityUtils.getEventAuditEntity(entityEvent).toString());
 		if (entityEvent.getEntity().getEntityType() == EntityType.RESOURCE) {

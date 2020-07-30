@@ -58,9 +58,9 @@ public interface EventConstants {
 	public static final String EVENT_THREAD_POOL_BEAN = "ThreadPoolBean";
 	
 	/**
-	 *　エンティティイベントを伝搬するexchangeのヘッダーキー
+	 *　イベントオブジェクトを伝搬するexchangeのヘッダーキー
 	 */
-	public static final String EXCHANGE_HEADER_ENTITY_EVENT = "EntityEvent";
+	public static final String EXCHANGE_HEADER_EVENT_OBJECT = "EventObject";
 	
 	/**
 	 * チェックポイントテーブルメッセージの分割サイズキー
