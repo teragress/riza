@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import jp.co.acom.riza.event.msg.Manager;
+import jp.co.acom.riza.event.msg.DomainEvent;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.event.msg.EntityEvent;
@@ -33,10 +34,10 @@ public class KafkaEventProducer {
 
 	@Autowired
 	ProducerTemplate producer;
-	
+
 	@Autowired
 	KafkaTemplate<String, String> kafkaTemplate;
-	
+
 	@Autowired
 	Environment env;
 
@@ -59,18 +60,31 @@ public class KafkaEventProducer {
 		logger.debug("sendMessageEvent() started.");
 
 		for (Manager pManager : tranEvent.getManagers()) {
-			for (Entity pEntity : pManager.getEntitys()) {
-				EntityEvent pEvent = new EntityEvent();
-				pEvent.setHeader(tranEvent.getHeader());
-				pEvent.setManager(pManager.getManager());
-				pEvent.setRevision(pManager.getRevison());
-				pEvent.setEntity(pEntity);
-				String entityTopic = KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX
-						+ pEntity.getEntity().substring((pEntity.getEntity().lastIndexOf('.') + 1));
-				String entityMessage = StringUtil.objectToJsonString(pEvent);
-				logger.debug("kafka-entity-send topic=" + entityTopic + " message=" + entityMessage);
+			DomainEvent domainEvent = new DomainEvent();
+			domainEvent.setHeader(tranEvent.getHeader());
+			domainEvent.setManager(pManager.getManager());
+			domainEvent.setRevision(pManager.getRevison());
+			domainEvent.setEntitys(pManager.getEntitys());
+			String domainTopic = KafkaConstants.KAFKA_DOMAIN_TOPIC_PREFIX + pManager.getManager()
+					+ tranEvent.getHeader().getBusinessProcess();
+			String domainMessage = StringUtil.objectToJsonString(domainEvent);
+			logger.debug("kafka-domain-send topic=" + domainEvent + " message=" + domainMessage);
+			send(domainTopic, domainMessage);
 
-				send(entityTopic, entityMessage);
+			for (Entity pEntity : pManager.getEntitys()) {
+				if (ApplicationRouteHolder.getTopic(pEntity.getClass().getSimpleName()) != null) {
+					EntityEvent pEvent = new EntityEvent();
+					pEvent.setHeader(tranEvent.getHeader());
+					pEvent.setManager(pManager.getManager());
+					pEvent.setRevision(pManager.getRevison());
+					pEvent.setEntity(pEntity);
+					String entityTopic = KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX
+							+ pEntity.getEntity().substring((pEntity.getEntity().lastIndexOf('.') + 1));
+					String entityMessage = StringUtil.objectToJsonString(pEvent);
+					logger.debug("kafka-entity-send topic=" + entityTopic + " message=" + entityMessage);
+
+					send(entityTopic, entityMessage);
+				}
 			}
 		}
 	}
@@ -78,7 +92,7 @@ public class KafkaEventProducer {
 	/**
 	 * KAFKAメッセージを送信して、送信したメッセージメタ情報を返す
 	 * 
-	 * @param topic トピック名
+	 * @param topic   トピック名
 	 * @param message 送信メッセージ
 	 * @return 送信メッセージのメタ情報
 	 */
@@ -90,9 +104,9 @@ public class KafkaEventProducer {
 	 * MQ用のKAFKAメッセージを送信する<br>
 	 * MQ用はKAFKAヘッダーにメッセージIDとキーを付与する。キーは同一トランザクションで同じパーティションにアサインする目的。
 	 * 
-	 * @param topic トピック名
-	 * @param key キー
-	 * @param message 送信メッセージ
+	 * @param topic       トピック名
+	 * @param key         キー
+	 * @param message     送信メッセージ
 	 * @param mqMessageID メッセージID
 	 * @return 送信メッセージのメタ情報
 	 */

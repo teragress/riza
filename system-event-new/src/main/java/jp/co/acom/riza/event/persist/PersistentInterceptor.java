@@ -99,7 +99,7 @@ public class PersistentInterceptor extends EmptyInterceptor {
 	 */
 	private void notifyEvent(Object entity, Serializable id, PersistentType persistentType) {
 		logger.debug("notifyEvent() started. entity=" + entity);
-		if (isCardObject(entity)) {
+		if (isAuditObject(entity)) {
 			AuditEntity auditEntity = new AuditEntity();
 			auditEntity.setType(persistentType);
 			auditEntity.setEntity(entity.getClass().getSimpleName());
@@ -108,10 +108,9 @@ public class PersistentInterceptor extends EmptyInterceptor {
 		}
 		if (isTargetEvent(entity)) {
 			if (persistentType != PersistentType.SELECT) {
-				postNotifier.setPersistentEvent(true);
 				EntityPersistent event = new EntityPersistent(persistentType, getEntityType(entity), entity, id);
 				event.setEntityId(id);
-				eventNotifier.notify(event);		// TODO 自動生成されたメソッド・スタブ
+				eventNotifier.notify(event);
 			}
 		}
 	}
@@ -152,18 +151,17 @@ public class PersistentInterceptor extends EmptyInterceptor {
 			}
 		}
 		return targetPackage
-				&& AnnotationUtils.findAnnotation(entityClass, RevisionEntity.class) == null
-				&& AnnotationUtils.findAnnotation(entityClass, NoEvent.class) == null;
+				&& AnnotationUtils.findAnnotation(entityClass, RevisionEntity.class) == null;
 	}
 	
 	/**
-	 * エンティティがカードオブジェクトかを取得する.
+	 * エンティティが監査オブジェクトかを取得する.
 	 *
 	 * @param entity エンティティ
 	 * @param id     エンティティのID
 	 * @return 送信対象の場合は true、それ以外の場合は false.
 	 */
-	protected boolean isCardObject(Object entity) {
+	protected boolean isAuditObject(Object entity) {
 		Class<?> entityClass = entity.getClass();
 		return AnnotationUtils.findAnnotation(entityClass, AuditMessage.class) != null;
 	}

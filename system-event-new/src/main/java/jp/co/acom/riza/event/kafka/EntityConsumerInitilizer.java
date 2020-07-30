@@ -1,6 +1,5 @@
 package jp.co.acom.riza.event.kafka;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -13,9 +12,6 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import brave.Tracer;
 import brave.propagation.TraceContext;
@@ -35,7 +31,6 @@ import jp.co.acom.riza.system.utils.log.Logger;
  *
  */
 @Service(EntityConsumerInitilizer.PROCESS_ID)
-//@Transactional
 public class EntityConsumerInitilizer implements Processor {
 	/**
 	 * ロガー

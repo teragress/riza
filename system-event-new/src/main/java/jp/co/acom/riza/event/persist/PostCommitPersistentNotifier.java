@@ -22,6 +22,7 @@ import jp.co.acom.riza.event.config.EventConstants;
 import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.event.entity.EventCheckpointEntity;
 import jp.co.acom.riza.event.entity.EventCheckpointEntityKey;
+import jp.co.acom.riza.event.kafka.ApplicationRouteHolder;
 import jp.co.acom.riza.event.kafka.KafkaEventProducer;
 import jp.co.acom.riza.event.kafka.KafkaEventUtil;
 import jp.co.acom.riza.event.kafka.MessageUtil;
@@ -56,20 +57,20 @@ public class PostCommitPersistentNotifier {
 	private static final Logger logger = Logger.getLogger(PostCommitPersistentNotifier.class);
 
 	/**
-	 * チェックポイントのトランザクションメッセージ分割サイズ 
+	 * チェックポイントのトランザクションメッセージ分割サイズ
 	 */
 	private Integer TranMessageSplitSize;
-	
+
 	/**
 	 * エンティティマネージャー単位のホルダー
 	 */
 	private List<PersistentHolder> holders = new ArrayList<>();
-	
+
 	/**
 	 * 監査メッセージホルダー
 	 */
 	private AuditMessage auditMessage = new AuditMessage();
-	
+
 	/**
 	 * チェクポイント用トランザクションイベント
 	 */
@@ -79,7 +80,7 @@ public class PostCommitPersistentNotifier {
 	 * パーシステントイベント有無
 	 */
 	private boolean persistentEvent = false;
-	
+
 	/**
 	 * MQ用KAFKA退避メッセージ情報
 	 */
@@ -111,6 +112,9 @@ public class PostCommitPersistentNotifier {
 
 	@Autowired
 	PostCommitPersistentNotifier eventNotifier;
+
+	@Autowired
+	ApplicationRouteHolder applicationRouteHolder;
 
 	private String sepKey;
 
@@ -161,15 +165,23 @@ public class PostCommitPersistentNotifier {
 			List<Entity> pList = new ArrayList<Entity>();
 			pManager.setEntitys(pList);
 			pManager.setRevison(holder.getRevision());
+			boolean eventOn = false;
 			for (EntityPersistent eP : holder.getEvents()) {
 				Entity pEntity = new Entity();
 				pEntity.setEntity(eP.getEntity().getClass().getName());
 				pEntity.setEntityType(eP.getEntityType());
 				pEntity.setKey(eP.getEntityId());
 				pEntity.setType(eP.getPersistentType());
-				pList.add(pEntity);
+				if ((applicationRouteHolder.getTopic(pEntity.getClass().getSimpleName()) != null)
+						|| (applicationRouteHolder.getTopic(
+								holder.getEntityManagerBeanName() + commonContext.getBusinessProcess()) != null)) {
+					pList.add(pEntity);
+					eventOn = true;
+				}
 			}
-			managerList.add(pManager);
+			if (eventOn) {
+				managerList.add(pManager);
+			}
 		}
 		tranEvent.setManagers(managerList);
 		return tranEvent;
@@ -262,7 +274,8 @@ public class PostCommitPersistentNotifier {
 				logger.error("Mq message send Exception occurred.", e);
 			}
 
-			monitor.endMonitor(commonContext.getTraceId() + commonContext.getSpanId(),commonContext.getLjcomDateTime());
+			monitor.endMonitor(commonContext.getTraceId() + commonContext.getSpanId(),
+					commonContext.getLjcomDateTime());
 
 			super.afterCommit();
 		}

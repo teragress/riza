@@ -81,7 +81,7 @@ public abstract class AbstractJpaConfiguration {
 	 * @return
 	 */
 	protected PersistentEventNotifier persistentEventNotifier(String entityManaerBeanName, EntityManager entityManager) {
-		System.out.println("********************add PersistentHolder*********************" + entityManaerBeanName);
+		//System.out.println("********************add PersistentHolder*********************" + entityManaerBeanName);
 		PersistentHolder holder = new PersistentHolder(entityManaerBeanName);
 		holder.setPostCommitPersistentEventNotifier(postCommitPersistentEventNotifier);
 		postCommitPersistentEventNotifier.addEventHolder(holder);

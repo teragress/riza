@@ -8,33 +8,50 @@ package jp.co.acom.riza.event.config;
  */
 public interface EventConstants {
 	/**
+	 *　起動モード(ONLINE/BATCH)
+	 */
+	public static final String EVENT_START_MODE = "EVENT_START_MODE";
+	
+	/**
+	 *　デフォルト起動モード
+	 */
+	public static final String EVENT_DEFAULT_START_MODE = "ONLINE";
+	
+	/**
 	 *　スレッドプールサイズプロパティ定義取得キー
 	 */
 	public static final String EVENT_THREAD_POOL_SIZE = "EVENT_THREAD_POOL_SIZE";
+	
 	/**
 	 *　スレッドプール最大サイズプロパティ定義取得キー
 	 */
 	public static final String EVENT_THREAD_MAX_POOL_SIZE = "EVENT_THREAD_MAX_POOL_SIZE";
+	
 	/**
 	 *　デフォルトスレッドプールサイズ
 	 */
 	public static final int EVENT_DEFAULT_THREAD_POOL_SIZE = 50;
+	
 	/**
 	 *　デフォルト最大スレッドプールサイズー
 	 */
 	public static final int EVENT_DEFAULT_THREAD_MAX_POOL_SIZE = 50;
+	
 	/**
 	 *　スレッドプールキューサイズプロパティ定義取得キー
 	 */
 	public static final String EVENT_THREAD_MAX_QUE_SIZE = "EVENT_THREAD_MAX_QUE_SIZE";
+	
 	/**
 	 *　スレッドプール最大キューサイズプロパティ定義取得キー
 	 */
 	public static final int EVENT_DEFAULT_THREAD_MAX_QUE_SIZE = 5000;
+	
 	/**
 	 *　スレッドプールID
 	 */
 	public static final String EVENT_THREAD_POOL_ID = "ThreadPoolProfile";
+	
 	/**
 	 *　スレッドプールBean名
 	 */

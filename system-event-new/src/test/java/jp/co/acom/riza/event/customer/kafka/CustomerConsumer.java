@@ -27,14 +27,14 @@ public class CustomerConsumer extends RouteBuilder {
 	public void configure() throws Exception {
 
 		logger.debug("configure() start");
-		from("direct:" + "KAD_CUSTOMER_EntityCustomer_CustomerBusiness")
-		.routeId("KAD_CUSTOMER_EntityCustomer_CustomerBusiness")
+		from("direct:" + "ENTITYAD_CUSTOMER_EntityCustomer_CustomerBusiness")
+		.routeId("ENTITYAD_CUSTOMER_EntityCustomer_CustomerBusiness")
     	.process(EntityConsumerInitilizer.PROCESS_ID)		
     	.process(AuditGetProcess.PROC_ID)
 		.process("customerBusinessProcess");
 		
-		from("direct:" + "KAD_CUSTOMER_EntityMultiKeyEntity_MultiBusiness")
-		.routeId("KAD_CUSTOMER_EntityMultiKeyEntity_MultiBusiness")
+		from("direct:" + "ENTITYAD_CUSTOMER_EntityMultiKeyEntity_MultiBusiness")
+		.routeId("ENTITYAD_CUSTOMER_EntityMultiKeyEntity_MultiBusiness")
  //   	.process(EntityConsumerInitilizer.PROCESS_ID)		
 		.process("customerBusinessProcess");
 	}

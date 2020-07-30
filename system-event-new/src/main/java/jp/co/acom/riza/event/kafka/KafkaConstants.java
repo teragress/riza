@@ -19,6 +19,10 @@ public class KafkaConstants {
 	public static final String KAFKA_ENTITY_TOPIC_PREFIX = "Entity";
 	
 	/**
+	 * KAFKAのドメインイベントのトピックプレフィックス
+	 */
+	public static final String KAFKA_DOMAIN_TOPIC_PREFIX = "Domain";
+	/**
 	 * KAFKA接続サーバー取得キー
 	 */
 	public static final String KAFKA_BOOTSTRAP_SERVER = "KAFKA_BOOTSTRAP_SERVER";
@@ -109,9 +113,14 @@ public class KafkaConstants {
 	public static final int KAFKA_DEFAULT_PROG_CONSUMER_COUNT = 6;
 	
 	/**
-	 * KAFKAアプリケーションアダプタールートIDのプレフィックス
+	 * KAFKAエンティティアダプタールートIDのプレフィックス
 	 */
-	public static final String KAFKA_APPLICATION_ROUTE_PREFIX = "KAD";
+	public static final String KAFKA_ENTITY_APL_ROUTE_PREFIX = "ENTITYAD";
+	
+	/**
+	 * KAFKAドメインアダプタールートIDのプレフィックス
+	 */
+	public static final String KAFKA_DOMAIN_APL_ROUTE_PREFIX = "DOMAINAD";
 	
 	/**
 	 * KAFKAコンシューマルートIDのプレフィックス

@@ -24,8 +24,8 @@ public class TradeConsumer extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 		logger.debug("configure() start");
-		from("direct:" + "KAD_TRADE_EntityTrade_TradeBusiness")
-		.routeId("KAD_TRADE_EntityTrade_TradeBusiness")
+		from("direct:" + "ENTITYAD_TRADE_EntityTrade_TradeBusiness")
+		.routeId("ENTITYAD_TRADE_EntityTrade_TradeBusiness")
 //    	.process(EntityConsumerInitilizer.PROCESS_ID)		
 		.process("customerBusinessProcess");
 	}

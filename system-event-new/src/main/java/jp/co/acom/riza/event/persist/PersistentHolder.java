@@ -6,56 +6,61 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jp.co.acom.riza.event.kafka.ApplicationRouteHolder;
 import jp.co.acom.riza.system.utils.log.Logger;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * 変更イベントを保持する
- * @author  teratani
+ * 
+ * @author teratani
  *
  */
 @Getter
 @Setter
 public class PersistentHolder implements PersistentEventNotifier {
-	
+
 	/**
 	 * ロガー
 	 */
 	private static final Logger logger = Logger.getLogger(PersistentHolder.class);
-	
+
 	/**
 	 * エンティティパーシステントリスト
 	 */
 	private List<EntityPersistent> events = new ArrayList<>();
-	
+
 	/**
 	 * エンティティマネージャーBean名
 	 */
 	private String entityManagerBeanName;
-	
+
 	/**
 	 * リビジョン番号
 	 */
 	private long revision = -1;
-	
+
+	/**
+	 * ドメインイベント送信有無
+	 */
+	private boolean domainEventSend = false;
+
 	/**
 	 * 監査レコードステータス
 	 *
 	 */
 	public enum AuditStatus {
-		INIT,
-		AUDIT_ENTITY_ON,
-		AUDIT_ENTITY_WRITE,
-		COMPLETE
+		INIT, AUDIT_ENTITY_ON, AUDIT_ENTITY_WRITE, COMPLETE
 	}
+
 	private AuditStatus auditStatus = AuditStatus.INIT;
-	
+
 	/**
-	 * トランザクション単位のインターセプター 
+	 * トランザクション単位のインターセプター
 	 */
 	private PostCommitPersistentNotifier postCommitPersistentEventNotifier;
-	
+
 	/**
 	 * @param entityManagerBeanName
 	 */
@@ -63,8 +68,9 @@ public class PersistentHolder implements PersistentEventNotifier {
 		super();
 		this.entityManagerBeanName = entityManagerBeanName;
 	}
+
 	/**
-	 *　変更イベントを保存する
+	 * 変更イベントを保存する
 	 */
 	@Override
 	public void notify(EntityPersistent event) {
@@ -72,10 +78,14 @@ public class PersistentHolder implements PersistentEventNotifier {
 			logger.debug(entityManagerBeanName + " auditStatus INIT to AUDIT_ENTITY_ON");
 			auditStatus = AuditStatus.AUDIT_ENTITY_ON;
 		}
-		events.add(event);
+		if (domainEventSend || ApplicationRouteHolder.getTopic(event.getClass().getSimpleName()) != null) {
+			events.add(event);
+			postCommitPersistentEventNotifier.setPersistentEvent(true);
+		}
 	}
+
 	/**
-	 *　リビジョンを保存する
+	 * リビジョンを保存する
 	 */
 	@Override
 	public void notify(Long revision) {
@@ -85,7 +95,7 @@ public class PersistentHolder implements PersistentEventNotifier {
 		}
 		this.revision = revision;
 	}
-	
+
 	/**
 	 * 保持しているイベントを取得する.
 	 *
@@ -99,14 +109,14 @@ public class PersistentHolder implements PersistentEventNotifier {
 	/**
 	 * トランザクション内で発生したイベントを正規化する.
 	 *
-	 * <p>１つのトランザクション内で同じデータに対する変更が複数あるものを１つのイベントに集約する.
+	 * <p>
+	 * １つのトランザクション内で同じデータに対する変更が複数あるものを１つのイベントに集約する.
 	 *
 	 * @return 正規化したイベントの一覧
 	 */
 	private List<EntityPersistent> getNormalizedEvents() {
 		Map<Serializable, List<EntityPersistent>> eventMap = new HashMap<>();
-		events.forEach(
-				it -> eventMap.computeIfAbsent(it.getEntityId(), key -> new ArrayList<>()).add(it));
+		events.forEach(it -> eventMap.computeIfAbsent(it.getEntityId(), key -> new ArrayList<>()).add(it));
 
 		List<EntityPersistent> normalized = new ArrayList<>();
 		for (List<EntityPersistent> sameIdEvents : eventMap.values()) {
@@ -127,7 +137,7 @@ public class PersistentHolder implements PersistentEventNotifier {
 		}
 		return normalized;
 	}
-		
+
 	/**
 	 * 監査レコード有無の通知ステータス|を更新
 	 */
