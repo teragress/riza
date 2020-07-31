@@ -23,14 +23,20 @@ public class Manager {
 	 * エンティティマネージャーファクトリー名
 	 */
 	@JsonDeserialize(contentAs = String.class)
-	@JsonProperty(value = "mg")
+	@JsonProperty(value = "mngr")
 	private String manager;
 	
-    /**
+	/**
+	 * ドメイン名
+	 */
+	@JsonDeserialize(contentAs = String.class)
+	private String domain;
+
+	/**
      * エンティティ更新情報リスト
      */
 	@JsonDeserialize(as = ArrayList.class, contentAs = Entity.class)
-	@JsonProperty(value = "ets")
+	@JsonProperty(value = "ents")
 	private List<Entity> entitys;
     
 	/**

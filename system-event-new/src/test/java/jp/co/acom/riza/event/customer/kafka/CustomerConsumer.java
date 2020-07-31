@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import jp.co.acom.riza.event.audit.AuditDomainGetProcess;
 import jp.co.acom.riza.event.audit.AuditGetProcess;
 import jp.co.acom.riza.event.kafka.EntityConsumerInitilizer;
 import jp.co.acom.riza.system.utils.log.Logger;
@@ -35,7 +36,13 @@ public class CustomerConsumer extends RouteBuilder {
 		
 		from("direct:" + "ENTITYAD_CUSTOMER_EntityMultiKeyEntity_MultiBusiness")
 		.routeId("ENTITYAD_CUSTOMER_EntityMultiKeyEntity_MultiBusiness")
- //   	.process(EntityConsumerInitilizer.PROCESS_ID)		
 		.process("customerBusinessProcess");
+		
+		from("direct:" + "DOMAINAD_customerInsertApl_CustomerDomainBusiness")
+		.routeId("DOMAINAD_customerInsertApl_CustomerDomainBusiness")
+    	.process(EntityConsumerInitilizer.PROCESS_ID)		
+    	.process(AuditDomainGetProcess.PROC_ID)
+		.process("customerBusinessProcess");
+		
 	}
 }

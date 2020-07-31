@@ -36,6 +36,12 @@ public class EntityEvent {
 	private String manager;
 	
 	/**
+	 * ドメイン名
+	 */
+	@JsonDeserialize(contentAs = String.class)
+	private String domain;
+	
+	/**
 	 * エンティティ情報
 	 */
 	@JsonDeserialize(contentAs = Entity.class)

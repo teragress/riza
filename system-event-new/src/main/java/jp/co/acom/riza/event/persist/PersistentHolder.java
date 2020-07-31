@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jp.co.acom.riza.event.kafka.ApplicationRouteHolder;
+import jp.co.acom.riza.event.kafka.AppRouteHolder;
+import jp.co.acom.riza.event.kafka.KafkaConstants;
 import jp.co.acom.riza.system.utils.log.Logger;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,6 +36,11 @@ public class PersistentHolder implements PersistentEventNotifier {
 	 * エンティティマネージャーBean名
 	 */
 	private String entityManagerBeanName;
+	
+	/**
+	 * ドメイン名
+	 */
+	private String domainName;
 
 	/**
 	 * リビジョン番号
@@ -44,7 +50,7 @@ public class PersistentHolder implements PersistentEventNotifier {
 	/**
 	 * ドメインイベント送信有無
 	 */
-	private boolean domainEventSend = false;
+	//private boolean domainEventSend = false;
 
 	/**
 	 * 監査レコードステータス
@@ -73,12 +79,12 @@ public class PersistentHolder implements PersistentEventNotifier {
 	 * 変更イベントを保存する
 	 */
 	@Override
-	public void notify(EntityPersistent event) {
+	public void notify(EntityPersistent event,String businessProcess) {
 		if (event.getEntityType() == EntityType.RESOURCE && auditStatus == AuditStatus.INIT) {
 			logger.debug(entityManagerBeanName + " auditStatus INIT to AUDIT_ENTITY_ON");
 			auditStatus = AuditStatus.AUDIT_ENTITY_ON;
 		}
-		if (domainEventSend || ApplicationRouteHolder.getTopic(event.getClass().getSimpleName()) != null) {
+		if (AppRouteHolder.isDomainEvent(domainName, businessProcess) || AppRouteHolder.isEntityEvent(event.getEntity())) {
 			events.add(event);
 			postCommitPersistentEventNotifier.setPersistentEvent(true);
 		}

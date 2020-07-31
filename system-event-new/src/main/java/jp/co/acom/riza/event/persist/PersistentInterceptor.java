@@ -12,7 +12,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import jp.co.acom.riza.event.msg.AuditEntity;
 import jp.co.acom.riza.event.persist.PersistentHolder.AuditStatus;
 import jp.co.acom.riza.system.object.annotation.ObjectAnnotation.AuditMessage;
-import jp.co.acom.riza.system.object.annotation.ObjectAnnotation.NoEvent;
 import jp.co.acom.riza.system.utils.log.Logger;
 import lombok.Getter;
 import lombok.Setter;
@@ -110,7 +109,7 @@ public class PersistentInterceptor extends EmptyInterceptor {
 			if (persistentType != PersistentType.SELECT) {
 				EntityPersistent event = new EntityPersistent(persistentType, getEntityType(entity), entity, id);
 				event.setEntityId(id);
-				eventNotifier.notify(event);
+				eventNotifier.notify(event,postNotifier.getCommonContext().getBusinessProcess());
 			}
 		}
 	}

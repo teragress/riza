@@ -29,13 +29,6 @@ public class TranEvent {
 	private Header header;
 	
 	/**
-	 * ビジネスプロセスID
-	 */
-	@JsonDeserialize(contentAs = String.class)
-	@JsonProperty("prc")
-	private String businessProcess;
-	
-	/**
 	 * エンティティマネージャー単位の更新情報リスト
 	 */
 	@JsonDeserialize(as = ArrayList.class,contentAs = Manager.class)

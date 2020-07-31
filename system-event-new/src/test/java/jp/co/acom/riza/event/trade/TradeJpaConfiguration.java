@@ -26,6 +26,7 @@ public class TradeJpaConfiguration extends AbstractJpaConfiguration {
 	private static final String ENTITY_PACKAGE = "jp.co.acom.riza.event.trade.entity";
 	private static final String ENTITY_MANAGER_FACTORY = "tradeEntityManagerFactory";
 	private static final String ENTITY_MANAGER_BEAN_NAME = "tradeEntityManager";
+	private static final String DOMAIN_NAME = "trade";
 
 	@Autowired
 	protected PersistentEventNotifier tradePersistentEventNotifier;
@@ -76,6 +77,6 @@ public class TradeJpaConfiguration extends AbstractJpaConfiguration {
 	@Scope(value = "transaction", proxyMode = ScopedProxyMode.INTERFACES)
 	public PersistentEventNotifier tradePersistentEventNotifier(
 			@Qualifier(ENTITY_MANAGER_BEAN_NAME) EntityManager entityManager) {
-		return super.persistentEventNotifier(ENTITY_MANAGER_BEAN_NAME, entityManager);
+		return super.persistentEventNotifier(ENTITY_MANAGER_BEAN_NAME, entityManager, DOMAIN_NAME);
 	}
 }

@@ -22,7 +22,7 @@ import jp.co.acom.riza.event.config.EventConstants;
  *
  */
 @Component
-public class ApplicationRouteHolder {
+public class AppRouteHolder {
 	public enum EventType {
 		DOMAIN, ENTITY
 	}
@@ -30,7 +30,7 @@ public class ApplicationRouteHolder {
 	/**
 	 * ロガー
 	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationRouteHolder.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AppRouteHolder.class);
 
 	/**
 	 * トピックルートホルダー
@@ -40,7 +40,7 @@ public class ApplicationRouteHolder {
 	/**
 	 * コンシューマトピックホルダー
 	 */
-	private static Map<String, EventType> topicHolder = new HashMap<String, ApplicationRouteHolder.EventType>();
+	private static Map<String, EventType> topicHolder = new HashMap<String, AppRouteHolder.EventType>();
 
 	/**
 	 * システムプロパティ環境変数取得用
@@ -55,7 +55,7 @@ public class ApplicationRouteHolder {
 
 	@PostConstruct
 	public void initilize() {
-		if (!EventConstants.EVENT_DEFAULT_START_MODE
+		if (EventConstants.EVENT_DEFAULT_START_MODE
 				.equals(env.getProperty(EventConstants.EVENT_START_MODE, EventConstants.EVENT_DEFAULT_START_MODE))) {
 			createConsumer = false;
 		}
@@ -117,12 +117,28 @@ public class ApplicationRouteHolder {
 	}
 
 	/**
-	 * コンシューマトピック情報を返す
-	 * 
-	 * @param topic
-	 * @return イベントタイプ(nullは登録なし)
+	 * @param entity
+	 * @return
 	 */
-	public static EventType getTopic(String topic) {
-		return topicHolder.get(topic);
+	public static boolean isEntityEvent(Object entity) {
+		if (topicHolder.get(KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX + entity.getClass().getSimpleName()) != null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * @param domainName
+	 * @param businessProcess
+	 * @return
+	 */
+	public static boolean isDomainEvent(String domainName, String businessProcess) {
+		if (topicHolder.get(KafkaConstants.KAFKA_DOMAIN_TOPIC_PREFIX + domainName
+				+ businessProcess) != null) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }

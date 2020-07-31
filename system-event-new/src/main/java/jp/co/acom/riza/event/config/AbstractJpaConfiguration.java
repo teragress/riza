@@ -13,7 +13,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 
 import jp.co.acom.riza.context.CommonContext;
-import jp.co.acom.riza.event.kafka.ApplicationRouteHolder;
+import jp.co.acom.riza.event.kafka.AppRouteHolder;
 import jp.co.acom.riza.event.persist.PersistentEventNotifier;
 import jp.co.acom.riza.event.persist.PersistentHolder;
 import jp.co.acom.riza.event.persist.PersistentInterceptor;
@@ -22,6 +22,7 @@ import jp.co.acom.riza.event.persist.PostCommitPersistentNotifier;
 /**
  * エンティティマネージャーを定義する抽象クラス<br>
  * エンティティマネージャーを作成する場合は当該クラスを継承して作成すること。
+ * 
  * @author teratani
  *
  */
@@ -29,12 +30,12 @@ public abstract class AbstractJpaConfiguration {
 
 	@Autowired
 	protected PostCommitPersistentNotifier postCommitPersistentEventNotifier;
-	
+
 	@Autowired
 	CommonContext commonContext;
-	
+
 	@Autowired
-	ApplicationRouteHolder applicationRouteHolder;
+	AppRouteHolder appRouteHolder;
 
 	/**
 	 * EntityManagerFactory の定義.
@@ -44,7 +45,7 @@ public abstract class AbstractJpaConfiguration {
 	 * @return
 	 */
 	protected LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource,
-			EntityManagerFactoryBuilder builder,PersistentInterceptor persistentInterceptor,String... entityPackage) {
+			EntityManagerFactoryBuilder builder, PersistentInterceptor persistentInterceptor, String... entityPackage) {
 
 		Map<String, Object> properties = new HashMap<>();
 
@@ -88,13 +89,11 @@ public abstract class AbstractJpaConfiguration {
 	 * @param EntityManager パッケージのEntityManager
 	 * @return
 	 */
-	protected PersistentEventNotifier persistentEventNotifier(String entityManaerBeanName, EntityManager entityManager) {
-		//System.out.println("********************add PersistentHolder*********************" + entityManaerBeanName);
+	protected PersistentEventNotifier persistentEventNotifier(String entityManaerBeanName,
+			EntityManager entityManager, String domainName) {
 		PersistentHolder persistentHolder = new PersistentHolder(entityManaerBeanName);
 		persistentHolder.setPostCommitPersistentEventNotifier(postCommitPersistentEventNotifier);
-		if (applicationRouteHolder.getTopic(entityManaerBeanName + commonContext.getBusinessProcess()) != null) {
-			persistentHolder.setDomainEventSend(true);
-		}
+		persistentHolder.setDomainName(domainName);
 		postCommitPersistentEventNotifier.addEventHolder(persistentHolder);
 		return persistentHolder;
 	}

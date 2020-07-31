@@ -42,7 +42,7 @@ public class KafkaConsumerCreate {
 	 *
 	 */
 	@Autowired
-	private ApplicationRouteHolder holder;
+	private AppRouteHolder holder;
 
 	/**
 	 * アプリケーションルートの設定
@@ -57,11 +57,11 @@ public class KafkaConsumerCreate {
 			String[] splitStr = root.getId().split("_", 4);
 			if (splitStr.length == 4 && KafkaConstants.KAFKA_ENTITY_APL_ROUTE_PREFIX.equals(splitStr[0])) {
 				logger.info("holder add routeid=" + root.getId());
-				holder.addApplicationRoute(splitStr[1], splitStr[2], root.getId(),ApplicationRouteHolder.EventType.ENTITY);
+				holder.addApplicationRoute(splitStr[1], splitStr[2], root.getId(),AppRouteHolder.EventType.ENTITY);
 			}
 			if (splitStr.length == 4 && KafkaConstants.KAFKA_DOMAIN_APL_ROUTE_PREFIX.equals(splitStr[0])) {
 				logger.info("holder add routeid=" + root.getId());
-				holder.addApplicationRoute(splitStr[1], splitStr[2], root.getId(),ApplicationRouteHolder.EventType.DOMAIN);
+				holder.addApplicationRoute(splitStr[1], splitStr[2], root.getId(),AppRouteHolder.EventType.DOMAIN);
 			}
 		}
 	}

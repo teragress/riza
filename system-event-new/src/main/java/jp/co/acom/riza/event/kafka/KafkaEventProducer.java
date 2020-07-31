@@ -60,22 +60,26 @@ public class KafkaEventProducer {
 		logger.debug("sendMessageEvent() started.");
 
 		for (Manager pManager : tranEvent.getManagers()) {
-			DomainEvent domainEvent = new DomainEvent();
-			domainEvent.setHeader(tranEvent.getHeader());
-			domainEvent.setManager(pManager.getManager());
-			domainEvent.setRevision(pManager.getRevison());
-			domainEvent.setEntitys(pManager.getEntitys());
-			String domainTopic = KafkaConstants.KAFKA_DOMAIN_TOPIC_PREFIX + pManager.getManager()
-					+ tranEvent.getHeader().getBusinessProcess();
-			String domainMessage = StringUtil.objectToJsonString(domainEvent);
-			logger.debug("kafka-domain-send topic=" + domainEvent + " message=" + domainMessage);
-			send(domainTopic, domainMessage);
+			if (AppRouteHolder.isDomainEvent(pManager.getManager(), tranEvent.getHeader().getBusinessProcess())) {
+				DomainEvent domainEvent = new DomainEvent();
+				domainEvent.setHeader(tranEvent.getHeader());
+				domainEvent.setManager(pManager.getManager());
+				domainEvent.setRevision(pManager.getRevison());
+				domainEvent.setEntitys(pManager.getEntitys());
+				String domainTopic = KafkaConstants.KAFKA_DOMAIN_TOPIC_PREFIX + pManager.getManager()
+						+ tranEvent.getHeader().getBusinessProcess();
+				String domainMessage = StringUtil.objectToJsonString(domainEvent);
+				logger.debug("kafka-domain-send topic=" + domainEvent + " message=" + domainMessage);
+				send(domainTopic, domainMessage);
+
+			}
 
 			for (Entity pEntity : pManager.getEntitys()) {
-				if (ApplicationRouteHolder.getTopic(pEntity.getClass().getSimpleName()) != null) {
+				if (AppRouteHolder.isEntityEvent(pEntity.getClass())) {
 					EntityEvent pEvent = new EntityEvent();
 					pEvent.setHeader(tranEvent.getHeader());
 					pEvent.setManager(pManager.getManager());
+					pEvent.setDomain(pManager.getDomain());
 					pEvent.setRevision(pManager.getRevison());
 					pEvent.setEntity(pEntity);
 					String entityTopic = KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX

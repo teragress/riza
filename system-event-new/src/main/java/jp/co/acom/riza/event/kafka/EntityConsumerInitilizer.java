@@ -69,7 +69,7 @@ public class EntityConsumerInitilizer implements Processor {
 		int len;
 		len = KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX.length();
 		
-		if (topic != null && topic.length() > len	&& prefix.equals(topic.substring(len))) {
+		if (topic != null && topic.length() > len	&& prefix.equals(topic.substring(0,len))) {
 			EntityEvent entityEvent = StringUtil.stringToEntityEventObject((String) exchange.getIn().getBody());
 			setCommonContext(exchange.getFromRouteId(), entityEvent.getHeader());
 			insertTranExecChckEntity(commonContext.getReqeustId(), commonContext.getLjcomDateTime());
@@ -79,7 +79,7 @@ public class EntityConsumerInitilizer implements Processor {
 		}
 		prefix	= KafkaConstants.KAFKA_DOMAIN_TOPIC_PREFIX;
 		len = KafkaConstants.KAFKA_DOMAIN_TOPIC_PREFIX.length();
-		if (topic != null && topic.length() > len	&& prefix.equals(topic.substring(len))) {
+		if (topic != null && topic.length() > len	&& prefix.equals(topic.substring(0,len))) {
 			DomainEvent domainEvent = StringUtil.stringToDomainEventObject((String) exchange.getIn().getBody());
 			setCommonContext(exchange.getFromRouteId(), domainEvent.getHeader());
 			insertTranExecChckEntity(commonContext.getReqeustId(), commonContext.getLjcomDateTime());

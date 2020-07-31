@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.cloud.sleuth.annotation.NewSpan;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
@@ -75,6 +76,7 @@ public class EventTest001 {
 
 
 	@Test
+	@NewSpan
 	public void test001() throws InterruptedException {
 
 //		Mockito.verify(eventProducer,Mockito.times(3)).send(Mockito.anyString(), Mockito.anyString());
@@ -93,6 +95,7 @@ public class EventTest001 {
 		Thread.sleep(10000);
 	}
 //	@Test
+	@NewSpan
 	public void test002() throws InterruptedException {
 		Customer customer = new Customer();
 		customer.setName("name");

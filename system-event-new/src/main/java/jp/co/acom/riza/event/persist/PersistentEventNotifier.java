@@ -11,7 +11,7 @@ public interface PersistentEventNotifier {
 	 * パーシステント通知
 	 * @param event
 	 */
-	void notify(EntityPersistent event);
+	void notify(EntityPersistent event,String businessProcess);
 
 	/**
 	 * リビジョン番号通知

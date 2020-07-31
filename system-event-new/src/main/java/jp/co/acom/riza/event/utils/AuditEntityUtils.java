@@ -39,7 +39,7 @@ public class AuditEntityUtils {
 	 * @return エンティティオブジェクト。検索できない場合はnull値。
 	 * @throws ClassNotFoundException
 	 */
-	public Object getEventAuditEntity(EntityEvent entityEvent) throws ClassNotFoundException {
+	public Object getEventEntity(EntityEvent entityEvent) throws ClassNotFoundException {
 
 		EntityManager em = (EntityManager) applicationContext.getBean(entityEvent.getManager());
 		Entity entity = entityEvent.getEntity();
@@ -65,7 +65,7 @@ public class AuditEntityUtils {
 	 * @throws ClassNotFoundException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Object> getResourceCurrentAndBeforeEntity(EntityEvent entityEvent) throws ClassNotFoundException {
+	public List<Object> getCurrentAndBeforeEntity(EntityEvent entityEvent) throws ClassNotFoundException {
 		EntityManager em = (EntityManager) applicationContext.getBean(entityEvent.getManager());
 		Entity entity = entityEvent.getEntity();
 
@@ -85,31 +85,57 @@ public class AuditEntityUtils {
 	 * @return イベントエンティティリスト
 	 * @throws ClassNotFoundException
 	 */
-	public List<Entity> getEntitys(DomainEvent domainEvent, String findClassName) throws ClassNotFoundException {
-		List<Entity> list = new ArrayList<Entity>();
+	public List<Object> getAuditEntity(DomainEvent domainEvent, String targetClass) throws ClassNotFoundException {
+		EntityManager em = (EntityManager) applicationContext.getBean(domainEvent.getManager());
+		List<Object> list = new ArrayList<Object>();
 		for (Entity entity : domainEvent.getEntitys()) {
-			if (findClassName.equals(entity.getEntity())) {
-				list.add(entity);
+			if (targetClass.equals(entity.getEntity().getClass().getName())) {
+				AuditQueryCreator queryCreator = AuditReaderFactory.get(em).createQuery();
+				Object findEntity = null;
+				if (entity.getEntityType() == EntityType.EVENT) {
+					findEntity = em.find(Class.forName(entity.getEntity()), entity.getKey());
+				} else {
+					findEntity = queryCreator.forRevisionsOfEntity(Class.forName(entity.getEntity()), true, true)
+							.add(AuditEntity.id().eq(entity.getKey()))
+							.add(AuditEntity.revisionNumber().eq(domainEvent.getRevision())).getSingleResult();
+				}
+				if (findEntity != null) {
+					list.add(findEntity);
+				}
 			}
 		}
 		return list;
 	}
 
 	/**
-	 * ドメインイベントオブジェクトから指定されたエンティティのクラス名と一致するイベントエンティティを返す
+	 * リソースエンティティの指定されたリビジョンの履歴をリストで返す。<br>
+	 * 返却するエンティティリストの最初はカレントで2番目は一世代前を返す。<br>
+	 * 1世代前が存在しない場合は、リスト件数が1件となる。検索にヒットしなかった場合はリスト件数がゼロとなる。
 	 * 
-	 * @param domainEvent   ドメインイベントオブジェクト
-	 * @param findClassName サーチするクラス名
-	 * @return イベントエンティティリスト
+	 * @param entityEvent
+	 * @return リソースエンティティリスト
 	 * @throws ClassNotFoundException
 	 */
-	public Entity getEntity(DomainEvent domainEvent, String findClassName) throws ClassNotFoundException {
-		for (Entity entity : domainEvent.getEntitys()) {
-			if (findClassName.equals(entity.getEntity())) {
-				return entity;
+	@SuppressWarnings("unchecked")
+	public List<List<Object>> getCurrentAndBeforeEntity(DomainEvent domainEvent,String entityClass) throws ClassNotFoundException {
+		EntityManager em = (EntityManager) applicationContext.getBean(domainEvent.getManager());
+		List<List<Object>> findList = new ArrayList<List<Object>>();
+		
+		for (Entity entity: domainEvent.getEntitys()) {
+			if (entityClass.equals(entity.getEntity())) {
+				
+				AuditQueryCreator queryCreator = AuditReaderFactory.get(em).createQuery();
+
+				List<Object> ent = queryCreator.forRevisionsOfEntity(Class.forName(entity.getEntity()), true, true)
+						.add(AuditEntity.id().eq(entity.getKey()))
+						.add(AuditEntity.revisionNumber().le(domainEvent.getRevision()))
+						.addOrder(AuditEntity.revisionNumber().desc()).setMaxResults(2).getResultList();
+				
+				if (ent != null && ent.size() > 0) {
+					findList.add(ent);
+				}
 			}
 		}
-		return null;
+		return findList;
 	}
-
 }

@@ -22,7 +22,8 @@ import jp.co.acom.riza.event.config.EventConstants;
 import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.event.entity.EventCheckpointEntity;
 import jp.co.acom.riza.event.entity.EventCheckpointEntityKey;
-import jp.co.acom.riza.event.kafka.ApplicationRouteHolder;
+import jp.co.acom.riza.event.kafka.AppRouteHolder;
+import jp.co.acom.riza.event.kafka.KafkaConstants;
 import jp.co.acom.riza.event.kafka.KafkaEventProducer;
 import jp.co.acom.riza.event.kafka.KafkaEventUtil;
 import jp.co.acom.riza.event.kafka.MessageUtil;
@@ -114,7 +115,7 @@ public class PostCommitPersistentNotifier {
 	PostCommitPersistentNotifier eventNotifier;
 
 	@Autowired
-	ApplicationRouteHolder applicationRouteHolder;
+	AppRouteHolder appRouteHolder;
 
 	private String sepKey;
 
@@ -149,11 +150,11 @@ public class PostCommitPersistentNotifier {
 		logger.info("createTranEvent() started.");
 
 		tranEvent = new TranEvent();
-		tranEvent.setBusinessProcess(commonContext.getBusinessProcess());
 
 		Header eventHeader = new Header();
 		eventHeader.setReqeustId(commonContext.getReqeustId());
 		eventHeader.setUserId(commonContext.getUserId());
+		eventHeader.setBusinessProcess(commonContext.getBusinessProcess());
 		tranEvent.setHeader(eventHeader);
 
 		// tranEvent.setMqCount(messageUtil.getMessageCount());
@@ -162,6 +163,7 @@ public class PostCommitPersistentNotifier {
 		for (PersistentHolder holder : holders) {
 			Manager pManager = new Manager();
 			pManager.setManager(holder.getEntityManagerBeanName());
+			pManager.setDomain(holder.getDomainName());
 			List<Entity> pList = new ArrayList<Entity>();
 			pManager.setEntitys(pList);
 			pManager.setRevison(holder.getRevision());
@@ -172,9 +174,8 @@ public class PostCommitPersistentNotifier {
 				pEntity.setEntityType(eP.getEntityType());
 				pEntity.setKey(eP.getEntityId());
 				pEntity.setType(eP.getPersistentType());
-				if ((applicationRouteHolder.getTopic(pEntity.getClass().getSimpleName()) != null)
-						|| (applicationRouteHolder.getTopic(
-								holder.getEntityManagerBeanName() + commonContext.getBusinessProcess()) != null)) {
+				if (AppRouteHolder.isEntityEvent(pEntity.getEntity()) || AppRouteHolder
+						.isDomainEvent(holder.getDomainName(), commonContext.getBusinessProcess())) {
 					pList.add(pEntity);
 					eventOn = true;
 				}

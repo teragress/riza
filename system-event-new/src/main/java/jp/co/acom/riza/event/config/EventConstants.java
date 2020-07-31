@@ -71,5 +71,5 @@ public interface EventConstants {
 	/**
 	 * デフオルトのチェックポイントテーブルメッセージの分割サイズ 
 	 */
-	public static final Integer DEFAULT_CHECK_POINT_SPLIT_SIZE = 240000;
+	public static final Integer DEFAULT_CHECK_POINT_SPLIT_SIZE = 24000;
 }

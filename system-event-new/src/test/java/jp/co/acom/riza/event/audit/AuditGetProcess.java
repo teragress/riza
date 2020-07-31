@@ -32,13 +32,12 @@ public class AuditGetProcess implements Processor {
 	AuditEntityUtils auditEntityUtils;
 
 	public void process(Exchange exchange) throws Exception {
-		logger.info("process() started.");
+		logger.info("*********** ドメイン ************ process() started.");
 
 		EntityEvent entityEvent = (EntityEvent) exchange.getIn().getHeader(EventConstants.EXCHANGE_HEADER_EVENT_OBJECT);
 		logger.info("EntityEvent=" + entityEvent);
-		logger.info("current entity=" + auditEntityUtils.getEventAuditEntity(entityEvent).toString());
 		if (entityEvent.getEntity().getEntityType() == EntityType.RESOURCE) {
-			for (Object entityObj : auditEntityUtils.getResourceCurrentAndBeforeEntity(entityEvent)) {
+			for (Object entityObj : auditEntityUtils.getCurrentAndBeforeEntity(entityEvent)) {
 				logger.info("CurrentAndBefore=" + entityObj.toString());
 			}
 		}

@@ -53,6 +53,11 @@ public class CustomerJpaConfiguration extends AbstractJpaConfiguration {
 	//****************************************************************************************
 	private static final String ENTITY_MANAGER_BEAN_NAME = "customerEntityManager";
 
+	//****************************************************************************************
+	// 当該エンティティマネージャーのドメイン名を定義する。ドメインイベントトピックの一部として利用される。
+	//****************************************************************************************
+	private static final String DOMAIN_NAME = "customer";
+	
 	@Autowired
 	protected PersistentEventNotifier customerPersistentEventNotifier;
 
@@ -122,6 +127,6 @@ public class CustomerJpaConfiguration extends AbstractJpaConfiguration {
 	//****************************************************************************************
 	public PersistentEventNotifier customerPersistentEventNotifier(
 			@Qualifier(ENTITY_MANAGER_BEAN_NAME) EntityManager entityManager) {
-		return super.persistentEventNotifier(ENTITY_MANAGER_BEAN_NAME, entityManager);
+		return super.persistentEventNotifier(ENTITY_MANAGER_BEAN_NAME, entityManager, DOMAIN_NAME);
 	}
 }

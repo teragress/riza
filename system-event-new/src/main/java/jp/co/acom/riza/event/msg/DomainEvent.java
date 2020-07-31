@@ -32,6 +32,12 @@ public class DomainEvent {
 	@JsonDeserialize(contentAs = String.class)
 	private String manager;
 	
+	/**
+	 * ドメイン名
+	 */
+	@JsonDeserialize(contentAs = String.class)
+	private String domain;
+	
     /**
      * エンティティ更新情報リスト
      */

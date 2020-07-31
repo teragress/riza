@@ -36,7 +36,7 @@ public class DynamicExecuteProcess implements Processor {
 	ProducerTemplate template;
 
 	@Autowired
-	ApplicationRouteHolder holder;
+	AppRouteHolder holder;
 
 	@Autowired
 	TransactionRouteExecute execute;
