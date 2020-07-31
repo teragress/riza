@@ -25,6 +25,7 @@ import jp.co.acom.riza.cep.data.RizaCepEventResponse;
 import jp.co.acom.riza.cep.event.RizaCepEventFinish;
 import jp.co.acom.riza.cep.event.RizaCepEventStart;
 import jp.co.acom.riza.event.config.EventMessageId;
+import jp.co.acom.riza.event.utils.ModeUtil;
 import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
 
@@ -74,11 +75,6 @@ public class CepMonitorService {
 	private RestTemplate restTemplate;
 
 	/**
-	 * テスト用のモック指定
-	 */
-	private Boolean mock;
-
-	/**
 	 * デフォルトのCEP URI
 	 */
 	private static final String MONITOR_DEFAULT_CEP_URI = "http://localhost:8080/rest/sep";
@@ -87,21 +83,15 @@ public class CepMonitorService {
 	 * 初期化
 	 */
 	@PostConstruct
-	public void initialize() {
+	public void initialize() throws Exception {
 
-		mock = env.getProperty(CepConstants.CEP_MOCK, Boolean.class, false);
-		if (mock) {
+		if (ModeUtil.isCepMock()) {
 			return;
 		}
 
 		String cepBaseUri = env.getProperty(CepConstants.CEP_BASE_URI, String.class, MONITOR_DEFAULT_CEP_URI);
-		try {
-
-			startUri = new URI(cepBaseUri + "/" + CepConstants.CEP_START_METHOD);
-			endUri = new URI(cepBaseUri + "/" + CepConstants.CEP_END_METHOD);
-		} catch (Exception e) {
-			logger.error("", e);
-		}
+		startUri = new URI(cepBaseUri + "/" + CepConstants.CEP_START_METHOD);
+		endUri = new URI(cepBaseUri + "/" + CepConstants.CEP_END_METHOD);
 		expireLimit = env.getProperty(CepConstants.CEP_EXPIRE_LIMIT, Integer.class,
 				CepConstants.CEP_DEFAULT_EXPIRE_LIMIT);
 		headers = new HttpHeaders();
@@ -112,14 +102,15 @@ public class CepMonitorService {
 	/**
 	 * CEP監視開始
 	 * 
-	 * @param key キー
+	 * @param key  キー
 	 * @param date キー日時
 	 * @throws URISyntaxException
 	 */
 	public void startMonitor(String key, LocalDateTime dateTime) {
-		if (mock) {
+		if (ModeUtil.isCepMock()) {
 			return;
 		}
+
 		try {
 			RizaCepEventStart eventStart = new RizaCepEventStart();
 			eventStart.setEntryKeyId(key);
@@ -134,21 +125,22 @@ public class CepMonitorService {
 			}
 		} catch (Exception ex) {
 			logger.error(MessageFormat.get(EventMessageId.CEP_ERROR), "start", key, dateTime, ex.getMessage());
-			logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION),ex);
+			logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION), ex);
 		}
 	}
 
 	/**
 	 * CEP監視終了
 	 * 
-	 * @param key キー
+	 * @param key  キー
 	 * @param date キー日時
 	 * @throws URISyntaxException
 	 */
 	public void endMonitor(String key, LocalDateTime dateTime) {
-		if (mock) {
+		if (ModeUtil.isCepMock()) {
 			return;
 		}
+
 		try {
 			RizaCepEventFinish eventEnd = new RizaCepEventFinish();
 			eventEnd.setEntryKeyId(key);
@@ -159,7 +151,7 @@ public class CepMonitorService {
 			}
 		} catch (Exception ex) {
 			logger.error(MessageFormat.get(EventMessageId.CEP_ERROR), "end", key, dateTime, ex.getMessage());
-			logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION),ex);
+			logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION), ex);
 		}
 	}
 }

@@ -5,15 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import jp.co.acom.riza.event.config.EventConstants;
+import jp.co.acom.riza.event.utils.ModeUtil;
 
 /**
  * コンシューマグループ、トピック、アプリケーションルートの関係を保持する
@@ -38,33 +34,6 @@ public class AppRouteHolder {
 	private static Map<String, Map<String, List<String>>> rootHolder = new HashMap<String, Map<String, List<String>>>();
 
 	/**
-	 * コンシューマトピックホルダー
-	 */
-	private static Map<String, EventType> topicHolder = new HashMap<String, AppRouteHolder.EventType>();
-
-	/**
-	 * システムプロパティ環境変数取得用
-	 */
-	@Autowired
-	private Environment env;
-
-	/**
-	 * イベント起動モード
-	 */
-	boolean createConsumer = true;
-
-	@PostConstruct
-	public void initilize() {
-		if (EventConstants.EVENT_DEFAULT_START_MODE
-				.equals(env.getProperty(EventConstants.EVENT_START_MODE, EventConstants.EVENT_DEFAULT_START_MODE))) {
-			createConsumer = false;
-		}
-		if (env.getProperty(KafkaConstants.KAFKA_MOCK, Boolean.class, false)) {
-			createConsumer = false;
-		}
-	}
-
-	/**
 	 * アプリケーションルートを登録する
 	 * 
 	 * @param consumerGroup    コンシューマグループ
@@ -74,16 +43,13 @@ public class AppRouteHolder {
 	public void addApplicationRoute(String consumerGroup, String topic, String applicationRoute, EventType eventType) {
 		LOGGER.debug("addAppoicationRoute() consumerGroup=" + consumerGroup + " topic=" + topic + "applicationroute="
 				+ applicationRoute);
-		if (createConsumer) {
-			if (rootHolder.get(consumerGroup) == null) {
-				rootHolder.put(consumerGroup, new HashMap<String, List<String>>());
-			}
-			if (rootHolder.get(consumerGroup).get(topic) == null) {
-				rootHolder.get(consumerGroup).put(topic, new ArrayList<String>());
-			}
-			rootHolder.get(consumerGroup).get(topic).add(applicationRoute);
+		if (rootHolder.get(consumerGroup) == null) {
+			rootHolder.put(consumerGroup, new HashMap<String, List<String>>());
 		}
-		topicHolder.put(topic, eventType);
+		if (rootHolder.get(consumerGroup).get(topic) == null) {
+			rootHolder.get(consumerGroup).put(topic, new ArrayList<String>());
+		}
+		rootHolder.get(consumerGroup).get(topic).add(applicationRoute);
 	}
 
 	/**
@@ -114,31 +80,5 @@ public class AppRouteHolder {
 	 */
 	public List<String> getTopicList(String consumerGroup) {
 		return new ArrayList<>(rootHolder.get(consumerGroup).keySet());
-	}
-
-	/**
-	 * @param entity
-	 * @return
-	 */
-	public static boolean isEntityEvent(Object entity) {
-		if (topicHolder.get(KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX + entity.getClass().getSimpleName()) != null) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	/**
-	 * @param domainName
-	 * @param businessProcess
-	 * @return
-	 */
-	public static boolean isDomainEvent(String domainName, String businessProcess) {
-		if (topicHolder.get(KafkaConstants.KAFKA_DOMAIN_TOPIC_PREFIX + domainName
-				+ businessProcess) != null) {
-			return false;
-		} else {
-			return true;
-		}
 	}
 }

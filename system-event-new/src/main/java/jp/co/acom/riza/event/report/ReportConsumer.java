@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import jp.co.acom.riza.event.kafka.KafkaConstants;
 import jp.co.acom.riza.event.kafka.ManualCommitProcess;
+import jp.co.acom.riza.event.utils.ModeUtil;
 import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
@@ -27,25 +28,24 @@ public class ReportConsumer extends RouteBuilder {
 	Environment env;
 
 	/**
-	 * ファイル受信イベントの定義
+	 * 帳票コンシューマ定義
 	 */
 	@Override
 	public void configure() throws Exception {
+		logger.debug("configure() start");
 
-		Boolean autoStart = true;
-		if (env.getProperty(KafkaConstants.KAFKA_MOCK, Boolean.class, false)) {
-			autoStart = false;
+		if (ModeUtil.isKafkaMock() || !ModeUtil.isReportOutput()) {
+			return;
 		};
 
 		String topicName = env.getProperty(KafkaConstants.KAFKA_REPORT_TOPIC,KafkaConstants.KAFKA_DEFAULT_REPORT_TOPIC);
 
-		logger.debug("configure() start");
 		from(KafkaConstants.KAFKA_COMPONENT_BEAN + ":" + topicName + "?groupId="
 				+ KafkaConstants.KAFKA_REPORT_TOPIC_GROUP + "&consumersCount="
 				+ KafkaConstants.KAFKA_REPORT_CONSUMER_COUNT)
-					.autoStartup(autoStart)
 					.routeId(REPORT_CONSUMER_ROUTE_ID)
-					.doTry().to(ReportMessagePut.PROCESS_ID)
+					.doTry()
+						.to(ReportMessagePut.PROCESS_ID)
 						.process(ManualCommitProcess.PROCESS_ID)
 					.doCatch(Exception.class)
 						.process(ReportConsumerStop.PROCESS_ID)

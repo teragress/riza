@@ -52,7 +52,7 @@ public class EventRestCommand {
 	private static final String RSP_NORMAL_END = "Normal end.";
 
 	private static final int DEFAULT_KEEP_DAYS = 1;
-	private static final int DEFAULT_DELETION_SPLIT_COUNT = 1;
+	private static final int DEFAULT_DELETION_SPLIT_COUNT = 1000;
 
 	@Autowired
 	MessageFormat msg;

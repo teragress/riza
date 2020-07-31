@@ -2,33 +2,17 @@ package jp.co.acom.riza.event.ita;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Properties;
-
-import org.apache.camel.impl.DefaultProducerTemplate;
-import org.apache.kafka.common.message.ProduceRequestData;
-import org.h2.command.dml.MergeUsing.When;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cloud.sleuth.annotation.NewSpan;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import jp.co.acom.riza.event.cep.CepMonitorService;
 import jp.co.acom.riza.event.customer.entity.Customer;
-import jp.co.acom.riza.event.kafka.KafkaEventProducer;
 import jp.co.acom.riza.event.service.CustomerService;
 import jp.co.acom.riza.event.service.TradeService;
 

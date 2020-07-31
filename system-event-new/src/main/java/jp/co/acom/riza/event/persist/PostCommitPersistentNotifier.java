@@ -23,7 +23,6 @@ import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.event.entity.EventCheckpointEntity;
 import jp.co.acom.riza.event.entity.EventCheckpointEntityKey;
 import jp.co.acom.riza.event.kafka.AppRouteHolder;
-import jp.co.acom.riza.event.kafka.KafkaConstants;
 import jp.co.acom.riza.event.kafka.KafkaEventProducer;
 import jp.co.acom.riza.event.kafka.KafkaEventUtil;
 import jp.co.acom.riza.event.kafka.MessageUtil;
@@ -37,6 +36,7 @@ import jp.co.acom.riza.event.msg.AuditMessage;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.Manager;
 import jp.co.acom.riza.event.repository.EventCheckPointEntityRepository;
+import jp.co.acom.riza.event.utils.ModeUtil;
 import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.system.CommonConstants;
 import jp.co.acom.riza.system.utils.log.Logger;
@@ -167,22 +167,15 @@ public class PostCommitPersistentNotifier {
 			List<Entity> pList = new ArrayList<Entity>();
 			pManager.setEntitys(pList);
 			pManager.setRevison(holder.getRevision());
-			boolean eventOn = false;
 			for (EntityPersistent eP : holder.getEvents()) {
 				Entity pEntity = new Entity();
 				pEntity.setEntity(eP.getEntity().getClass().getName());
 				pEntity.setEntityType(eP.getEntityType());
 				pEntity.setKey(eP.getEntityId());
 				pEntity.setType(eP.getPersistentType());
-				if (AppRouteHolder.isEntityEvent(pEntity.getEntity()) || AppRouteHolder
-						.isDomainEvent(holder.getDomainName(), commonContext.getBusinessProcess())) {
-					pList.add(pEntity);
-					eventOn = true;
-				}
+				pList.add(pEntity);
 			}
-			if (eventOn) {
-				managerList.add(pManager);
-			}
+			managerList.add(pManager);
 		}
 		tranEvent.setManagers(managerList);
 		return tranEvent;
@@ -235,7 +228,9 @@ public class PostCommitPersistentNotifier {
 				tranEntity.setCnt(splitStr.size());
 				tranEntity.setEventMsg(splitStr.get(i));
 				logger.info("******* TranEntity=" + tranEntity);
-				tranEventRepository.save(tranEntity);
+				if (!ModeUtil.isDbMock()) {
+					tranEventRepository.save(tranEntity);
+				}
 			}
 		} catch (Exception ex) {
 			logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION), ex.getMessage());

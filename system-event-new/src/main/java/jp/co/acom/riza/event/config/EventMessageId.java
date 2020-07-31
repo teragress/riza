@@ -27,5 +27,6 @@ public interface EventMessageId {
 	public static final String TRANEXEC_CLEANUP = "RIZAE018";
 	public static final String CEP_ERROR = "RIZAE019";
 	public static final String KAFKA_CONSUMER_CREATE = "RIZAE020";
+	public static final String EVENT_START_INFO = "RIZAE021";
 
 }

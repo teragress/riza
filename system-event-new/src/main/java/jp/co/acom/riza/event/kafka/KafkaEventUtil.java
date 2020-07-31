@@ -1,13 +1,11 @@
 package jp.co.acom.riza.event.kafka;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 
@@ -30,6 +28,7 @@ import jp.co.acom.riza.event.config.EventMessageId;
 import jp.co.acom.riza.event.exception.EventCommandException;
 import jp.co.acom.riza.event.msg.KafkaMessage;
 import jp.co.acom.riza.event.msg.KafkaTopicMessage;
+import jp.co.acom.riza.event.utils.ModeUtil;
 import jp.co.acom.riza.system.utils.log.Logger;
 import jp.co.acom.riza.system.utils.log.MessageFormat;
 
@@ -180,9 +179,6 @@ public class KafkaEventUtil {
 		logger.debug("saveMqMessage() started.");
 
 		List<KafkaTopicMessage> topicMessages = new ArrayList<KafkaTopicMessage>();
-		if (env.getProperty(KafkaConstants.KAFKA_MOCK, Boolean.class, false)) {
-			return topicMessages;
-		}
 
 		for (KafkaTopicMessage topicMessage : topics) {
 			int i = 0;
@@ -219,7 +215,7 @@ public class KafkaEventUtil {
 
 		List<KafkaTopicMessage> topicMessages = new ArrayList<KafkaTopicMessage>();
 
-		if (env.getProperty(KafkaConstants.KAFKA_MOCK, Boolean.class, false)) {
+		if (ModeUtil.isKafkaMock()) {
 			return topicMessages;
 		}
 

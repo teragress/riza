@@ -16,6 +16,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import jp.co.acom.riza.event.persist.PostCommitPersistentNotifier;
+import jp.co.acom.riza.event.utils.ModeUtil;
 import jp.co.acom.riza.system.utils.log.Logger;
 
 /**
@@ -74,7 +75,9 @@ public class MessageHolderUtil {
 	 * @throws JMSException
 	 */
 	public void flush(byte[] messagIdPrefix) throws NamingException, IOException {
-		if (env.getProperty(KafkaConstants.KAFKA_MOCK, Boolean.class, false)) {
+		
+		if (ModeUtil.isKafkaMock()) {
+			messageMap.clear();
 			return;
 		}
 

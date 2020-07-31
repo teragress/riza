@@ -48,9 +48,6 @@ public class ReportMessagePut implements Processor {
 	 */
 	public void process(Exchange exchange) throws Exception {
 		logger.debug("process() started.");
-		if (env.getProperty(MQConstants.MQ_MOCK,Boolean.class,false)) {
-			return;
-		}
 		
 		int retryCount = env.getProperty(MQConstants.MQ_PUT_MAX_RETRY, Integer.class,
 				MQConstants.MQ_DEFAULT_PUT_MAX_RETRY);

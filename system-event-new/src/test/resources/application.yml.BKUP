@@ -7,19 +7,15 @@ app:
 
 spring:
   datasource:
-    driverClassName: org.apache.derby.jdbc.EmbeddedDriver
-    url: jdbc:derby:memory:testDB;create=true	
+    #    url: jdbc:h2:./target/db/test;AUTO_SERVER=true;TRACE_LEVEL_FILE=3
+    url: jdbc		.autoStartup(ModeUtil.isRouteStart()):h2:mem:test
+    username: vagrant
+    type: org.h2.jdbcx.JdbcDataSource
   jpa:
     properties:
-      hibernate:
-        dialect: org.hibernate.dialect.DerbyDialect
-    hibernate:
-      use-new-id-generator-mappings: true
-      ddl-auto: create-drop
-    show-apl: true
-    datasource:
-      driverClassName: org.apache.derby.jdbc.EmbeddedDriver
-      url: jdbc:derby:memory:testDB;create=true	
+      # version フィールドを Audit 対象とする
+      'org.hibernate.envers.do_not_audit_optimistic_locking_field': false
+      hibernate.hbm2ddl.auto: create
   jta:
     log-dir: target/transaction-logs
 

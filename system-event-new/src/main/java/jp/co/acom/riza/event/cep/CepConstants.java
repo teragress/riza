@@ -28,8 +28,5 @@ public class CepConstants {
 	 * CEPの処理待ち期限(秒)デフォルト
 	 */
 	public static final int CEP_DEFAULT_EXPIRE_LIMIT = 30;
-	/**
-	 * CEPの無効化フラグ(true/false)
-	 */
-	public static final String CEP_MOCK = "CEP_MOCK";
+
 }

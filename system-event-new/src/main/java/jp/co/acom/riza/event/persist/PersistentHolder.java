@@ -36,7 +36,7 @@ public class PersistentHolder implements PersistentEventNotifier {
 	 * エンティティマネージャーBean名
 	 */
 	private String entityManagerBeanName;
-	
+
 	/**
 	 * ドメイン名
 	 */
@@ -50,7 +50,7 @@ public class PersistentHolder implements PersistentEventNotifier {
 	/**
 	 * ドメインイベント送信有無
 	 */
-	//private boolean domainEventSend = false;
+	// private boolean domainEventSend = false;
 
 	/**
 	 * 監査レコードステータス
@@ -79,15 +79,13 @@ public class PersistentHolder implements PersistentEventNotifier {
 	 * 変更イベントを保存する
 	 */
 	@Override
-	public void notify(EntityPersistent event,String businessProcess) {
+	public void notify(EntityPersistent event, String businessProcess) {
 		if (event.getEntityType() == EntityType.RESOURCE && auditStatus == AuditStatus.INIT) {
 			logger.debug(entityManagerBeanName + " auditStatus INIT to AUDIT_ENTITY_ON");
 			auditStatus = AuditStatus.AUDIT_ENTITY_ON;
 		}
-		if (AppRouteHolder.isDomainEvent(domainName, businessProcess) || AppRouteHolder.isEntityEvent(event.getEntity())) {
-			events.add(event);
-			postCommitPersistentEventNotifier.setPersistentEvent(true);
-		}
+		events.add(event);
+		postCommitPersistentEventNotifier.setPersistentEvent(true);
 	}
 
 	/**

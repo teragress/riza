@@ -162,8 +162,4 @@ public class KafkaConstants {
 	 */
 	public static final String KAFKA_HEADER_MQ_MESSAGE_ID = "mq_messageId";
 	
-	/**
-	 * KAFKA機能のモック指定キー
-	 */
-	public static final String KAFKA_MOCK = "KAFKA_MOCK";
 }

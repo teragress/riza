@@ -54,9 +54,5 @@ public class MQConstants {
 	 * MQPUTリトライ間隔(秒指定)取得キー
 	 */
 	public static final String MQ_PUT_RETRY_TIME = "MQ_PUT_RETRY_TIME";
-	/**
-	* MQモック指定
-	*/
-	public static final String MQ_MOCK = "MQ_MOCK";
 
 }

@@ -23,6 +23,7 @@ import jp.co.acom.riza.event.exception.DuplicateExecuteException;
 import jp.co.acom.riza.event.msg.DomainEvent;
 import jp.co.acom.riza.event.msg.EntityEvent;
 import jp.co.acom.riza.event.msg.Header;
+import jp.co.acom.riza.event.utils.ModeUtil;
 import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.system.utils.log.Logger;
 
@@ -121,6 +122,10 @@ public class EntityConsumerInitilizer implements Processor {
 	private void insertTranExecChckEntity(String key, LocalDateTime dateTime) {
 		logger.info("insertTranExecChckEntity() started.");
 
+		if (ModeUtil.isDbMock()) {
+			return;
+		}
+		
 		EntityManager em = (EntityManager) applicationContext.getBean(EventConfiguration.ENTITY_MANAGER_NAME);
 		TranExecCheckEntity checkEntity = em.find(TranExecCheckEntity.class, commonContext.getReqeustId());
 		if (checkEntity != null) {

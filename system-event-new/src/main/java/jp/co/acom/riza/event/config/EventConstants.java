@@ -8,16 +8,6 @@ package jp.co.acom.riza.event.config;
  */
 public interface EventConstants {
 	/**
-	 *　起動モード(ONLINE/BATCH)
-	 */
-	public static final String EVENT_START_MODE = "EVENT_START_MODE";
-	
-	/**
-	 *　デフォルト起動モード
-	 */
-	public static final String EVENT_DEFAULT_START_MODE = "ONLINE";
-	
-	/**
 	 *　スレッドプールサイズプロパティ定義取得キー
 	 */
 	public static final String EVENT_THREAD_POOL_SIZE = "EVENT_THREAD_POOL_SIZE";
@@ -72,4 +62,5 @@ public interface EventConstants {
 	 * デフオルトのチェックポイントテーブルメッセージの分割サイズ 
 	 */
 	public static final Integer DEFAULT_CHECK_POINT_SPLIT_SIZE = 24000;
+	
 }

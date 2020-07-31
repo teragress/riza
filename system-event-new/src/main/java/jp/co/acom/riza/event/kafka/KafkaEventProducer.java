@@ -1,11 +1,8 @@
 package jp.co.acom.riza.event.kafka;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.camel.ProducerTemplate;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -16,6 +13,7 @@ import jp.co.acom.riza.event.msg.DomainEvent;
 import jp.co.acom.riza.event.msg.Entity;
 import jp.co.acom.riza.event.msg.TranEvent;
 import jp.co.acom.riza.event.msg.EntityEvent;
+import jp.co.acom.riza.event.utils.ModeUtil;
 import jp.co.acom.riza.event.utils.StringUtil;
 import jp.co.acom.riza.system.utils.log.Logger;
 
@@ -38,57 +36,42 @@ public class KafkaEventProducer {
 	@Autowired
 	KafkaTemplate<String, String> kafkaTemplate;
 
-	@Autowired
-	Environment env;
-
-	Boolean mock;
-
-	@PostConstruct
-	public void initilize() {
-		mock = env.getProperty(KafkaConstants.KAFKA_MOCK, Boolean.class, false);
-	}
-
 	/**
 	 * パーシステントイベントのKafka送信
 	 * 
 	 * @param tranEvent
 	 */
 	public void sendEventMessage(TranEvent tranEvent) {
-		if (mock) {
+		logger.debug("sendMessageEvent() started.");
+		if (ModeUtil.isKafkaMock()) {
 			return;
 		}
-		logger.debug("sendMessageEvent() started.");
 
 		for (Manager pManager : tranEvent.getManagers()) {
-			if (AppRouteHolder.isDomainEvent(pManager.getManager(), tranEvent.getHeader().getBusinessProcess())) {
-				DomainEvent domainEvent = new DomainEvent();
-				domainEvent.setHeader(tranEvent.getHeader());
-				domainEvent.setManager(pManager.getManager());
-				domainEvent.setRevision(pManager.getRevison());
-				domainEvent.setEntitys(pManager.getEntitys());
-				String domainTopic = KafkaConstants.KAFKA_DOMAIN_TOPIC_PREFIX + pManager.getManager()
-						+ tranEvent.getHeader().getBusinessProcess();
-				String domainMessage = StringUtil.objectToJsonString(domainEvent);
-				logger.debug("kafka-domain-send topic=" + domainEvent + " message=" + domainMessage);
-				send(domainTopic, domainMessage);
-
-			}
+			DomainEvent domainEvent = new DomainEvent();
+			domainEvent.setHeader(tranEvent.getHeader());
+			domainEvent.setManager(pManager.getManager());
+			domainEvent.setRevision(pManager.getRevison());
+			domainEvent.setEntitys(pManager.getEntitys());
+			String domainTopic = KafkaConstants.KAFKA_DOMAIN_TOPIC_PREFIX + pManager.getManager()
+					+ tranEvent.getHeader().getBusinessProcess();
+			String domainMessage = StringUtil.objectToJsonString(domainEvent);
+			logger.debug("kafka-domain-send topic=" + domainEvent + " message=" + domainMessage);
+			send(domainTopic, domainMessage);
 
 			for (Entity pEntity : pManager.getEntitys()) {
-				if (AppRouteHolder.isEntityEvent(pEntity.getClass())) {
-					EntityEvent pEvent = new EntityEvent();
-					pEvent.setHeader(tranEvent.getHeader());
-					pEvent.setManager(pManager.getManager());
-					pEvent.setDomain(pManager.getDomain());
-					pEvent.setRevision(pManager.getRevison());
-					pEvent.setEntity(pEntity);
-					String entityTopic = KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX
-							+ pEntity.getEntity().substring((pEntity.getEntity().lastIndexOf('.') + 1));
-					String entityMessage = StringUtil.objectToJsonString(pEvent);
-					logger.debug("kafka-entity-send topic=" + entityTopic + " message=" + entityMessage);
+				EntityEvent pEvent = new EntityEvent();
+				pEvent.setHeader(tranEvent.getHeader());
+				pEvent.setManager(pManager.getManager());
+				pEvent.setDomain(pManager.getDomain());
+				pEvent.setRevision(pManager.getRevison());
+				pEvent.setEntity(pEntity);
+				String entityTopic = KafkaConstants.KAFKA_ENTITY_TOPIC_PREFIX
+						+ pEntity.getEntity().substring((pEntity.getEntity().lastIndexOf('.') + 1));
+				String entityMessage = StringUtil.objectToJsonString(pEvent);
+				logger.debug("kafka-entity-send topic=" + entityTopic + " message=" + entityMessage);
 
-					send(entityTopic, entityMessage);
-				}
+				send(entityTopic, entityMessage);
 			}
 		}
 	}
