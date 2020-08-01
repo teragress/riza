@@ -42,7 +42,7 @@ public class CustomerController {
   @RequestMapping("/insert")
   public Customer save(@RequestBody Customer customer) {
 
-	logger.info(MessageFormat.get("RIZA0001"),"イベント","監視");
+	logger.info(MessageFormat.getMessage("RIZA0001"),"イベント","監視");
     customerService.save(customer);
     return customer;
   }

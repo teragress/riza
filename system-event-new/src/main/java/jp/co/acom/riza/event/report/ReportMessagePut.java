@@ -68,15 +68,15 @@ public class ReportMessagePut implements Processor {
 
 			} catch (Exception ex) {
 				throwException = ex;
-				logger.warn(MessageFormat.get(EventMessageId.MQPUT_EXCEPTION), i + 1, retryCount, retryTime,
-						ex.getMessage());
-				logger.info(MessageFormat.get(EventMessageId.WARNING_EXCEPTION_INFORMATION), ex);
+				logger.warn(MessageFormat.getMessage(EventMessageId.MQPUT_EXCEPTION, i + 1, retryCount, retryTime,
+						ex.getMessage()));
+				logger.info(MessageFormat.getMessage(EventMessageId.WARNING_EXCEPTION_INFORMATION), ex);
 				Thread.sleep(retryTime * 1000);
 			}
 		}
 		
-		logger.warn(MessageFormat.get(EventMessageId.MQPUT_RETRY_OVER), retryCount, retryCount, retryTime,
-				throwException.getMessage());
+		logger.warn(MessageFormat.getMessage(EventMessageId.MQPUT_RETRY_OVER, retryCount, retryCount, retryTime,
+				throwException.getMessage()));
 		throw throwException;
 	}
 }

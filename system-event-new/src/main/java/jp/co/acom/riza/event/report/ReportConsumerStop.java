@@ -38,7 +38,7 @@ public class ReportConsumerStop implements Processor {
 					exchange.getContext().stopRoute(ReportConsumer.REPORT_CONSUMER_ROUTE_ID);
 					
 				} catch (Exception e) {
-					logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION),e);
+					logger.error(MessageFormat.getMessage(EventMessageId.EVENT_EXCEPTION),e);
 				}
 			}
 		};

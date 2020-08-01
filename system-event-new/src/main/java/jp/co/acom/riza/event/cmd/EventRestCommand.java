@@ -121,7 +121,7 @@ public class EventRestCommand {
 				allDeleteCount = allDeleteCount + deleteCount;
 			}
 			
-			logger.info(MessageFormat.get(EventMessageId.CHECKPOINT_CLEANUP), allDeleteCount);
+			logger.info(MessageFormat.getMessage(EventMessageId.CHECKPOINT_CLEANUP, allDeleteCount));
 			
 		} catch (Exception ex) {
 			return exceptionProc(ex, REQ_CHECK_POINT_CLEAN, parm);
@@ -170,7 +170,7 @@ public class EventRestCommand {
 				allDeleteCount = allDeleteCount + deleteCount;
 			}
 
-			logger.info(MessageFormat.get(EventMessageId.TRANEXEC_CLEANUP), allDeleteCount);
+			logger.info(MessageFormat.getMessage(EventMessageId.TRANEXEC_CLEANUP, allDeleteCount));
 
 		} catch (Exception ex) {
 			return exceptionProc(ex, REQ_EXEC_TABLE_CLEAN, parm);
@@ -234,7 +234,7 @@ public class EventRestCommand {
 
 		try {
 			rspInfo = kafkaEventUtil.recoveryKafkaMessages(parm.getMsgInfo());
-			logger.info(MessageFormat.get(EventMessageId.KAFKA_MESSAGE_RECOVERY),
+			logger.info(MessageFormat.getMessage(EventMessageId.KAFKA_MESSAGE_RECOVERY),
 					StringUtil.objectToJsonString(rspInfo));
 		} catch (Exception ex) {
 			return exceptionProc(ex, REQ_KAFKA_RECOVERY_OFFSET, parm);
@@ -296,7 +296,7 @@ public class EventRestCommand {
 	 * @param parm コマンドパラメータ
 	 */
 	private void outputStartMessage(String path, String parm) {
-		logger.info(MessageFormat.get(EventMessageId.EVENT_COMMAND_START), REQ_PREFIX_PATH + path, parm);
+		logger.info(MessageFormat.getMessage(EventMessageId.EVENT_COMMAND_START, REQ_PREFIX_PATH + path, parm));
 	}
 
 	/**
@@ -306,7 +306,7 @@ public class EventRestCommand {
 	 * @param parm コマンドパラメータ
 	 */
 	private void outputEndMessage(String path, String parm) {
-		logger.info(MessageFormat.get(EventMessageId.EVENT_COMMAND_END), REQ_PREFIX_PATH + path, parm);
+		logger.info(MessageFormat.getMessage(EventMessageId.EVENT_COMMAND_END, REQ_PREFIX_PATH + path, parm));
 	}
 
 	/**
@@ -318,9 +318,9 @@ public class EventRestCommand {
 	 * @return
 	 */
 	private EventCommandResponse exceptionProc(Exception ex, String cmdPath, Object parm) {
-		logger.error(MessageFormat.get(EventMessageId.COMMAND_EXCEPTION), REQ_PREFIX_PATH + cmdPath, parm.toString(),
-				ex.getMessage());
-		logger.error(MessageFormat.get(EventMessageId.EXCEPTION_INFORMATION), ex);
+		logger.error(MessageFormat.getMessage(EventMessageId.COMMAND_EXCEPTION, REQ_PREFIX_PATH + cmdPath, parm.toString(),
+				ex.getMessage()));
+		logger.error(MessageFormat.getMessage(EventMessageId.EXCEPTION_INFORMATION), ex);
 
 		EventCommandResponse resp = new EventCommandResponse();
 		resp.setRc(EventCommandResponse.RC.NG);

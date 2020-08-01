@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jp.co.acom.riza.event.kafka.AppRouteHolder;
-import jp.co.acom.riza.event.kafka.KafkaConstants;
 import jp.co.acom.riza.system.utils.log.Logger;
 import lombok.Getter;
 import lombok.Setter;

@@ -98,7 +98,7 @@ public class KafkaConsumerCreate {
 							.end();
 				}
 			});
-			logger.info(MessageFormat.get(EventMessageId.KAFKA_CONSUMER_CREATE),routeId, uri,consumersCount);
+			logger.info(MessageFormat.getMessage(EventMessageId.KAFKA_CONSUMER_CREATE, routeId, uri,consumersCount));
 		}
 	}
 }

@@ -143,7 +143,7 @@ public class KafkaEventUtil {
 			ConsumerRecords<String, String> conRecs = consumer.poll(Duration.ofMillis(1000));
 			conrec = conRecs.iterator().next();
 			if (conrec == null) {
-				logger.error(MessageFormat.get("REV0001E"), topic, partition, offset);
+				logger.error(MessageFormat.getMessage(EventMessageId.KAFKA_MESSAGE_NOT_FOUND, topic, partition, offset));
 				throw new EventCommandException("kafka message notfound topic(" + topic + ") partition(" + partition
 						+ ") offset(" + offset + ")");
 			}
@@ -187,8 +187,8 @@ public class KafkaEventUtil {
 				ConsumerRecord<String, String> conrec = getKafkaMessage(topicMessage.getTopic(),
 						kafkaMessage.getPartition(), kafkaMessage.getOffset());
 				if (conrec == null && notFoundError) {
-					logger.error(MessageFormat.get(EventMessageId.SAVE_KAFKA_MESSAGE_NOT_FOUND),
-							topicMessage.getTopic(), kafkaMessage.getPartition(), kafkaMessage.getOffset());
+					logger.error(MessageFormat.getMessage(EventMessageId.SAVE_KAFKA_MESSAGE_NOT_FOUND,
+							topicMessage.getTopic(), kafkaMessage.getPartition(), kafkaMessage.getOffset()));
 					throw new EventCommandException("Save kafka message not found");
 				}
 				if (conrec != null) {

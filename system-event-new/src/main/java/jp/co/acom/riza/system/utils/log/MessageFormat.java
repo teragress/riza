@@ -29,7 +29,11 @@ public class MessageFormat {
 		}
 	}
 	
-	public static String get(String key) {
+	public static String getFormat(String key) {
 		return messageProperties.getProperty(key);
+	}
+	
+	public static String getMessage(String key, Object ...objects) {
+		return java.text.MessageFormat.format(messageProperties.getProperty(key),objects);
 	}
 }

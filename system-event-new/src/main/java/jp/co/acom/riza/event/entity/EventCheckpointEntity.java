@@ -27,8 +27,8 @@ import lombok.Data;
 		+ "where u.tranEventKey.datetime < :dateTime")})
 
 @Data
-//@Table(schema = "DP0", name = "EVENTCHECKPOINT")
-@Table(name = "EVENTCHECKPOINT")
+@Table(schema = "RP0", name = "EVENTCHECKPOINT")
+//@Table(name = "EVENTCHECKPOINT")
 @Entity
 public class EventCheckpointEntity {
 	public static final String FIND_BY_DATETIME_FIRST = "eventCheckpoint.findByDatetimeFirst";

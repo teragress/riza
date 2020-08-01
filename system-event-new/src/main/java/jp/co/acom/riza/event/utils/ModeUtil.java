@@ -84,7 +84,7 @@ public class ModeUtil {
 		} else {
 			online = false;
 		}
-		logger.info(MessageFormat.get(EventMessageId.EVENT_START_INFO),online,report,eventMock,kafkaMock,dbMock,cepMock);
+		logger.info(MessageFormat.getMessage(EventMessageId.EVENT_START_INFO, online, report, eventMock, kafkaMock, dbMock, cepMock));
 	}
 	
 	/**

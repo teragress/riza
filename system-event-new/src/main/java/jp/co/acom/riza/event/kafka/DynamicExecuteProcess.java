@@ -56,13 +56,13 @@ public class DynamicExecuteProcess implements Processor {
 				execute.executeRoute("direct:" + root, exchange);
 			} catch (Exception ex) {
 				if (ex.getCause() != null && ex.getCause() instanceof DuplicateExecuteException) {
-					logger.warn(MessageFormat.get(EventMessageId.CONSUMER_ROUTE_DUPLICATION), group,
-							getKafkaMessageInfo(topic, exchange));
+					logger.warn(MessageFormat.getMessage(EventMessageId.CONSUMER_ROUTE_DUPLICATION, group,
+							getKafkaMessageInfo(topic, exchange)));
 				} else {
 
-					logger.error(MessageFormat.get(EventMessageId.CONSUMER_ROUTE_EXCEPTION), group, ex.getMessage(),
-							getKafkaMessageInfo(topic, exchange));
-					logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION), ex);
+					logger.error(MessageFormat.getMessage(EventMessageId.CONSUMER_ROUTE_EXCEPTION, group, ex.getMessage(),
+							getKafkaMessageInfo(topic, exchange)));
+					logger.error(MessageFormat.getMessage(EventMessageId.EVENT_EXCEPTION), ex);
 				}
 			}
 		}

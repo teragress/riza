@@ -69,10 +69,10 @@ public class EventRecovery {
 			TranEvent tranEvent = StringUtil.stringToTranEventEventObject(eventMessage);
 			kafkaEventUtil.resendMqMessage(tranEvent.getTopicMessages(), tranEvent.getMessageIdPrefix(), true);
 			kafkaEventProducer.sendEventMessage(tranEvent);
-			logger.info(MessageFormat.get(EventMessageId.EVENT_RECOVERY_EXECUTE), tranEvent.toString());
+			logger.info(MessageFormat.getMessage(EventMessageId.EVENT_RECOVERY_EXECUTE, tranEvent.toString()));
 			em.detach(entity);
 		} else {
-			throw new EventCommandException(MessageFormat.get(EventMessageId.RECORD_NOT_FOUND));
+			throw new EventCommandException(MessageFormat.getMessage(EventMessageId.RECORD_NOT_FOUND));
 		}
 	}
 
@@ -111,7 +111,7 @@ public class EventRecovery {
 				em.detach(checkpoint);
 				fromDateTime = checkpoint.getTranEventKey().getDatetime();
 				tranId = checkpoint.getTranEventKey().getTranId();
-				logger.info(MessageFormat.get(EventMessageId.EVENT_RECOVERY_EXECUTE), tranEvent.toString());
+				logger.info(MessageFormat.getMessage(EventMessageId.EVENT_RECOVERY_EXECUTE, tranEvent.toString()));
 			}
 
 			if (checkpointList.size() > 0) {

@@ -121,11 +121,11 @@ public class CepMonitorService {
 			RequestEntity<RizaCepEventStart> req = new RequestEntity<>(eventStart, headers, HttpMethod.POST, startUri);
 			ResponseEntity<RizaCepEventResponse> rsp = restTemplate.exchange(req, RizaCepEventResponse.class);
 			if (rsp == null || rsp.getBody().getRc() != RizaCepEventResponse.RC.NORMAL) {
-				logger.error(MessageFormat.get(EventMessageId.CEP_ERROR), "start", key, dateTime, rsp);
+				logger.error(MessageFormat.getMessage(EventMessageId.CEP_ERROR, "start", key, dateTime, rsp));
 			}
 		} catch (Exception ex) {
-			logger.error(MessageFormat.get(EventMessageId.CEP_ERROR), "start", key, dateTime, ex.getMessage());
-			logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION), ex);
+			logger.error(MessageFormat.getMessage(EventMessageId.CEP_ERROR, "start", key, dateTime, ex.getMessage()));
+			logger.error(MessageFormat.getMessage(EventMessageId.EVENT_EXCEPTION), ex);
 		}
 	}
 
@@ -147,11 +147,11 @@ public class CepMonitorService {
 			RequestEntity<RizaCepEventFinish> req = new RequestEntity<>(eventEnd, headers, HttpMethod.POST, endUri);
 			ResponseEntity<RizaCepEventResponse> rsp = restTemplate.exchange(req, RizaCepEventResponse.class);
 			if (rsp == null || rsp.getBody().getRc() != RizaCepEventResponse.RC.NORMAL) {
-				logger.error(MessageFormat.get(EventMessageId.CEP_ERROR), "end", key, dateTime, rsp);
+				logger.error(MessageFormat.getMessage(EventMessageId.CEP_ERROR, "end", key, dateTime, rsp));
 			}
 		} catch (Exception ex) {
-			logger.error(MessageFormat.get(EventMessageId.CEP_ERROR), "end", key, dateTime, ex.getMessage());
-			logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION), ex);
+			logger.error(MessageFormat.getMessage(EventMessageId.CEP_ERROR, "end", key, dateTime, ex.getMessage()));
+			logger.error(MessageFormat.getMessage(EventMessageId.EVENT_EXCEPTION), ex);
 		}
 	}
 }

@@ -28,8 +28,8 @@ public class MessageFormatTest {
 
 	@Test
 	public void testMessageFormat() {
-		assertEquals("RIZA0004I {}の{}が開始しました。",MessageFormat.get("RIZA0004"));
-		assertEquals(null,MessageFormat.get("bbbb"));
-		assertEquals("TEST0004I {}の{}が開始しました。",MessageFormat.get("TEST0004"));
+		assertEquals("RIZA0004I {}の{}が開始しました。",MessageFormat.getMessage("RIZA0004"));
+		assertEquals(null,MessageFormat.getMessage("bbbb"));
+		assertEquals("TEST0004I {}の{}が開始しました。",MessageFormat.getMessage("TEST0004"));
 	}
 }

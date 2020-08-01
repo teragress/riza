@@ -53,7 +53,7 @@ public class EventThreadPoolSetting {
 				.maxQueueSize(maxQueueSize)
 				.keepAliveTime(60L).rejectedPolicy(ThreadPoolRejectedPolicy.CallerRuns)
 				.build(EventConstants.EVENT_THREAD_POOL_ID);
-		logger.info(MessageFormat.get(EventMessageId.CONSUMER_THREAD_POOL),poolSize,maxPoolSize,maxQueueSize);
+		logger.info(MessageFormat.getMessage(EventMessageId.CONSUMER_THREAD_POOL,poolSize,maxPoolSize,maxQueueSize));
 		return executorService;
 	}
 }

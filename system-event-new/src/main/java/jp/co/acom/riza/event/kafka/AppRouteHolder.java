@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import jp.co.acom.riza.event.utils.ModeUtil;
-
 /**
  * コンシューマグループ、トピック、アプリケーションルートの関係を保持する
  * 

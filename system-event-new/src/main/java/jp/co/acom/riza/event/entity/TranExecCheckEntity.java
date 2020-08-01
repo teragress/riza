@@ -16,7 +16,7 @@ import lombok.Data;
  *
  */
 @Data
-@Table(name = "TRANEXECCHECK")
+@Table(schema = "RP0", name = "TRANEXECCHECK")
 @Entity
 public class TranExecCheckEntity {
 

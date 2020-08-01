@@ -233,8 +233,8 @@ public class PostCommitPersistentNotifier {
 				}
 			}
 		} catch (Exception ex) {
-			logger.error(MessageFormat.get(EventMessageId.EVENT_EXCEPTION), ex.getMessage());
-			logger.error(MessageFormat.get(EventMessageId.EXCEPTION_INFORMATION), ex);
+			logger.error(MessageFormat.getMessage(EventMessageId.EVENT_EXCEPTION, ex.getMessage()));
+			logger.error(MessageFormat.getMessage(EventMessageId.EXCEPTION_INFORMATION), ex);
 			Integer forceNullException = null;
 			forceNullException.intValue();
 		}
@@ -254,7 +254,8 @@ public class PostCommitPersistentNotifier {
 			logger.debug("afterCommit() started.");
 			if (auditMessage.getAuditEntity().size() > 0) {
 				auditMessage.setUser(commonContext.getUserId());
-				logger.info(MessageFormat.get("RIZA0001"), StringUtil.objectToJsonString(auditMessage));
+				logger.info(MessageFormat.getMessage(EventMessageId.PCIDS_INFORMATION, commonContext.getSpanId(),
+						commonContext.getUserId(), StringUtil.objectToJsonString(auditMessage)));
 			}
 
 			if (!persistentEvent) {
