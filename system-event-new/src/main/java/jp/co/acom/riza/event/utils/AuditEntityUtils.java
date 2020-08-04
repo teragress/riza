@@ -39,17 +39,18 @@ public class AuditEntityUtils {
 	 * @return エンティティオブジェクト。検索できない場合はnull値。
 	 * @throws ClassNotFoundException
 	 */
-	public Object getEventEntity(EntityEvent entityEvent) throws ClassNotFoundException {
+	@SuppressWarnings("unchecked")
+	public <T> T getEventEntity(EntityEvent entityEvent) throws ClassNotFoundException {
 
 		EntityManager em = (EntityManager) applicationContext.getBean(entityEvent.getManager());
 		Entity entity = entityEvent.getEntity();
 
 		if (entity.getEntityType() == EntityType.EVENT) {
-			return em.find(Class.forName(entity.getEntity()), entity.getKey());
+			return (T)em.find(Class.forName(entity.getEntity()), entity.getKey());
 		} else {
 			AuditQueryCreator queryCreator = AuditReaderFactory.get(em).createQuery();
 
-			return queryCreator.forRevisionsOfEntity(Class.forName(entity.getEntity()), true, true)
+			return (T)queryCreator.forRevisionsOfEntity(Class.forName(entity.getEntity()), true, true)
 					.add(AuditEntity.id().eq(entity.getKey()))
 					.add(AuditEntity.revisionNumber().eq(entityEvent.getRevision())).getSingleResult();
 		}
@@ -65,7 +66,7 @@ public class AuditEntityUtils {
 	 * @throws ClassNotFoundException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Object> getCurrentAndBeforeEntity(EntityEvent entityEvent) throws ClassNotFoundException {
+	public <T> List<T> getCurrentAndBeforeEntity(EntityEvent entityEvent) throws ClassNotFoundException {
 		EntityManager em = (EntityManager) applicationContext.getBean(entityEvent.getManager());
 		Entity entity = entityEvent.getEntity();
 
@@ -85,17 +86,18 @@ public class AuditEntityUtils {
 	 * @return イベントエンティティリスト
 	 * @throws ClassNotFoundException
 	 */
-	public List<Object> getAuditEntity(DomainEvent domainEvent, String targetClass) throws ClassNotFoundException {
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getAuditEntity(DomainEvent domainEvent, Class<T> targetClass) throws ClassNotFoundException {
 		EntityManager em = (EntityManager) applicationContext.getBean(domainEvent.getManager());
-		List<Object> list = new ArrayList<Object>();
+		List<T> list = new ArrayList<T>();
 		for (Entity entity : domainEvent.getEntitys()) {
 			if (targetClass.equals(entity.getEntity().getClass().getName())) {
 				AuditQueryCreator queryCreator = AuditReaderFactory.get(em).createQuery();
-				Object findEntity = null;
+				T findEntity = null;
 				if (entity.getEntityType() == EntityType.EVENT) {
-					findEntity = em.find(Class.forName(entity.getEntity()), entity.getKey());
+					findEntity = (T)em.find(Class.forName(entity.getEntity()), entity.getKey());
 				} else {
-					findEntity = queryCreator.forRevisionsOfEntity(Class.forName(entity.getEntity()), true, true)
+					findEntity = (T)queryCreator.forRevisionsOfEntity(Class.forName(entity.getEntity()), true, true)
 							.add(AuditEntity.id().eq(entity.getKey()))
 							.add(AuditEntity.revisionNumber().eq(domainEvent.getRevision())).getSingleResult();
 				}
@@ -117,16 +119,16 @@ public class AuditEntityUtils {
 	 * @throws ClassNotFoundException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<List<Object>> getCurrentAndBeforeEntity(DomainEvent domainEvent,String entityClass) throws ClassNotFoundException {
+	public <T> List<List<T>> getCurrentAndBeforeEntity(DomainEvent domainEvent,Class<T> entityClass) throws ClassNotFoundException {
 		EntityManager em = (EntityManager) applicationContext.getBean(domainEvent.getManager());
-		List<List<Object>> findList = new ArrayList<List<Object>>();
+		List<List<T>> findList = new ArrayList<List<T>>();
 		
 		for (Entity entity: domainEvent.getEntitys()) {
 			if (entityClass.equals(entity.getEntity())) {
 				
 				AuditQueryCreator queryCreator = AuditReaderFactory.get(em).createQuery();
 
-				List<Object> ent = queryCreator.forRevisionsOfEntity(Class.forName(entity.getEntity()), true, true)
+				List<T> ent = queryCreator.forRevisionsOfEntity(Class.forName(entity.getEntity()), true, true)
 						.add(AuditEntity.id().eq(entity.getKey()))
 						.add(AuditEntity.revisionNumber().le(domainEvent.getRevision()))
 						.addOrder(AuditEntity.revisionNumber().desc()).setMaxResults(2).getResultList();
@@ -136,6 +138,6 @@ public class AuditEntityUtils {
 				}
 			}
 		}
-		return findList;
+	return findList;
 	}
 }

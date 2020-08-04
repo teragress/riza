@@ -124,8 +124,7 @@ public class CepMonitorService {
 				logger.error(MessageFormat.getMessage(EventMessageId.CEP_ERROR, "start", key, dateTime, rsp));
 			}
 		} catch (Exception ex) {
-			logger.error(MessageFormat.getMessage(EventMessageId.CEP_ERROR, "start", key, dateTime, ex.getMessage()));
-			logger.error(MessageFormat.getMessage(EventMessageId.EVENT_EXCEPTION), ex);
+			logger.error(MessageFormat.getMessage(EventMessageId.CEP_ERROR, "start", key, dateTime, ex.getMessage()),ex);
 		}
 	}
 
@@ -150,8 +149,7 @@ public class CepMonitorService {
 				logger.error(MessageFormat.getMessage(EventMessageId.CEP_ERROR, "end", key, dateTime, rsp));
 			}
 		} catch (Exception ex) {
-			logger.error(MessageFormat.getMessage(EventMessageId.CEP_ERROR, "end", key, dateTime, ex.getMessage()));
-			logger.error(MessageFormat.getMessage(EventMessageId.EVENT_EXCEPTION), ex);
+			logger.error(MessageFormat.getMessage(EventMessageId.CEP_ERROR, "end", key, dateTime, ex.getMessage()),ex);
 		}
 	}
 }

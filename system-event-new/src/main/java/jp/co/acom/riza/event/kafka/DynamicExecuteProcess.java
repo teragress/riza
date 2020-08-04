@@ -60,9 +60,8 @@ public class DynamicExecuteProcess implements Processor {
 							getKafkaMessageInfo(topic, exchange)));
 				} else {
 
-					logger.error(MessageFormat.getMessage(EventMessageId.CONSUMER_ROUTE_EXCEPTION, group, ex.getMessage(),
-							getKafkaMessageInfo(topic, exchange)));
-					logger.error(MessageFormat.getMessage(EventMessageId.EVENT_EXCEPTION), ex);
+					logger.error(MessageFormat.getMessage(EventMessageId.CONSUMER_ROUTE_EXCEPTION, group,
+							getKafkaMessageInfo(topic, exchange)),ex);
 				}
 			}
 		}

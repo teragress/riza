@@ -318,9 +318,7 @@ public class EventRestCommand {
 	 * @return
 	 */
 	private EventCommandResponse exceptionProc(Exception ex, String cmdPath, Object parm) {
-		logger.error(MessageFormat.getMessage(EventMessageId.COMMAND_EXCEPTION, REQ_PREFIX_PATH + cmdPath, parm.toString(),
-				ex.getMessage()));
-		logger.error(MessageFormat.getMessage(EventMessageId.EXCEPTION_INFORMATION), ex);
+		logger.error(MessageFormat.getMessage(EventMessageId.COMMAND_EXCEPTION, REQ_PREFIX_PATH + cmdPath, parm.toString()),ex);
 
 		EventCommandResponse resp = new EventCommandResponse();
 		resp.setRc(EventCommandResponse.RC.NG);

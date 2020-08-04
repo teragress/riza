@@ -76,14 +76,12 @@ public class KafkaConsumerCreate {
 
 		int defaultConsumerCount = env.getProperty(KafkaConstants.KAFKA_DEFAULT_CONSUMER_COUNT, Integer.class,
 				KafkaConstants.KAFKA_DEFAULT_PROG_CONSUMER_COUNT);
-		String groupPrefix = env.getProperty(KafkaConstants.KAFKA_CONSUMER_GROUP_PREFIX, String.class,
-				KafkaConstants.KAFKA_DEFAULT_CONSUMER_GROUP_PREFIX);
 		for (String group : holder.getGroupeList()) {
 			String topicList = String.join(",", holder.getTopicList(group));
-			String key = "KAFKA_" + groupPrefix + group + "_CONSUMER_COUNT";
+			String key = "KAFKA_" + group + "_CONSUMER_COUNT";
 			int consumersCount = env.getProperty(key, Integer.class, defaultConsumerCount);
-			String routeId = KafkaConstants.KAFKA_CONSUMER_PREFIX + "_" + groupPrefix +group;
-			String uri = KafkaConstants.KAFKA_COMPONENT_BEAN + ":" + topicList + "?groupId=" + groupPrefix + group + "&consumersCount=" + consumersCount;
+			String routeId = KafkaConstants.KAFKA_CONSUMER_PREFIX + "_" + group;
+			String uri = KafkaConstants.KAFKA_COMPONENT_BEAN + ":" + topicList + "?groupId=" + group + "&consumersCount=" + consumersCount;
 
 			context.addRoutes(new RouteBuilder() {
 				@Override

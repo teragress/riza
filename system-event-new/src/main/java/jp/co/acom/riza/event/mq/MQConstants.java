@@ -15,7 +15,7 @@ public class MQConstants {
 	/**
 	 * 最大接続数デフォルト値
 	 */
-	public static final int MQ_DEFAULT_MAX_CONNECTION = 3;
+	public static final int MQ_DEFAULT_MAX_CONNECTION = 2;
 
 	/**
 	 * 接続先キューマネージャー名

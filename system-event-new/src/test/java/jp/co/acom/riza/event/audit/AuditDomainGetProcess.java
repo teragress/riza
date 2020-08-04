@@ -34,13 +34,13 @@ public class AuditDomainGetProcess implements Processor {
 		logger.info("process() started.");
 
 		DomainEvent domainEvent = (DomainEvent) exchange.getIn().getHeader(EventConstants.EXCHANGE_HEADER_EVENT_OBJECT);
-		List<List<Object>> hList = auditEntityUtils.getCurrentAndBeforeEntity(domainEvent, Customer.class.getName());
-		for (List<Object> gList : hList) {
+		List<List<Customer>> hList = auditEntityUtils.getCurrentAndBeforeEntity(domainEvent, Customer.class);
+		for (List<Customer> gList : hList) {
 			for (Object entityObj : gList) {
 				System.out.println(entityObj.toString());
 			}
 		}
-		List<Object> eList = auditEntityUtils.getAuditEntity(domainEvent, Customer.class.getName());
+		List<Customer> eList = auditEntityUtils.getAuditEntity(domainEvent, Customer.class);
 		for (Object entityObj : eList) {
 			System.out.println(entityObj.toString());
 		}

@@ -53,7 +53,7 @@ public class KafkaEventProducer {
 			domainEvent.setManager(pManager.getManager());
 			domainEvent.setRevision(pManager.getRevison());
 			domainEvent.setEntitys(pManager.getEntitys());
-			String domainTopic = KafkaConstants.KAFKA_DOMAIN_TOPIC_PREFIX + pManager.getManager()
+			String domainTopic = KafkaConstants.KAFKA_DOMAIN_TOPIC_PREFIX + pManager.getDomain()
 					+ tranEvent.getHeader().getBusinessProcess();
 			String domainMessage = StringUtil.objectToJsonString(domainEvent);
 			logger.debug("kafka-domain-send topic=" + domainEvent + " message=" + domainMessage);

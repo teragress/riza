@@ -128,16 +128,6 @@ public class KafkaConstants {
 	public static final String KAFKA_CONSUMER_PREFIX = "KCM";
 	
 	/**
-	 * コンシューマグループプレフィックス名
-	 */
-	public static final String KAFKA_CONSUMER_GROUP_PREFIX = "KAFKA_CONSUMER_GROUP_PREFIX";
-	
-	/**
-	 * コンシューマグループプレフィックス名
-	 */
-	public static final String KAFKA_DEFAULT_CONSUMER_GROUP_PREFIX = "";
-	
-	/**
 	 * KAFKAのAcks数指定取得キー
 	 */
 	public static final String KAFKA_REQUIRED_ACKS = "KAFKA_REQUIRED_ACKS";

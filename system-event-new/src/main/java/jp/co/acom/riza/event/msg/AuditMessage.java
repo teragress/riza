@@ -24,6 +24,11 @@ public class AuditMessage {
 	private String user;
 
 	/**
+	 * トレースID
+	 */
+	private String traceId;
+	
+	/**
 	 * 監査エンティティリスト
 	 * 
 	 */
